@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<title>Login</title>
+	
+	<style>
+		.features{
+			padding-top: 80px;
+			position: absolute;
+			height: 500px;
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+			margin-left:650px;
+		}
+		.features h2{
+			font-size: 3rem;
+			color: var(--accent);
+		}
+		.features form{
+			padding: 50px;
+			max-width: 480px;
+		}
+		.features form label{
+			font-size: 1.2rem;
+		}
+		.features form input{
+			padding: 10px 15px;
+			margin: 5px;
+			border-radius: 5px;
+			border: 2px solid var(--slider);
+			width: 300px;
+			font-size: 1.1rem;
+		}
+		.features form button{
+			margin-left: 100px;
+		}
+		.features a{ color: black; }
+		.features a:hover{ color: var(--accent); transform: scale(2); }
+		.error{ color:#c0392b; font-size: 0.9rem; margin-left: 6px; }
+		@media (max-width: 1200px){ .features{ margin-left: 0; } }
+		@media (max-width: 640px){
+			.features{ position: static; padding: 80px 16px 24px 16px; align-items: center; }
+			.features form{ padding: 24px; width: 100%; }
+			.features form input{ width: 100%; }
+			.features form button{ margin-left: 0; width: 100%; }
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar">
+		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<div class="nav">
+			<ul class="list">
+				<li><a href="aboutus.html" class="nb">About us</a></li>
+				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="features">
+		<h2>Login</h2>
+		<form class="form" action="student-dashboard.html" id="loginForm" novalidate>
+			<label>Email: <br>
+				<input type="email" name="email" id="l-email" required>
+				<div class="error" id="err-l-email"></div>
+			</label> <br><br>
+			<label>Password: <br>
+				<input type="password" name="password" id="l-pass" required minlength="6">
+				<div class="error" id="err-l-pass"></div>
+			</label> <br><br>
+			<button type="submit" class="login">Login</button>
+		</form>
+		<p style="margin-top: 12px; text-align:center; font-size: 1.3rem;">Don't have an account? <a href="register.html">Sign in</a></p>
+	</div>
+
+	<script>
+	(function(){
+		function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
+		function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+		document.getElementById('loginForm').addEventListener('submit', function(e){
+			var ok = true;
+			var email = document.getElementById('l-email').value.trim();
+			var pass = document.getElementById('l-pass').value;
+			setError('err-l-email'); setError('err-l-pass');
+			if(!emailOk(email)){ setError('err-l-email','Enter a valid email address.'); ok=false; }
+			if(pass.length < 6){ setError('err-l-pass','Password must be at least 6 characters.'); ok=false; }
+			if(!ok){ e.preventDefault(); return; }
+			try{ localStorage.setItem('loggedIn','true'); }catch(err){}
+		});
+	})();
+	</script>
+</body>
+</html>

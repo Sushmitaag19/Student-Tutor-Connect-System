@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/style.css">
+    <script src="https://kit.fontawesome.com/e7df210b8c.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Boldonse&family=Dancing+Script:wght@400..700&family=Oleo+Script:wght@400;700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>About us</title>
+    <style>
+        .feedback{ background: var(--extra); padding: 40px 16px; margin-top: 20px; }
+        .feedback h2{ text-align:center; color: var(--accent); margin-bottom: 16px; }
+        .feedback .wrap{ max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .feedback form{ background: var(--nav); padding: 20px; border-radius: 12px; box-shadow: 0 8px 12px var(--shadow); }
+        .feedback label{ display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+        .feedback input, .feedback textarea, .feedback select{ border: 2px solid var(--slider); border-radius: 8px; padding: 10px; font-size: 1rem; }
+        .feedback textarea{ min-height: 120px; resize: vertical; }
+        .feedback .messages{ background:#fff; border-radius:12px; padding:16px; border:1px solid var(--accent); overflow:auto; }
+        .msg{ border-bottom:1px solid #eee; padding:10px 0; }
+        .msg:last-child{ border-bottom:none; }
+        .error{ color:#c0392b; font-size: 0.9rem; }
+        @media (max-width: 900px){ .feedback .wrap{ grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar">
+        <a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+        
+        <input type="checkbox" id="toggle">
+        <label for="toggle"><i class="fa-solid fa-bars"></i></label>
+           
+
+        <div class="nav">
+            <ul class="list">
+            <li><a href="./aboutus.html" class="nb">About us</a></li>
+            <li><a href="./tutor.html" class="nb">Find a tutor</a></li>
+            <li><a href="./becomeTutor.html" class="nb">Become a tutor</a></li>
+             <div class="search-bar"> 
+            <input type="text" class="searchInput" placeholder="Search tutors..." id="navSearch"> 
+            <button class="clickHere" id="navSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+            <li><a href="./login.html"><button type="button">Login</button></a></li>
+            <li><a href="./register.html"><button type="button">Sign in</button></a></li>
+            </ul>
+        </div>
+    </nav>
+
+     <div class="slogan">
+        <h1>StudentTutor Connect System is on the mission to offer great tutoring offers in <span>affordable price to all</span>.</h1>
+    </div>
+
+    <div class="about">
+         <h1>Our Features</h1>
+
+        <div class="about1">
+            <div class="desc">
+                <h2>Our Misson</h2>
+                <p>Student Tutor Connect System aims to provide a great tutoring session for both tutors and students. <br> <br>
+                The general tutoring sessions are long terms and so many times unproductive leading to major loss of time, efforts and of course money.
+                Studnt Tutor Connect System aims to fill the gap between students and tutors providing complete control over time, schedule and course.
+                Students can browse through multiple choices of tutors and select the ones that meet their requirements in terms of cost, course, time, mode of learning and location. <br> <br>
+                We’re building a future where access to high quality learning is stress-free for those who can afford it, and funded directly through schools for those who can't. Online tuition, delivering high quality learning in a safe, convenient, and affordable way.
+                </p>
+            </div>
+            <div class="img-container"><img src="./assets/images/a1.png" alt="Learning" height="400px" width="auto"></div>
+        </div>
+
+         <div class="about1">
+             <div class="img-container2">
+                <img src="./assets/images/s7.png" alt="Learning" height="400px" width="auto">
+            </div>
+            <div class="desc">
+                <h2>Our Tutors</h2>
+                <p>Our handpicked tutors have the subject expertise to explain tricky concepts. But the biggest thing Student Tutor Connect System tutors have is the relationship and rapport they build with students. All our tutors are current or recent undergraduates at British universities, and come from all walks of life. So they don’t just know pythagorean triangles; they know the exams they’ll come up in. And perhaps most importantly, they know how it feels to take them. They’re more than tutors; they’re mentors. </p>
+            </div>
+        </div>
+
+        
+        <div class="about1">
+            <div class="desc">
+                <h2>What is it like working with us ?</h2>
+                <p>
+ Well, people are at the heart of everything we do. There are so many different career paths at Student Tutor Connect System, from Software Engineer to Customer Operations. From Marketing to the Data team.
+  But we don’t just get our heads down and do our own jobs. We all go out of our way to support each other, and solve problems together. 
+  Expectations around high performance are clear and we help each other to do our best work. 
+  We don’t think a great company culture is just free yoga sessions and summer socials (although we do that stuff too). We think it’s about creating a supportive environment where everyone can perform at their best, and be their authentic self, every day. Whoever you are.
+
+                </p>
+            </div>
+            <div class="img-container3"><img src="./assets/images/a5.png" alt="Learning" height="350px" width="350px"></div>
+        </div>
+
+        </div>
+
+        <div class="offers">
+            <h1>What Student Tutor Connect System offers </h1>
+            <p>"Service so good, it speaks for itself."</p>
+
+            <div class="oDesc">
+                <div class="o1">
+                    <img src="./assets/images/o1.png" alt="time" height="100px">
+                    <h2>Flexibility</h2>
+                    <p>You have full control and felxibility over your schedule both as a teacher as well as student and schedule your session as per your availability. </p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o2.png" alt="reward" height="100px">
+                    <h2>Rewards</h2>
+                    <p>Build or help build educational journey and advance towards the betterment in academic or career.</p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o3.png" alt="time" height="100px">
+                    <h2>Constant growth</h2>
+                    <p>Student Tutor Connect System drives you to evolve constantly and regularly through enhanced communication, problem solving and interpersonal skills. </p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o4.png" alt="time" height="100px">
+                    <h2>Online or offline</h2>
+                    <p>Teach and learn from the comfort of your home, in your local community or online and tailor the teaching and learning to your preferences and style. </p>
+                </div>
+            </div>
+
+             <div class="oDesc">
+                <div class="o1">
+                    <img src="./assets/images/o5.png" alt="time" height="100px">
+                    <h2>Set your rates</h2>
+                    <p>You’re in control. Decide how much you want to charge or pay based on your experience, subject, and time. No middleman cutting into your earnings.</p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o6.png" alt="reward" height="100px">
+                    <h2>1000+ subjects</h2>
+                    <p>From academic tutoring to creative skills, test prep, language, coding, business, music, and more; there's a place for every passion and expertise.</p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o7.png" alt="time" height="100px">
+                    <h2>Local and global reach</h2>
+                    <p>Get discovered by students in your area and around the world. Expand your impact without limits, all from the comfort of your home without any limitations. </p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o8.png" alt="time" height="100px">
+                    <h2>Create your own course</h2>
+                    <p>Turn your knowledge into a structured course. Share it, sell it, or use it to attract more students. Build your brand and teach on your terms without limits. </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="feedback">
+            <h2 style="margin-bottom:8px; text-align: center; font-size: 2rem; color: var(--accent);">Share your feedback</h2>
+            <div class="wrap">
+                <form id="feedbackForm" novalidate>
+                    <label>Name
+                        <input type="text" id="fb-name" required>
+                        <span class="error" id="err-fb-name"></span>
+                    </label>
+                    <label>Email
+                        <input type="email" id="fb-email" required>
+                        <span class="error" id="err-fb-email"></span>
+                    </label>
+                    <label>Rating
+                        <select id="fb-rating" required>
+                            <option value="">Select</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                        <span class="error" id="err-fb-rating"></span>
+                    </label>
+                    <label >Feedback
+                        <textarea id="fb-text" required></textarea>
+                        <span class="error" id="err-fb-text"></span>
+                    </label>
+                    <button type="submit" class="login">Submit</button>
+                </form>
+                <div class="messages" id="feedbackList">
+                    <h3 style="margin-bottom:8px; text-align: center; font-size: 1.rem; color: var(--accent);">Recent Feedback</h3>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="satisfy">
+            <img src="./assets/images/o9.png" alt="satisfaction">
+            <p>Student Tutor Connect System's online lessons are just as effective as in-person classes - you won't miss out on anything! <br>
+                You'll also be learning with the best online tutors. <br>
+We are so confident about the quality of our lessons, that in the unlikely event you're not 100% satisfied, we'll give you a full refund.</p>
+<a href="tutor.html"><button type="submit">Discover your perfect tutor</button></a>
+        </div>
+</body>
+
+
+    <footer>
+        <h3>Quick links</h3>
+        <div class="ftr">
+        <ul>
+            <li><a href="aboutus.html">About us</a></li>
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="tutor.html">Find a tutor</a></li>
+            <li><a href="becomeTutor.html">Become a tutor</a></li>
+            <li><a href="terms.html">Terms and Conditions</a></li>  
+        </ul>
+        <div class="contacts">
+            <p><i class="fa-solid fa-envelope"></i> : student.connect.tutor@email.com</p>
+            <p><i class="fa-solid fa-phone"></i> : 987654321</p>
+            <span>
+            <p><a href="www.facebook.com"><i class="fa-brands fa-facebook"></i></a></p>
+            <p><a href="www.twitter.com"><i class="fa-brands fa-x-twitter"></i></a></p>
+            <p><a href="www.instagram.com"><i class="fa-brands fa-instagram"></i></a></p>
+            <p><a href="www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a></p>
+            </span>
+        </div>
+        <div class="start" style="width: 200px;">
+             <button class="login"><a href="./register.html">Register now</a></button>
+            <button class="login"><a href="./login.html">Log in</a></button>   
+        </div>
+        <img src="./assets/images/pill-logo.png" alt="Logo" height="100px">
+        </div>
+    </footer>
+
+    <script>
+    (function(){
+        function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
+        function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+        function addToList(entry){
+            var list = document.getElementById('feedbackList');
+            var div = document.createElement('div');
+            div.className = 'msg';
+            div.innerHTML = '<b>'+entry.name+'</b> • Rating: '+entry.rating+'<br>'+entry.text;
+            list.appendChild(div);
+        }
+        var saved = JSON.parse(localStorage.getItem('stcs_feedback')||'[]');
+        saved.forEach(addToList);
+        document.getElementById('feedbackForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            var name = document.getElementById('fb-name').value.trim();
+            var email = document.getElementById('fb-email').value.trim();
+            var rating = document.getElementById('fb-rating').value;
+            var text = document.getElementById('fb-text').value.trim();
+            setError('err-fb-name'); setError('err-fb-email'); setError('err-fb-rating'); setError('err-fb-text');
+            var ok = true;
+            if(name.length<2){ setError('err-fb-name','Please enter your name.'); ok=false; }
+            if(!emailOk(email)){ setError('err-fb-email','Enter a valid email.'); ok=false; }
+            if(!rating){ setError('err-fb-rating','Select a rating.'); ok=false; }
+            if(text.length<10){ setError('err-fb-text','Please write at least 10 characters.'); ok=false; }
+            if(!ok) return;
+            var entry = {name:name,email:email,rating:rating,text:text};
+            saved.push(entry);
+            localStorage.setItem('stcs_feedback', JSON.stringify(saved));
+            addToList(entry);
+            this.reset();
+            alert('Thanks for your feedback!');
+        });
+    })();
+    </script>
+</html>

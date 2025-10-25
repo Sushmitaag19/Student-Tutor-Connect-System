@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<title>FAQs</title>
+	<style>
+		.faq{ max-width: 900px; margin: 80px auto; padding: 16px; }
+		.faq h1{ text-align:center; margin-bottom: 16px; color: var(--accent); }
+		.q{ border:1px solid var(--accent); border-radius:10px; padding:12px; margin:10px 0; background: var(--nav); cursor: pointer; }
+		.q-header{ display: flex; justify-content: space-between; align-items: center; }
+		.q-arrow{ transition: transform 0.3s; }
+		.q-arrow.open{ transform: rotate(180deg); }
+		.q-answer{ display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--accent); }
+		.q-answer.show{ display: block; }
+	</style>
+</head>
+<body>
+	 <nav class="navbar">
+        <a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+        
+        <input type="checkbox" id="toggle">
+        <label for="toggle"><i class="fa-solid fa-bars"></i></label>
+           
+
+        <div class="nav">
+            <ul class="list">
+            <li><a href="./aboutus.html" class="nb">About us</a></li>
+            <li><a href="./tutor.html" class="nb">Find a tutor</a></li>
+            <li><a href="./becomeTutor.html" class="nb">Become a tutor</a></li>
+             
+            <li><a href="./login.html"><button type="button">Login</button></a></li>
+            <li><a href="./register.html"><button type="button">Sign in</button></a></li>
+            </ul>
+        </div>
+    </nav>
+
+	<div class="faq" style="height: 800px; padding: 100px;">
+		<h1>Frequently Asked Questions</h1>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>How do I find tutors?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Use the Find a tutor page, filter by subject, level, mode and location.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>Is the platform free?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Yes, browsing and signing up are free for both students and tutors.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>How are lessons scheduled?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Students and tutors coordinate directly based on availability and preferred mode.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>Do you support Hybrid lessons?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Yes, many tutors offer Online, Offline, and Hybrid modes.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>What subjects are available?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">We offer Math, Physics, English, Computer Science, Chemistry, Biology, and Nepali.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>How do I become a tutor?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Sign up as a tutor, complete your profile, upload a photo, and pass the subject quiz.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>What is the tutor quiz?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">A 10-question test in your chosen subject. You need 6/10 correct to pass.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>How do I contact a tutor?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Click "Show More" on any tutor profile (requires login) to see contact details.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>Can I change my profile later?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Yes, you can update your profile information anytime from your dashboard.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>What if I fail the tutor quiz?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">You can retry after 1 month. Use this time to study and improve your knowledge.</div>
+		</div>
+		<div class="q" onclick="toggleFAQ(this)">
+			<div class="q-header">
+				<b>Is there a mobile app?</b>
+				<span class="q-arrow">▼</span>
+			</div>
+			<div class="q-answer">Currently we're web-based only, but our site is fully responsive for mobile devices.</div>
+		</div>
+	</div>
+
+	<footer>
+        <h3>Quick links</h3>
+        <div class="ftr">
+        <ul>
+            <li><a href="aboutus.html">About us</a></li>
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="tutor.html">Find a tutor</a></li>
+            <li><a href="becomeTutor.html">Become a tutor</a></li>
+            <li><a href="terms.html">Terms and Conditions</a></li>  
+        </ul>
+        <div class="contacts">
+            <p><i class="fa-solid fa-envelope"></i> : student.connect.tutor@email.com</p>
+            <p><i class="fa-solid fa-phone"></i> : 987654321</p>
+            <span>
+            <p><a href="www.facebook.com"><i class="fa-brands fa-facebook"></i></a></p>
+            <p><a href="www.twitter.com"><i class="fa-brands fa-x-twitter"></i></a></p>
+            <p><a href="www.instagram.com"><i class="fa-brands fa-instagram"></i></a></p>
+            <p><a href="www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a></p>
+            </span>
+        </div>
+        <div class="start" style="width: 200px;">
+             <button class="login"><a href="register.html">Register now</a></button>
+            <button class="login"><a href="login.html">Log in</a></button>   
+        </div>
+        <img src="./assets/images/pill-logo.png" alt="Logo" height="100px">
+        </div>
+    </footer>
+
+	<script>
+	function toggleFAQ(element) {
+		var arrow = element.querySelector('.q-arrow');
+		var answer = element.querySelector('.q-answer');
+		if (answer.classList.contains('show')) {
+			answer.classList.remove('show');
+			arrow.classList.remove('open');
+		} else {
+			answer.classList.add('show');
+			arrow.classList.add('open');
+		}
+	}
+	</script>
+</body>
+</html>

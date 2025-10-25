@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student-Tutor Connect System</title>
+    <link rel="stylesheet" href="./assets/style.css">
+    <script src="https://kit.fontawesome.com/e7df210b8c.js" crossorigin="anonymous"></script>
+    <style>
+      .nb:hover{
+    transform: scale(1.1);
+    }
+    </style>
+</head>
+<body>
+      <nav class="navbar">
+        <a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+        <div class="nav">
+            <ul class="list">
+            <li><a href="aboutus.html" class="nb">About us</a></li>
+            <li><a href="tutor.html" class="nb">Find a tutor</a></li>
+            <li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+             <div class="search-bar"> 
+            <input type="text" class="searchInput" placeholder="Search tutors..." id="navSearch"> 
+            <button class="clickHere" id="navSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+            <li><a href="login.html"><button type="button">Login</button></a></li>
+            <li><a href="register.html"><button type="button">Sign in</button></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="t-container">
+        <div class="text" style="display: flex;flex-direction: column; gap: 40px;">
+        <h1>Find your perfect tutor.</h1>
+        <h3>Enter your requirements and let our system choose <span>your perfect tutor.</span> <br> Or choose yourself one from our perfect candidates. </h3>
+        </div>
+        <img src="./assets/images/choose.png" alt="choose" height="270px" width="400px">
+    </div>
+
+    <div class="searchForm">
+      <h2>Start from here <span>Today</span>.</h2>
+
+      <form action="" id="searchForm">
+
+        <div class="formGrid">
+
+          <div class="select">
+                <label for="level">I study in:</label>
+                <select name="level" id="level">
+                    <option value="">Level</option>
+                    <option value="Primary Class">Primary Class</option>
+                    <option value="Lower Secondary Class">Lower Secondary Class</option>
+                    <option value="+2">+2</option>
+                    <option value="Bachelors">Bachelors</option>
+                    <option value="Masters">Masters</option>
+                </select>
+            </div>
+
+
+            <div class="select">
+                <label for="subject">Subjects:</label>
+                <select name="subject" id="subject">
+                    <option value="">Subject</option>
+                    <option value="English">English</option>
+                    <option value="Nepali">Nepali</option>
+                    <option value="Maths">Maths</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Biology">Biology</option>
+                    <option value="Computer Science">Computer Science</option>
+                </select>
+            </div>
+
+             <div class="select">
+          <label for="availability">Availability:</label>
+          <select name="availability" id="availability">
+            <option value="">Availability</option>
+            <option value="Weekdays">Weekdays</option>
+            <option value="weekends">Weekends</option>
+            <option value="everyday">Everyday</option>
+            <option value="Weekdays">Weekdays</option>
+          </select>
+        </div>
+
+        <div class="select">
+                <label for="mode">Tutoring Mode:</label><br>
+    
+            <label for="online">
+            <input type="radio" name="mode" id="online" value="online">
+            Online
+            </label><br>
+            <label for="offline">
+            <input type="radio" name="mode" id="offline" value="offline">
+            Offline
+            </label> <br>
+             <label for="both">
+            <input type="radio" name="mode" id="both" value="both">
+            Both
+            </label> <br>
+            <label for="hybrid">
+            <input type="radio" name="mode" id="hybrid" value="hybrid">
+            Hybrid
+            </label>
+            </div>
+         
+        <div class="select" style="display: flex; flex-direction: column; gap: 10px; ">
+          <label for="palce">I am currently living in:</label> <br>
+                  <label for="provience">Provience</label>
+                    <select name="provience" id="proviences"></select>
+                    <label for="districts">District</label>
+                    <select name="districts" id="districts">Districts</select>
+                
+                </div>
+
+       <div class="select">
+        <label for="price">Price</label>
+        <select name="price" id="price">
+          <option value="">Price</option>
+          <option value="low">Rs. 100 - Rs. 300</option>
+          <option value="medium">Rs. 310 - Rs. 750</option>
+          <option value="high">Rs.760 - Rs. 1200 </option>
+          <option value="veryHigh">Rs 1210 and above</option>
+        </select>
+       </div>
+
+          
+      </div>
+
+      <div class="formButtons">
+         <button class="search-btn">Search</button>
+        <button class="clear">Clear all</button>
+      </div>
+
+
+      </form>
+    </div>
+
+    <div class="tCard">
+      <h2>Find your <span>perfect </span> tutors:</h2>
+        <div class="search-bar" id="search-bar">
+                <input type="text" placeholder="Search by name" class="searchInput" id="search"> 
+                <button class="clickHere"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
+       <div id="tutor-cards" class="c"></div>
+    </div>
+
+
+</body>
+<footer>
+        <h3>Quick links</h3>
+        <div class="ftr">
+        <ul>
+            <li><a href="./aboutus.html">About us</a></li>
+            <li><a href="./faqs.html">FAQs</a></li>
+            <li><a href="tutor.html">Find a tutor</a></li>
+            <li><a href="becomeTutor.html">Become a tutor</a></li>
+            <li><a href="./terms.html">Terms and Conditions</a></li>  
+        </ul>
+        <div class="contacts">
+            <p><i class="fa-solid fa-envelope"></i> : student.connect.tutor@email.com</p>
+            <p><i class="fa-solid fa-phone"></i> : 987654321</p>
+            <span>
+            <p><a href="www.facebook.com"><i class="fa-brands fa-facebook"></i></a></p>
+            <p><a href="www.twitter.com"><i class="fa-brands fa-x-twitter"></i></a></p>
+            <p><a href="www.instagram.com"><i class="fa-brands fa-instagram"></i></a></p>
+            <p><a href="www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a></p>
+            </span>
+        </div>
+        <div class="start" style="width: 200px;">
+               <button class="login"><a href="./register.html">Register now</a></button>
+            <button class="login"><a href="./login.html">Log in</a></button>  
+        </div>
+        <img src="./assets/images/pill-logo.png" alt="Logo" height="100px">
+        </div>
+    </footer>
+<script>
+    const provinceDistricts = {
+  "Koshi": ["Bhojpur", "Dhankuta", "Ilam", "Jhapa", "Morang", "Sankhuwasabha", "Sunsari", "Taplejung", "Tehrathum", "Udayapur"],
+  "Madhesh": ["Bara", "Dhanusha", "Mahottari", "Parsa", "Rautahat", "Saptari", "Sarlahi", "Siraha"],
+  "Bagmati": ["Bhaktapur", "Chitwan", "Dhading", "Dolakha", "Kathmandu", "Kavrepalanchok", "Lalitpur", "Makwanpur", "Nuwakot", "Ramechhap", "Rasuwa", "Sindhuli", "Sindhupalchok"],
+  "Gandaki": ["Baglung", "Gorkha", "Kaski", "Lamjung", "Manang", "Mustang", "Myagdi", "Nawalpur", "Parbat", "Syangja", "Tanahun"],
+  "Lumbini": ["Arghakhanchi", "Banke", "Bardiya", "Dang", "Eastern Rukum", "Gulmi", "Kapilvastu", "Palpa", "Parasi", "Pyuthan", "Rolpa", "Rupandehi", "Western Rukum"],
+  "Karnali": ["Dailekh", "Dolpa", "Humla", "Jajarkot", "Jumla", "Kalikot", "Mugu", "Salyan", "Surkhet"],
+  "Sudurpashchim": ["Achham", "Baitadi", "Bajhang", "Bajura", "Dadeldhura", "Darchula", "Doti", "Kailali", "Kanchanpur"]
+};
+
+const provinceSelect = document.getElementById("proviences");
+provinceSelect.innerHTML = '<option value="">Select Province</option>';
+Object.keys(provinceDistricts).forEach(province => {
+  const option = document.createElement("option");
+  option.value = province;
+  option.textContent = province;
+  provinceSelect.appendChild(option);
+});
+
+provinceSelect.addEventListener('change', function() {
+  const districtSelect = document.getElementById("districts");
+  districtSelect.innerHTML = '<option value="">Select District</option>';
+  
+  if (this.value) {
+    provinceDistricts[this.value].forEach(district => {
+      const option = document.createElement("option");
+      option.value = district;
+      option.textContent = district;
+      districtSelect.appendChild(option);
+    });
+  }
+});
+
+    // Mock tutor data
+
+  const tutors = [
+  {
+    id: 1,
+    name: "Aarav Sharma",
+    image: "./assets/images/b1.png",
+    level: "Primary Class",
+    subject: "English",
+    availability: "Weekdays",
+    mode: "offline",
+    district: "Kathmandu",
+    province: "Bagmati",
+    price: "medium",
+    rate: "Rs. 400/hr",
+    experience: "3 years",
+    bio: "Specializes in fun, interactive English lessons for young learners using games and storytelling."
+  },
+  {
+    id: 2,
+    name: "Bina Gurung",
+    image: "./assets/images/g1.png",
+    level: "Lower Secondary Class",
+    subject: "Maths",
+    availability: "everyday",
+    mode: "online",
+    district: "Pokhara",
+    province: "Gandaki",
+    price: "low",
+    rate: "Rs. 250/hr",
+    experience: "2 years",
+    bio: "Makes mathematics enjoyable with real-life examples and step-by-step problem solving."
+  },
+  {
+    id: 3,
+    name: "Chandra Thapa",
+    image: "./assets/images/b2.png",
+    level: "+2",
+    subject: "Physics",
+    availability: "weekends",
+    mode: "both",
+    district: "Lalitpur",
+    province: "Bagmati",
+    price: "high",
+    rate: "Rs. 850/hr",
+    experience: "5 years",
+    bio: "Engineering graduate with specialization in exam preparation and practical physics applications."
+  },
+  {
+    id: 4,
+    name: "Deepa Rai",
+    image: "/assets/images/g2.png",
+    level: "Bachelors",
+    subject: "Chemistry",
+    availability: "Weekdays",
+    mode: "online",
+    district: "Bhaktapur",
+    province: "Bagmati",
+    price: "veryHigh",
+    rate: "Rs. 1300/hr",
+    experience: "8 years",
+    bio: "PhD holder with research experience in organic chemistry and pharmaceutical applications."
+  },
+  {
+    id: 5,
+    name: "Eshan KC",
+    image: "./assets/images/b3.png",
+    level: "Masters",
+    subject: "Biology",
+    availability: "everyday",
+    mode: "offline",
+    district: "Chitwan",
+    province: "Bagmati",
+    price: "high",
+    rate: "Rs. 950/hr",
+    experience: "6 years",
+    bio: "Medical professional offering advanced biology tutoring with clinical case studies."
+  },
+  {
+    id: 6,
+    name: "Falguni Shrestha",
+    image: "/assets/images/g3.png",
+    level: "Primary Class",
+    subject: "Social study",
+    availability: "Weekdays",
+    mode: "offline",
+    district: "Kirtipur",
+    province: "Bagmati",
+    price: "medium",
+    rate: "Rs. 350/hr",
+    experience: "4 years",
+    bio: "Cultural studies expert who brings history and geography to life through local field trips."
+  },
+  {
+    id: 7,
+    name: "Ganesh Magar",
+    image: "./assets/images/b4.png",
+    level: "Lower Secondary Class",
+    subject: "Nepali",
+    availability: "weekends",
+    mode: "online",
+    district: "Dharan",
+    province: "Koshi",
+    price: "low",
+    rate: "Rs. 300/hr",
+    experience: "3 years",
+    bio: "Nepali literature specialist focusing on creative writing and language fundamentals."
+  },
+  {
+    id: 8,
+    name: "Hema Basnet",
+    image: "./assets/images/g4.png",
+    level: "+2",
+    subject: "English",
+    availability: "everyday",
+    mode: "both",
+    district: "Butwal",
+    province: "Lumbini",
+    price: "medium",
+    rate: "Rs. 600/hr",
+    experience: "5 years",
+    bio: "IELTS specialist with proven track record of helping students achieve band 7+ scores."
+  },
+  {
+    id: 9,
+    name: "Ishan Pandit",
+    image: "./assets/images/b5.png",
+    level: "Bachelors",
+    subject: "Maths",
+    availability: "Weekdays",
+    mode: "online",
+    district: "Biratnagar",
+    province: "Koshi",
+    price: "high",
+    rate: "Rs. 1100/hr",
+    experience: "7 years",
+    bio: "Actuary providing advanced mathematics tutoring with financial and statistical applications."
+  },
+  {
+    id: 10,
+    name: "Jaya Tamang",
+    image: "./assets/images/g5.png",
+    level: "Masters",
+    subject: "Physics",
+    availability: "weekends",
+    mode: "offline",
+    district: "Hetauda",
+    province: "Bagmati",
+    price: "veryHigh",
+    rate: "Rs. 1500/hr",
+    experience: "10 years",
+    bio: "University professor specializing in quantum mechanics and advanced physics concepts."
+  },
+  {
+    id: 11,
+    name: "Kiran Poudel",
+    image: "./assets/images/b6.png",
+    level: "Primary Class",
+    subject: "English",
+    availability: "everyday",
+    mode: "both",
+    district: "Janakpur",
+    province: "Madhesh",
+    price: "medium",
+    rate: "Rs. 500/hr",
+    experience: "4 years",
+    bio: "Montessori-trained educator using multisensory approaches for young English learners."
+  },
+  {
+    id: 12,
+    name: "Laxmi Ghale",
+    image: "./assets/images/g6.png",
+    level: "+2",
+    subject: "Chemistry",
+    availability: "Weekdays",
+    mode: "online",
+    district: "Nepalgunj",
+    province: "Lumbini",
+    price: "high",
+    rate: "Rs. 900/hr",
+    experience: "5 years",
+    bio: "Industrial chemist making complex chemical concepts accessible through practical examples."
+  }
+];
+
+
+// Function to render tutors
+function renderTutors(tutorsToShow) {
+  const container = document.getElementById('tutor-cards');
+  if (!container) {
+    console.error("Container element not found");
+    return;
+  }
+  
+  if (!tutorsToShow.length) {
+    container.innerHTML = '<p>No tutors found matching your criteria.</p>';
+    return;
+  }
+
+  container.innerHTML = tutorsToShow.map(tutor => `
+    <div class="tcard">
+      <img src="${tutor.image}" alt="${tutor.name}" onerror="this.src='./assets/default-profile.png'">
+      <h2>${tutor.name}</h2>
+      <p><b>Level:</b> ${tutor.level}</p>
+      <p><b>Subject:</b> ${tutor.subject}</p>
+      <p><b>District:</b> ${tutor.district}</p>
+      <p><b>Province:</b> ${tutor.province}</p>
+      <p><b>Mode:</b> ${tutor.mode.charAt(0).toUpperCase() + tutor.mode.slice(1)}</p>
+      <p><b>Rate:</b> ${tutor.rate}</p>
+      <p>${tutor.bio}</p>
+      <button class="show-more-btn" data-id="${tutor.id}">Show More</button>
+    </div>
+  `).join('');
+
+  // Add event listeners AFTER the elements exist in the DOM
+  document.querySelectorAll('.show-more-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tutorId = this.getAttribute('data-id');
+      handleShowMore(tutorId);
+    });
+  });
+}
+
+// Create modal if it doesn't exist
+function ensureModalExists() {
+  if (!document.getElementById('tutor-modal')) {
+    const modalDiv = document.createElement('div');
+    modalDiv.id = 'tutor-modal';
+    modalDiv.style.display = 'none';
+    modalDiv.style.position = 'fixed';
+    modalDiv.style.top = '0';
+    modalDiv.style.left = '0';
+    modalDiv.style.width = '100vw';
+    modalDiv.style.height = '100vh';
+    modalDiv.style.background = 'rgba(0,0,0,0.5)';
+    modalDiv.style.justifyContent = 'center';
+    modalDiv.style.alignItems = 'center';
+    modalDiv.style.zIndex = '1000';
+    modalDiv.innerHTML = `
+      <div id="modal-content" style="background:#fff; padding:30px; border-radius:10px; max-width:400px; margin:auto; position:relative;">
+        <button id="close-modal" style="position:absolute; top:10px; right:10px;">&times;</button>
+        <div id="modal-body"></div>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    document.getElementById('close-modal').onclick = function() {
+      document.getElementById('tutor-modal').style.display = 'none';
+    };
+  }
+}
+
+// Handle show more button click
+function handleShowMore(tutorId) {
+  if (localStorage.getItem('loggedIn') !== 'true') {
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  const tutor = tutors.find(t => t.id == tutorId);
+  if (!tutor) return;
+
+  const modal = document.getElementById('tutor-modal');
+  const modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = `
+    <h2>${tutor.name}</h2>
+    <img src="${tutor.image}" alt="${tutor.name}" style="width:120px;height:120px;">
+    <p><b>Level:</b> ${tutor.level}</p>
+    <p><b>Subject:</b> ${tutor.subject}</p>
+    <p><b>District:</b> ${tutor.district}</p>
+    <p><b>Province:</b> ${tutor.province}</p>
+    <p><b>Mode:</b> ${tutor.mode.charAt(0).toUpperCase() + tutor.mode.slice(1)}</p>
+    <p><b>Rate:</b> ${tutor.rate}</p>
+    <p><b>Experience:</b> ${tutor.experience}</p>
+    <p><b>Bio:</b> ${tutor.bio}</p>
+  `;
+  modal.style.display = 'flex';
+}
+
+// Filter function
+function filterTutors() {
+  const level = document.getElementById('level').value;
+  const subject = document.getElementById('subject').value;
+  const district = document.getElementById('districts').value;
+  const province = document.getElementById('proviences').value;
+  const mode = document.querySelector('input[name="mode"]:checked')?.value;
+  const searchText = document.querySelector('.searchInput').value.toLowerCase();
+  const priceSort = document.getElementById('price').value;
+
+  let filtered = tutors.filter(tutor => {
+    return (!level || tutor.level === level) &&
+           (!subject || tutor.subject === subject) &&
+           (!district || tutor.district === district) &&
+           (!province || tutor.province === province) &&
+           (!mode || tutor.mode === mode) &&
+           (!searchText || 
+             tutor.name.toLowerCase().includes(searchText) ||
+             tutor.subject.toLowerCase().includes(searchText) ||
+             tutor.bio.toLowerCase().includes(searchText));
+  });
+
+  if (priceSort === 'low' || priceSort === 'high') {
+    filtered.sort((a, b) => {
+      const aPrice = parseInt(a.rate.replace(/\D/g, ''));
+      const bPrice = parseInt(b.rate.replace(/\D/g, ''));
+      return priceSort === 'low' ? aPrice - bPrice : bPrice - aPrice;
+    });
+  }
+
+  renderTutors(filtered);
+}
+
+// Initialize everything when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+  ensureModalExists();
+  
+  if (!document.getElementById('tutor-cards')) {
+    console.error("Element with ID 'tutor-cards' not found");
+    return;
+  }
+
+  renderTutors(tutors);
+
+  document.querySelectorAll('select, input[type="radio"]').forEach(el => {
+    el.addEventListener('change', filterTutors);
+  });
+  
+  document.querySelector('.searchInput').addEventListener('input', filterTutors);
+  
+  document.querySelector('.clear').addEventListener('click', function() {
+    document.getElementById('level').value = '';
+    document.getElementById('subject').value = '';
+    document.getElementById('districts').innerHTML = '<option value="">Select District</option>';
+    document.getElementById('proviences').value = '';
+    document.querySelectorAll('input[name="mode"]').forEach(r => r.checked = false);
+    document.getElementById('price').value = '';
+    document.querySelector('.searchInput').value = '';
+    renderTutors(tutors);
+  });
+});
+
+
+const searchInput = document.getElementById("search");
+search.addEventListener('input', () => {
+  const searchItem = searchInput.value.toLowerCase();
+  const filtered = tutors.filter(tutor => 
+    tutor.name.toLowerCase().includes(searchItem)
+  );
+   renderTutors(filtered);
+})
+
+// Navbar search functionality
+document.getElementById('navSearchBtn').addEventListener('click', function() {
+	var query = document.getElementById('navSearch').value.trim();
+	if (query) {
+		document.getElementById('search').value = query;
+		searchInput.dispatchEvent(new Event('input'));
+	}
+});
+document.getElementById('navSearch').addEventListener('keypress', function(e) {
+	if (e.key === 'Enter') {
+		document.getElementById('navSearchBtn').click();
+	}
+});
+
+// Handle URL search parameter
+const urlParams = new URLSearchParams(window.location.search);
+const searchParam = urlParams.get('search');
+if (searchParam) {
+	document.getElementById('search').value = searchParam;
+	searchInput.dispatchEvent(new Event('input'));
+}
+</script>
+</html>

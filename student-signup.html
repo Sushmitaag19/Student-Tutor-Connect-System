@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<title>Student Sign Up</title>
+	<style>
+		.features{
+			padding: 50px;
+		}
+		.features h2{
+			font-size: 3rem;
+			color: var(--accent);
+			text-align: center;
+			margin-bottom: 50px;
+		}
+		.features form{
+			max-width: 700px;
+			padding-left: 40px;
+		}
+		.features form label{
+			font-size: 1.2rem;
+		}
+		.features form input, .features form select{
+			padding: 10px 15px;
+			margin: 5px;
+			border-radius: 5px;
+			border: 2px solid var(--slider);
+			width: 350px;
+			font-size: 1.1rem;
+		}
+		.features form select{
+			padding: 5px;
+			background-color: white;
+			color: var(--font);
+			font-size: 1.2rem;
+		}
+		.features form button{
+			margin-left: 100px;
+		}
+		.features a{
+			color: black;
+		}
+		.features a:hover{
+			color: var(--accent);
+			transform: scale(2);
+		} 
+		.error{ color:#c0392b; font-size: 0.9rem; margin-left: 6px; }
+		@media (max-width: 1200px){
+			.features h2{ margin-left: 0; }
+			.features form{ margin: 0 auto; }
+		}
+		@media (max-width: 640px){
+			.features{ position: static; padding: 80px 16px 24px 16px; }
+			.features form{ width: 100%; padding-left: 0; }
+			.features form input, .features form select{ width: 100%; }
+			.features form button{ margin-left: 0; width: 100%; }
+		} 
+		 
+
+	</style>
+</head>
+<body>
+	<nav class="navbar" >
+		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<div class="nav">
+			<ul class="list">
+				<li><a href="aboutus.html" class="nb">About us</a></li>
+				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+				<li><a href="login.html"><button type="button">Login</button></a></li>
+				<li><a href="register.html"><button type="button">Sign in</button></a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="features">
+		<h2>Student Sign Up</h2>
+		<form class="form" action="student-dashboard.html" id="studentForm" novalidate>
+			<label>Full Name: <br>
+				<input type="text" name="name" id="s-name" required>
+				<div class="error" id="err-s-name"></div>
+			</label> <br> <br>
+			<label>Email: <br>
+				<input type="email" name="email" id="s-email" required>
+				<div class="error" id="err-s-email"></div>
+			</label> <br> <br>
+			<label>Password: <br>
+				<input type="password" name="password" id="s-pass" required minlength="6">
+				<div class="error" id="err-s-pass"></div>
+			</label> <br> <br>
+			<label>Educational Level <br>
+				<select name="level" id="s-level" required>
+					<option value="">Select level</option>
+					<option value="Primary Class">Primary Class</option>
+					<option value="Lower Secondary Class">Lower Secondary Class</option>
+					<option value="+2">+2</option>
+					<option value="Bachelors">Bachelors</option>
+					<option value="Masters">Masters</option>
+				</select>
+				<div class="error" id="err-s-level"></div>
+			</label> <br> <br>
+			<label>Preferred Subject: <br>
+				<select name="subject" id="s-subject" required>
+					<option value="">Select subject</option>
+					<option value="Math">Math</option>
+					<option value="Physics">Physics</option>
+					<option value="English">English</option>
+					<option value="Computer Science">Computer Science</option>
+					<option value="Chemistry">Chemistry</option>
+					<option value="Biology">Biology</option>
+					<option value="Nepali">Nepali</option>
+				</select>
+				<div class="error" id="err-s-subject"></div>
+			</label> <br> <br>
+			<label>Mode: <br>
+				<select name="mode" id="s-mode" required>
+					<option value="">Select mode</option>
+					<option value="Online">Online</option>
+					<option value="Offline">Offline</option>
+					<option value="Hybrid">Hybrid</option>
+				</select>
+				<div class="error" id="err-s-mode"></div>
+			</label> <br> <br>
+			<label>Location (City): <br>
+				<input type="text" name="location" id="s-location" required>
+				<div class="error" id="err-s-location"></div>
+			</label> <br> <br>
+			<label>Budget (NPR/hr) <br>
+				<input type="number" name="budget" id="s-budget" min="0" step="100" required>
+				<div class="error" id="err-s-budget"></div>
+			</label> <br> <br>
+			<label style="display: flex; align-items: center; gap: 8px; margin: 16px 0;">
+				<input type="checkbox" id="s-terms" required>
+				<span>I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a></span>
+				<div class="error" id="err-s-terms"></div>
+			</label>
+			<button type="submit" class="login">Create account</button>
+		</form>
+	</div>
+
+	<script>
+	(function(){
+		function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
+		function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+		document.getElementById('studentForm').addEventListener('submit', function(e){
+			var ok = true;
+			var name = document.getElementById('s-name').value.trim();
+			var email = document.getElementById('s-email').value.trim();
+			var pass = document.getElementById('s-pass').value;
+			var level = document.getElementById('s-level').value;
+			var subject = document.getElementById('s-subject').value;
+			var mode = document.getElementById('s-mode').value;
+			var location = document.getElementById('s-location').value.trim();
+			var budget = document.getElementById('s-budget').value;
+			var terms = document.getElementById('s-terms').checked;
+
+			setError('err-s-name'); setError('err-s-email'); setError('err-s-pass'); setError('err-s-level'); setError('err-s-subject'); setError('err-s-mode'); setError('err-s-location'); setError('err-s-budget'); setError('err-s-terms');
+
+			if(name.length < 2){ setError('err-s-name','Please enter your full name.'); ok=false; }
+			if(!emailOk(email)){ setError('err-s-email','Enter a valid email address.'); ok=false; }
+			if(pass.length < 6){ setError('err-s-pass','Password must be at least 6 characters.'); ok=false; }
+			if(!level){ setError('err-s-level','Select your level.'); ok=false; }
+			if(!subject){ setError('err-s-subject','Select a subject.'); ok=false; }
+			if(!mode){ setError('err-s-mode','Select a mode.'); ok=false; }
+			if(location.length < 2){ setError('err-s-location','Enter your city.'); ok=false; }
+			if(budget === '' || Number(budget) < 0){ setError('err-s-budget','Enter a valid budget.'); ok=false; }
+			if(!terms){ setError('err-s-terms','You must agree to the Terms and Conditions.'); ok=false; }
+
+			if(!ok){ e.preventDefault(); return; }
+			try{ localStorage.setItem('loggedIn','true'); }catch(err){}
+		});
+	})();
+	</script>
+</body>
+</html> 
