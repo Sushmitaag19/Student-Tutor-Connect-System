@@ -1,263 +1,189 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const models = require('../models');
-const { generateToken, verifyToken } = require('../middleware/auth');
-const { validateUserRegistration } = require('../middleware/validation');
-const { authLimiter, registrationLimiter } = require('../middleware/rateLimiting');
-
+const bcrypt = require('bcrypt');
+const pool = require('../db');
 const router = express.Router();
 
-// Register new user
-router.post('/register', registrationLimiter, validateUserRegistration, async (req, res) => {
-  try {
-    const { full_name, email, password, role } = req.body;
+/**
+ * @route   POST /api/auth/register
+ * @desc    Register a new user
+ * @access  Public
+ * 
+ * Security Features:
+ * - Password hashing with bcrypt
+ * - Parameterized queries to prevent SQL injection
+ * - Input validation
+ */
+router.post('/register', async (req, res) => {
+    const client = await pool.connect();
+    
+    try {
+        const { full_name, email, password, role } = req.body;
 
-    // Check if user already exists
-    const existingUser = await models.User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User with this email already exists'
-      });
-    }
-
-    // Hash password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Create user
-    const user = await models.User.create({
-      full_name,
-      email,
-      password: hashedPassword,
-      role
-    });
-
-    // Create profile based on role
-    if (role === 'student') {
-      await models.Student.create({
-        user_id: user.user_id
-      });
-    } else if (role === 'tutor') {
-      await models.Tutor.create({
-        user_id: user.user_id
-      });
-    }
-
-    // Generate token
-    const token = generateToken(user);
-
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      data: {
-        user: {
-          user_id: user.user_id,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role
-        },
-        token
-      }
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-// Login user
-router.post('/login', authLimiter, async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email and password are required'
-      });
-    }
-
-    // Find user
-    const user = await models.User.findOne({ 
-      where: { email },
-      include: [
-        { model: models.Student, as: 'studentProfile' },
-        { model: models.Tutor, as: 'tutorProfile' }
-      ]
-    });
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
-    }
-
-    // Check if user is active
-    if (!user.is_active) {
-      return res.status(401).json({
-        success: false,
-        message: 'Account is deactivated'
-      });
-    }
-
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
-    }
-
-    // Update last login
-    await user.update({ last_login: new Date() });
-
-    // Generate token
-    const token = generateToken(user);
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      data: {
-        user: {
-          user_id: user.user_id,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role,
-          studentProfile: user.studentProfile,
-          tutorProfile: user.tutorProfile
-        },
-        token
-      }
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-// Get current user profile
-router.get('/me', verifyToken, async (req, res) => {
-  try {
-    const user = await models.User.findByPk(req.user.user_id, {
-      include: [
-        { model: models.Student, as: 'studentProfile' },
-        { model: models.Tutor, as: 'tutorProfile' }
-      ]
-    });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        user: {
-          user_id: user.user_id,
-          full_name: user.full_name,
-          email: user.email,
-          role: user.role,
-          is_active: user.is_active,
-          last_login: user.last_login,
-          created_at: user.created_at,
-          studentProfile: user.studentProfile,
-          tutorProfile: user.tutorProfile
+        // Input validation
+        if (!full_name || !email || !password || !role) {
+            return res.status(400).json({
+                error: 'Missing required fields',
+                message: 'All fields (full_name, email, password, role) are required'
+            });
         }
-      }
-    });
-  } catch (error) {
-    console.error('Get profile error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
+
+        // Validate role
+        const validRoles = ['student', 'tutor', 'admin'];
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({
+                error: 'Invalid role',
+                message: 'Role must be one of: student, tutor, admin'
+            });
+        }
+
+        // Validate email format (basic validation)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                error: 'Invalid email format'
+            });
+        }
+
+        // Validate password length
+        if (password.length < 6) {
+            return res.status(400).json({
+                error: 'Password too short',
+                message: 'Password must be at least 6 characters long'
+            });
+        }
+
+        // Begin transaction
+        await client.query('BEGIN');
+
+        // Check if email already exists
+        const emailCheck = await client.query(
+            'SELECT email FROM users WHERE email = $1',
+            [email]
+        );
+
+        if (emailCheck.rows.length > 0) {
+            await client.query('ROLLBACK');
+            return res.status(409).json({
+                error: 'Email already exists',
+                message: 'An account with this email already exists'
+            });
+        }
+
+        // Hash password securely
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Insert new user with parameterized query (SQL injection prevention)
+        const userResult = await client.query(
+            `INSERT INTO users (full_name, email, password, role) 
+             VALUES ($1, $2, $3, $4) 
+             RETURNING user_id, full_name, email, role, created_at`,
+            [full_name, email, hashedPassword, role]
+        );
+
+        const newUser = userResult.rows[0];
+
+        // Commit transaction
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user: {
+                user_id: newUser.user_id,
+                full_name: newUser.full_name,
+                email: newUser.email,
+                role: newUser.role,
+                created_at: newUser.created_at
+            }
+        });
+
+    } catch (error) {
+        // Rollback transaction on error
+        await client.query('ROLLBACK');
+        console.error('Registration error:', error);
+        res.status(500).json({
+            error: 'Registration failed',
+            message: 'An error occurred during registration'
+        });
+    } finally {
+        client.release();
+    }
 });
 
-// Logout (client-side token removal)
-router.post('/logout', verifyToken, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Logout successful'
-  });
-});
+/**
+ * @route   POST /api/auth/login
+ * @desc    Authenticate user and return user data
+ * @access  Public
+ * 
+ * Security Features:
+ * - Parameterized queries to prevent SQL injection
+ * - Secure password comparison using bcrypt
+ * - Does not expose whether email exists or not in generic errors
+ */
+router.post('/login', async (req, res) => {
+    const client = await pool.connect();
 
-// Change password
-router.post('/change-password', verifyToken, async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Current password and new password are required'
-      });
+        // Input validation
+        if (!email || !password) {
+            return res.status(400).json({
+                error: 'Missing credentials',
+                message: 'Email and password are required'
+            });
+        }
+
+        // Find user by email using parameterized query
+        const result = await client.query(
+            'SELECT user_id, email, password, full_name, role, created_at FROM users WHERE email = $1',
+            [email]
+        );
+
+        // Check if user exists
+        if (result.rows.length === 0) {
+            return res.status(401).json({
+                error: 'Invalid credentials',
+                message: 'Email or password is incorrect'
+            });
+        }
+
+        const user = result.rows[0];
+
+        // Compare provided password with stored hash
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                error: 'Invalid credentials',
+                message: 'Email or password is incorrect'
+            });
+        }
+
+        // Remove password from response
+        delete user.password;
+
+        res.json({
+            message: 'Login successful',
+            user: {
+                user_id: user.user_id,
+                full_name: user.full_name,
+                email: user.email,
+                role: user.role,
+                created_at: user.created_at
+            }
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            error: 'Login failed',
+            message: 'An error occurred during login'
+        });
+    } finally {
+        client.release();
     }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: 'New password must be at least 6 characters long'
-      });
-    }
-
-    const user = await models.User.findByPk(req.user.user_id);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
-    if (!isCurrentPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Current password is incorrect'
-      });
-    }
-
-    // Hash new password
-    const saltRounds = 10;
-    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
-
-    // Update password
-    await user.update({ password: hashedNewPassword });
-
-    res.json({
-      success: true,
-      message: 'Password changed successfully'
-    });
-  } catch (error) {
-    console.error('Change password error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
-  }
-});
-
-// Verify token endpoint
-router.get('/verify', verifyToken, (req, res) => {
-  res.json({
-    success: true,
-    message: 'Token is valid',
-    user: req.user
-  });
 });
 
 module.exports = router;
+

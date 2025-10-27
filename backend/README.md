@@ -1,349 +1,313 @@
-# Student-Tutor Platform Backend API
+# Student-Tutor Connect System Backend
 
-A comprehensive backend system for a Student-Tutor matching platform built with Node.js, Express, PostgreSQL, and a Python/Flask ML microservice.
+A secure and efficient Node.js backend API with PostgreSQL database for the Student-Tutor Connect System.
 
 ## Features
 
-### 🔐 Authentication & User Management
-- JWT-based authentication with role-based access control
-- User registration and login for students, tutors, and admins
-- Profile management with image uploads
-- Password hashing with bcrypt
+- ✅ Secure database connection with connection pooling
+- ✅ Parameterized queries to prevent SQL injection
+- ✅ Password hashing with bcrypt
+- ✅ Environment variable configuration
+- ✅ Transaction support for data integrity
+- ✅ Comprehensive error handling
+- ✅ RESTful API endpoints
 
-### 👨‍🏫 Tutor Verification System
-- Automated verification based on test scores (≥80%)
-- Manual admin approval workflow
-- Document and qualification management
-- Auto-verification triggers
+## Prerequisites
 
-### 🤖 ML-Powered Matching System
-- Python/Flask microservice for ML recommendations
-- TF-IDF vectorization for content matching
-- Collaborative filtering based on ratings
-- Logistic regression for match probability
-- Real-time tutor recommendations
-
-### 💬 Q&A Knowledge Forum
-- Question posting and answering system
-- Voting mechanism (upvote/downvote)
-- Best answer selection
-- Subject-based categorization
-- Trending questions
-
-### ⭐ Rating & Feedback System
-- Session-based rating system (1-5 stars)
-- Detailed feedback categories (communication, knowledge, punctuality)
-- Dynamic rating aggregation
-- Anonymous rating option
-
-### 📅 Session Booking & Scheduling
-- Session request and approval workflow
-- Calendar integration
-- Multiple session modes (online/offline/hybrid)
-- Conflict detection and resolution
-- Session completion tracking
-
-### 🔔 Notification System
-- Real-time in-app notifications
-- Email notifications for key events
-- Notification preferences
-- Bulk announcements
-
-### 🏆 Leaderboard & Rewards
-- Top-rated tutors leaderboard
-- Q&A contribution rankings
-- Most active students
-- User ranking system
-
-### 👨‍💼 Admin Dashboard
-- User management and monitoring
-- Tutor verification approval
-- System analytics and reports
-- Health monitoring
-- System announcements
-
-## Tech Stack
-
-### Backend
-- **Node.js** with Express.js
-- **PostgreSQL** database with Sequelize ORM
-- **JWT** for authentication
-- **Multer** for file uploads
-- **Nodemailer** for email services
-- **Helmet** for security
-- **Rate limiting** with express-rate-limit
-
-### ML Microservice
-- **Python** with Flask
-- **scikit-learn** for machine learning
-- **pandas** for data processing
-- **TF-IDF** vectorization
-- **Collaborative filtering**
-- **Logistic regression**
+- Node.js (v14 or higher)
+- PostgreSQL (v12 or higher)
+- npm or yarn
 
 ## Installation
 
-### Prerequisites
-- Node.js (v14 or higher)
-- PostgreSQL (v12 or higher)
-- Python (v3.8 or higher)
-- npm or yarn
+1. **Install dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
 
-### Backend Setup
+2. **Setup PostgreSQL database**
+   
+   Run the following SQL commands in your PostgreSQL client (e.g., psql, pgAdmin):
+   
+   ```sql
+   CREATE DATABASE Student_tutor;
 
-1. **Install dependencies:**
+   \c Student_tutor
+
+   CREATE TABLE users(
+       user_id SERIAL PRIMARY KEY,
+       full_name VARCHAR(40) NOT NULL,
+       email VARCHAR(40) UNIQUE,
+       password VARCHAR(40) NOT NULL,
+       role VARCHAR(10) CHECK (role in ('student', 'tutor', 'admin')) NOT NULL,
+       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+
+   CREATE TABLE students(
+       student_id SERIAL NOT NULL,
+       user_id INT UNIQUE REFERENCES users(user_id) ON DELETE CASCADE,
+       academic_level VARCHAR(50),
+       preferred_mode VARCHAR(10) CHECK(preferred_mode IN ('online', 'offline', 'hybrid')),
+       budget NUMERIC(10, 2),
+       availability TEXT
+   );
+
+   CREATE TABLE tutors(
+       tutor_id SERIAL PRIMARY KEY,
+       user_id INT UNIQUE references users(user_id) ON DELETE CASCADE,
+       bio TEXT,
+       experience TEXT,
+       hourly_rate NUMERIC(10, 2),
+       preferred_mode VARCHAR(10) CHECK(preferred_mode IN ('online', 'offline', 'hybrid')),
+       verified BOOLEAN DEFAULT FALSE,
+       availability TEXT,
+       profile_picture VARCHAR(255)
+   );
+   ```
+
+3. **Configure environment variables**
+   
+   Create a `.env` file in the `backend` directory:
+   
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit the `.env` file with your database credentials:
+   ```
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=Student_tutor
+   DB_USER=your_postgres_username
+   DB_PASSWORD=your_postgres_password
+   
+   PORT=5000
+   NODE_ENV=development
+   JWT_SECRET=your_secret_key_here
+   APP_NAME=Student Tutor Connect System
+   ```
+
+## Running the Application
+
+**Development mode** (with auto-reload):
 ```bash
-cd backend
-npm install
-```
-
-2. **Environment Configuration:**
-Create a `.env` file in the backend directory:
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=Student_tutor
-DB_USER=postgres
-DB_PASSWORD=mypassword
-
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-JWT_EXPIRES_IN=7d
-
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-
-# ML Microservice Configuration
-ML_SERVICE_URL=http://localhost:5000
-
-# Email Configuration
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-
-# File Upload Configuration
-UPLOAD_PATH=./uploads
-MAX_FILE_SIZE=5242880
-
-# Rate Limiting
-RATE_LIMIT_WINDOW_MS=900000
-RATE_LIMIT_MAX_REQUESTS=100
-```
-
-3. **Database Setup:**
-```bash
-# Initialize database
-node scripts/init-db.js
-
-# Sync database models
-node scripts/sync-db.js
-```
-
-4. **Start the server:**
-```bash
-npm start
-# or for development
 npm run dev
 ```
 
-### ML Microservice Setup
-
-1. **Navigate to ML service directory:**
+**Production mode**:
 ```bash
-cd backend/ml-service
+npm start
 ```
 
-2. **Install Python dependencies:**
-```bash
-pip install -r requirements.txt
-```
-
-3. **Start the ML service:**
-```bash
-python run_ml_service.py
-```
+The server will start on `http://localhost:5000` (or the port specified in your `.env` file).
 
 ## API Endpoints
 
-### Authentication (`/api/auth`)
-- `POST /register` - User registration
-- `POST /login` - User login
-- `GET /me` - Get current user profile
-- `POST /logout` - User logout
-- `POST /change-password` - Change password
-- `GET /verify` - Verify JWT token
+### Authentication
 
-### Users (`/api/users`)
-- `GET /` - Get all users (Admin)
-- `GET /:user_id` - Get user by ID
-- `PUT /:user_id` - Update user profile
-- `PUT /:user_id/student` - Update student profile
-- `PUT /:user_id/tutor` - Update tutor profile
-- `POST /:user_id/tutor/documents` - Upload tutor documents
-- `PUT /:user_id/deactivate` - Deactivate user (Admin)
-- `PUT /:user_id/activate` - Activate user (Admin)
-- `DELETE /:user_id` - Delete user (Admin)
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
 
-### Tutor Verification (`/api/tutor-verification`)
-- `POST /submit` - Submit verification data
-- `GET /status/:tutor_id` - Get verification status
-- `GET /pending` - Get pending verifications (Admin)
-- `PUT /:verification_id/approve` - Approve verification (Admin)
-- `PUT /:verification_id/reject` - Reject verification (Admin)
-- `GET /stats` - Get verification statistics (Admin)
+{
+  "full_name": "John Doe",
+  "email": "john@example.com",
+  "password": "securePassword123",
+  "role": "student"
+}
+```
 
-### Matching (`/api/matching`)
-- `GET /recommendations/:student_id` - Get tutor recommendations
-- `GET /similar-students/:tutor_id` - Get similar students
-- `POST /train-models` - Train ML models (Admin)
-- `GET /stats` - Get matching statistics (Admin)
+#### Login
+```http
+POST /api/auth/login
+Content-Type: application/json
 
-### Questions (`/api/questions`)
-- `GET /` - Get all questions
-- `GET /:question_id` - Get question by ID
-- `POST /` - Create new question
-- `PUT /:question_id` - Update question
-- `DELETE /:question_id` - Delete question
-- `PUT /:question_id/resolve` - Mark as resolved
-- `GET /student/:student_id` - Get questions by student
-- `GET /trending/trending` - Get trending questions
+{
+  "email": "john@example.com",
+  "password": "securePassword123"
+}
+```
 
-### Answers (`/api/answers`)
-- `GET /question/:question_id` - Get answers for question
-- `GET /:answer_id` - Get answer by ID
-- `POST /` - Create new answer
-- `PUT /:answer_id` - Update answer
-- `DELETE /:answer_id` - Delete answer
-- `PUT /:answer_id/best` - Mark as best answer
-- `POST /:answer_id/vote` - Vote on answer
-- `GET /user/:user_id` - Get answers by user
+### Tutor Endpoints
 
-### Ratings (`/api/ratings`)
-- `POST /` - Submit rating
-- `GET /tutor/:tutor_id` - Get tutor ratings
-- `GET /student/:student_id` - Get student ratings
-- `GET /:rating_id` - Get rating by ID
-- `PUT /:rating_id` - Update rating
-- `DELETE /:rating_id` - Delete rating
-- `GET /tutor/:tutor_id/stats` - Get rating statistics
+#### Create Tutor Profile
+```http
+POST /api/tutor/profile
+Content-Type: application/json
 
-### Sessions (`/api/sessions`)
-- `GET /` - Get all sessions
-- `GET /:session_id` - Get session by ID
-- `POST /` - Create session request
-- `PUT /:session_id/accept` - Accept session (Tutor)
-- `PUT /:session_id/reject` - Reject session (Tutor)
-- `PUT /:session_id/complete` - Complete session
-- `PUT /:session_id/cancel` - Cancel session
-- `PUT /:session_id` - Update session
-- `DELETE /:session_id` - Delete session
-- `GET /stats/overview` - Get session statistics
+{
+  "user_id": 1,
+  "bio": "Experienced tutor with 5 years of experience",
+  "experience": "Teaching Mathematics and Physics",
+  "hourly_rate": 25.50,
+  "preferred_mode": "online",
+  "availability": "Weekdays 9am-5pm",
+  "profile_picture": "https://example.com/pic.jpg"
+}
+```
 
-### Notifications (`/api/notifications`)
-- `GET /` - Get user notifications
-- `GET /unread-count` - Get unread count
-- `PUT /:notification_id/read` - Mark as read
-- `PUT /mark-all-read` - Mark all as read
-- `DELETE /:notification_id` - Delete notification
-- `DELETE /delete-all` - Delete all notifications
-- `GET /:notification_id` - Get notification by ID
+#### Get Tutor Profile
+```http
+GET /api/tutor/profile/:user_id
+```
 
-### Leaderboard (`/api/leaderboard`)
-- `GET /top-tutors` - Get top rated tutors
-- `GET /top-contributors` - Get top Q&A contributors
-- `GET /active-students` - Get most active students
-- `GET /top-session-tutors` - Get top session tutors
-- `GET /user-ranking/:user_id` - Get user ranking
-- `GET /stats` - Get leaderboard statistics
+#### Get All Tutors
+```http
+GET /api/tutor/all
+```
 
-### Admin (`/api/admin`)
-- `GET /dashboard/overview` - Get dashboard overview
-- `GET /users` - Get user management data
-- `GET /tutor-verifications` - Get verification requests
-- `GET /reports` - Get system reports
-- `GET /system/health` - Get system health
-- `GET /settings` - Get system settings
-- `POST /announcements` - Send system announcement
-- `GET /activity-log` - Get admin activity log
+### Student Endpoints
 
-## Database Schema
+#### Create Student Profile
+```http
+POST /api/student/profile
+Content-Type: application/json
 
-The system uses the following main tables:
+{
+  "user_id": 2,
+  "academic_level": "High School",
+  "preferred_mode": "online",
+  "budget": 100.00,
+  "availability": "Weekends"
+}
+```
 
-- **users** - User accounts and authentication
-- **students** - Student profiles and preferences
-- **tutors** - Tutor profiles and qualifications
-- **subjects** - Available subjects/courses
-- **tutor_subjects** - Tutor-subject relationships
-- **sessions** - Booking and scheduling
-- **ratings** - Feedback and ratings
-- **questions** - Q&A forum questions
-- **answers** - Q&A forum answers
-- **votes** - Answer voting system
-- **notifications** - User notifications
-- **tutor_verifications** - Verification data
+#### Get Student Profile
+```http
+GET /api/student/profile/:user_id
+```
 
 ## Security Features
 
-- JWT-based authentication
-- Password hashing with bcrypt
-- Role-based access control
-- Rate limiting
-- Input validation
-- SQL injection protection
-- XSS protection with Helmet
-- CORS configuration
+### 1. SQL Injection Prevention
+All queries use parameterized statements with placeholders (`$1`, `$2`, etc.), preventing SQL injection attacks.
 
-## ML Integration
+Example:
+```javascript
+await client.query('SELECT * FROM users WHERE email = $1', [email]);
+```
 
-The ML microservice provides:
-- **TF-IDF vectorization** for content matching
-- **Collaborative filtering** based on user ratings
-- **Logistic regression** for match probability
-- Real-time recommendations
-- Model training and retraining
+### 2. Password Security
+Passwords are hashed using bcrypt with a salt rounds of 10:
+```javascript
+const hashedPassword = await bcrypt.hash(password, 10);
+```
 
-## Deployment
+### 3. Connection Pooling
+The database connection uses a pool to manage multiple concurrent connections efficiently:
+- Max connections: 20
+- Idle timeout: 30 seconds
+- Connection timeout: 2 seconds
 
-### Production Considerations
+### 4. Environment Variables
+Sensitive credentials are stored in `.env` file and loaded using `dotenv` package.
 
-1. **Environment Variables:**
-   - Set strong JWT secrets
-   - Configure production database
-   - Set up email service
-   - Configure ML service URL
+### 5. Input Validation
+All endpoints validate required fields and data formats before processing.
 
-2. **Database:**
-   - Use connection pooling
-   - Set up regular backups
-   - Monitor performance
+### 6. Transaction Support
+Critical operations use database transactions to ensure data consistency.
 
-3. **Security:**
-   - Use HTTPS
-   - Set up proper CORS
-   - Configure rate limiting
-   - Monitor for attacks
+## File Structure
 
-4. **Monitoring:**
-   - Set up logging
-   - Monitor system health
-   - Track performance metrics
+```
+backend/
+├── db.js                 # Database connection pool
+├── server.js             # Express server setup
+├── routes/
+│   ├── auth.js          # Authentication routes
+│   ├── tutor.js         # Tutor routes
+│   └── student.js       # Student routes
+├── .env                 # Environment variables (not in git)
+├── .env.example         # Environment variables template
+├── package.json         # Dependencies
+└── README.md           # This file
+```
 
-## Contributing
+## Error Handling
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+The API returns consistent error responses:
+
+```json
+{
+  "error": "Error type",
+  "message": "Human-readable error message"
+}
+```
+
+Status codes:
+- `200`: Success
+- `201`: Created
+- `400`: Bad Request
+- `401`: Unauthorized
+- `403`: Forbidden
+- `404`: Not Found
+- `409`: Conflict
+- `500`: Internal Server Error
+
+## Testing the API
+
+You can test the API using tools like:
+- **Postman**
+- **curl**
+- **Thunder Client** (VS Code extension)
+
+### Example: Register a User
+
+```bash
+curl -X POST http://localhost:5000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "full_name": "Jane Smith",
+    "email": "jane@example.com",
+    "password": "test123",
+    "role": "tutor"
+  }'
+```
+
+### Example: Login
+
+```bash
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane@example.com",
+    "password": "test123"
+  }'
+```
+
+## Next Steps
+
+To further enhance the API:
+
+1. **Add JWT authentication** - Use jsonwebtoken for secure session management
+2. **Add middleware** - Create authentication and authorization middleware
+3. **Add logging** - Implement winston or morgan for request logging
+4. **Add rate limiting** - Use express-rate-limit to prevent abuse
+5. **Add CORS configuration** - Restrict CORS to specific origins
+6. **Add validation middleware** - Use express-validator or joi
+
+## Troubleshooting
+
+**Database connection error:**
+- Verify PostgreSQL is running
+- Check `.env` file credentials
+- Ensure database exists
+
+**Port already in use:**
+- Change `PORT` in `.env` file
+- Or kill the process using the port
+
+**Module not found:**
+- Run `npm install` to install dependencies
 
 ## License
 
-This project is licensed under the MIT License.
+ISC
 
 ## Support
 
-For support, please contact the development team or create an issue in the repository.
+For issues or questions, please contact the development team.
+
