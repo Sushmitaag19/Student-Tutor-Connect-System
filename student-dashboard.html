@@ -4,35 +4,387 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="./assets/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<title>Student Dashboard</title>
+	<style>
+		.dashboard-container {
+			padding-top: 100px;
+			min-height: 100vh;
+			background-color: var(--body);
+		}
+
+		.dashboard-nav {
+			background: linear-gradient(135deg, var(--slider) 0%, var(--accent) 100%);
+			padding: 1.5rem 2rem;
+			color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		}
+
+		.dashboard-nav h2 {
+			margin: 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+		}
+
+		.dashboard-nav .user-info {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.dashboard-nav .username {
+			font-size: 1.1rem;
+			font-weight: 500;
+		}
+
+		.dashboard-nav ul {
+			list-style: none;
+			display: flex;
+			gap: 2rem;
+			align-items: center;
+			margin: 0;
+			padding: 0;
+		}
+
+		.dashboard-nav ul li a {
+			color: white;
+			text-decoration: none;
+			font-size: 1.1rem;
+			padding: 0.5rem 1rem;
+			border-radius: 6px;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.dashboard-nav ul li a:hover {
+			background-color: rgba(255,255,255,0.2);
+			transform: translateY(-2px);
+		}
+
+		.sign-out-btn {
+			background-color: #dc3545;
+			padding: 0.6rem 1.2rem;
+			border-radius: 6px;
+			border: none;
+			color: white;
+			cursor: pointer;
+			font-size: 1rem;
+			transition: all 0.3s ease;
+		}
+
+		.sign-out-btn:hover {
+			background-color: #c82333;
+			transform: translateY(-2px);
+		}
+
+		.dashboard-content {
+			padding: 2rem;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.welcome-section {
+			background: white;
+			padding: 2rem;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			margin-bottom: 2rem;
+		}
+
+		.welcome-section h1 {
+			color: var(--accent);
+			font-size: 2rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.welcome-section p {
+			color: #666;
+			font-size: 1.1rem;
+		}
+
+		.section {
+			background: white;
+			padding: 2rem;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			margin-bottom: 2rem;
+		}
+
+		.section h2 {
+			color: var(--slider);
+			font-size: 1.8rem;
+			margin-bottom: 1.5rem;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.notification-item {
+			padding: 1rem;
+			border-left: 4px solid var(--logo);
+			margin-bottom: 1rem;
+			background-color: #f8f9fa;
+			border-radius: 6px;
+			transition: all 0.3s ease;
+		}
+
+		.notification-item:hover {
+			background-color: #e9ecef;
+			transform: translateX(5px);
+		}
+
+		.notification-item.unread {
+			background-color: #fff3cd;
+			border-left-color: #ffc107;
+		}
+
+		.notification-item h3 {
+			color: var(--slider);
+			font-size: 1.2rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.notification-item p {
+			color: #666;
+			margin: 0;
+		}
+
+		.notification-item .timestamp {
+			font-size: 0.85rem;
+			color: #999;
+			margin-top: 0.5rem;
+		}
+
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 1.5rem;
+			margin-top: 1rem;
+		}
+
+		.stat-card {
+			background: linear-gradient(135deg, var(--logo) 0%, #ffd700 100%);
+			padding: 1.5rem;
+			border-radius: 12px;
+			color: #333;
+			text-align: center;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			transition: transform 0.3s ease;
+		}
+
+		.stat-card:hover {
+			transform: translateY(-5px);
+		}
+
+		.stat-card h3 {
+			font-size: 2rem;
+			margin: 0;
+			font-weight: bold;
+		}
+
+		.stat-card p {
+			margin: 0.5rem 0 0 0;
+			font-size: 1rem;
+			opacity: 0.9;
+		}
+
+		.quick-actions {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 1rem;
+			margin-top: 1rem;
+		}
+
+		.action-btn {
+			padding: 1.5rem;
+			background-color: var(--slider);
+			color: white;
+			text-align: center;
+			text-decoration: none;
+			border-radius: 12px;
+			transition: all 0.3s ease;
+			font-size: 1.1rem;
+			font-weight: 600;
+		}
+
+		.action-btn:hover {
+			background-color: var(--accent);
+			transform: translateY(-3px);
+			box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+		}
+
+		@media (max-width: 768px) {
+			.dashboard-nav {
+				flex-direction: column;
+				gap: 1rem;
+			}
+
+			.dashboard-nav ul {
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+
+			.dashboard-content {
+				padding: 1rem;
+			}
+
+			.welcome-section h1 {
+				font-size: 1.5rem;
+			}
+
+			.stats-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
 </head>
 <body>
-	<nav class="navbar">
+	<div class="dashboard-nav">
 		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
-		<div class="nav">
-			<ul class="list">
-				<li>Welcome, <span>Student</span></li>
-				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+        
+		<div class="user-info">
+			<span class="username" id="displayName">Student</span>
+			<ul>
+				<li><a href="tutor.html"><i class="fas fa-search"></i> Find Tutor</a></li>
+				<li><a href="#notifications" onclick="showNotifications()"><i class="fas fa-bell"></i> Notifications</a></li>
+				<li><button class="sign-out-btn" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button></li>
 			</ul>
 		</div>
-	</nav>
+	</div>
 
-	<div class="features" style="max-width: 960px; margin: 24px auto;">
-		<h2>Your Matches</h2>
-		<ul class="tutor-list">
-			<li class="tutor-item">Aarav Sharma — Math — NPR 800/hr — Online — Kathmandu</li>
-			<li class="tutor-item">Maya Gurung — Physics — NPR 1000/hr — Offline — Pokhara</li>
-			<li class="tutor-item">Sita Rai — English — NPR 700/hr — Online — Lalitpur</li>
-			<li class="tutor-item">Ramesh Karki — Computer Science — NPR 1200/hr — Online — Bhaktapur</li>
-		</ul>
+	<div class="dashboard-container">
+		<div class="dashboard-content">
+			<!-- Welcome Section -->
+			<div class="welcome-section">
+				<h1><i class="fas fa-user-graduate"></i> Welcome Back!</h1>
+				<p>Find your perfect tutor and start learning today</p>
+			</div>
 
-		<h2 style="margin-top: 40px;">Recommended for you</h2>
-		<p>(Collaborative filtering placeholder)</p>
-		<div class="cards" style="padding-top: 0;">
-			<div class="c" id="recommendations">
-				<!-- Placeholder cards could go here -->
+			<!-- Dashboard Stats -->
+			<div class="section">
+				<h2><i class="fas fa-chart-line"></i> Your Statistics</h2>
+				<div class="stats-grid">
+					<div class="stat-card">
+						<h3 id="tutorCount">0</h3>
+						<p>Available Tutors</p>
+					</div>
+					<div class="stat-card">
+						<h3 id="msgCount">0</h3>
+						<p>New Messages</p>
+					</div>
+					<div class="stat-card">
+						<h3 id="notifCount">3</h3>
+						<p>Notifications</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Quick Actions -->
+			<div class="section">
+				<h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+				<div class="quick-actions">
+					<a href="tutor.html" class="action-btn">
+						<i class="fas fa-search"></i><br>Search Tutors
+					</a>
+					<a href="#notifications" class="action-btn" onclick="showNotifications()">
+						<i class="fas fa-bell"></i><br>View Notifications
+					</a>
+					<a href="aboutus.html" class="action-btn">
+						<i class="fas fa-info-circle"></i><br>About Us
+					</a>
+				</div>
+			</div>
+
+			<!-- Notifications Section -->
+			<div class="section" id="notifications">
+				<h2><i class="fas fa-bell"></i> Notifications</h2>
+				<div id="notificationsList">
+					<div class="notification-item unread">
+						<h3><i class="fas fa-check-circle"></i> New Tutor Available</h3>
+						<p>Great news! A Math tutor matching your preferences has joined the platform.</p>
+						<span class="timestamp">2 hours ago</span>
+					</div>
+					<div class="notification-item unread">
+						<h3><i class="fas fa-star"></i> Profile Update</h3>
+						<p>Don't forget to complete your profile to get better tutor recommendations.</p>
+						<span class="timestamp">1 day ago</span>
+					</div>
+					<div class="notification-item">
+						<h3><i class="fas fa-info-circle"></i> System Maintenance</h3>
+						<p>Scheduled maintenance on Sunday from 2:00 AM to 4:00 AM. Service will be temporarily unavailable.</p>
+						<span class="timestamp">3 days ago</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+
+	<script>
+		// Load student data on page load
+		document.addEventListener('DOMContentLoaded', function() {
+			// Check if user is logged in
+			const isLoggedIn = localStorage.getItem('loggedIn');
+			const studentData = localStorage.getItem('studentData');
+
+			if (!isLoggedIn) {
+				alert('Please login first');
+				window.location.href = 'login.html';
+				return;
+			}
+
+			// Display student name if available
+			if (studentData) {
+				try {
+					const data = JSON.parse(studentData);
+					if (data.full_name) {
+						document.getElementById('displayName').textContent = data.full_name;
+					}
+				} catch (e) {
+					console.error('Error parsing student data:', e);
+				}
+			}
+
+			// Update notification count
+			updateNotificationCount();
+		});
+
+		// Show notifications section
+		function showNotifications() {
+			const notificationsSection = document.getElementById('notifications');
+			notificationsSection.scrollIntoView({ behavior: 'smooth' });
+		}
+
+		// Update notification count
+		function updateNotificationCount() {
+			const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
+			document.getElementById('notifCount').textContent = unreadNotifications;
+		}
+
+		// Handle sign out
+		function handleSignOut() {
+			if (confirm('Are you sure you want to sign out?')) {
+				// Clear local storage
+				localStorage.removeItem('loggedIn');
+				localStorage.removeItem('studentData');
+				localStorage.removeItem('userRole');
+				
+				// Redirect to logout page
+				window.location.href = 'logout.html';
+			}
+		}
+
+		// Smooth scroll to notifications
+		document.querySelectorAll('a[href="#notifications"]').forEach(link => {
+			link.addEventListener('click', function(e) {
+				e.preventDefault();
+				showNotifications();
+			});
+		});
+	</script>
 </body>
-</html> 
+</html>

@@ -249,10 +249,50 @@ Status codes:
 
 ## Testing the API
 
+### Connection Test
+
+Test the database connection before starting the server:
+
+```bash
+npm test
+```
+
+Or run the test script directly:
+
+```bash
+node test-connection.js
+```
+
+This will verify:
+- Database connection
+- Table existence
+- Admin user data
+- Foreign key relationships
+
+### API Endpoints
+
 You can test the API using tools like:
 - **Postman**
 - **curl**
 - **Thunder Client** (VS Code extension)
+
+### Test Endpoints
+
+Test database connectivity and operations:
+
+```bash
+# Test connection
+curl http://localhost:5000/api/test/connection
+
+# Test read operation (get admin user)
+curl http://localhost:5000/api/test/admin
+
+# Test read operation (get all users)
+curl http://localhost:5000/api/test/users
+
+# Test schema
+curl http://localhost:5000/api/test/schema
+```
 
 ### Example: Register a User
 

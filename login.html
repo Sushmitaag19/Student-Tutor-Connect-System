@@ -79,18 +79,98 @@
 	</div>
 
 	<script>
-	(function(){
+	(async function(){
+		const API_BASE_URL = 'http://localhost:5000/api';
+		
 		function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
 		function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-		document.getElementById('loginForm').addEventListener('submit', function(e){
+		
+		document.getElementById('loginForm').addEventListener('submit', async function(e){
+			e.preventDefault();
+			
 			var ok = true;
 			var email = document.getElementById('l-email').value.trim();
 			var pass = document.getElementById('l-pass').value;
-			setError('err-l-email'); setError('err-l-pass');
-			if(!emailOk(email)){ setError('err-l-email','Enter a valid email address.'); ok=false; }
-			if(pass.length < 6){ setError('err-l-pass','Password must be at least 6 characters.'); ok=false; }
-			if(!ok){ e.preventDefault(); return; }
-			try{ localStorage.setItem('loggedIn','true'); }catch(err){}
+			
+			setError('err-l-email'); 
+			setError('err-l-pass');
+			
+			if(!emailOk(email)){ 
+				setError('err-l-email','Enter a valid email address.'); 
+				ok=false; 
+			}
+			if(pass.length < 6){ 
+				setError('err-l-pass','Password must be at least 6 characters.'); 
+				ok=false; 
+			}
+			
+			if(!ok) return;
+
+			// Try API first, fallback to localStorage
+			try {
+				// Try backend API
+				const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						email: email,
+						password: pass
+					}),
+					timeout: 5000
+				});
+
+				const loginResult = await loginResponse.json();
+
+				if (loginResponse.ok) {
+					// Store user data
+					const user = loginResult.user;
+					
+					localStorage.setItem('loggedIn', 'true');
+					localStorage.setItem('userRole', user.role);
+					localStorage.setItem('studentData', JSON.stringify(user));
+
+					// Redirect based on role
+					if (user.role === 'student') {
+						window.location.href = 'student-dashboard.html';
+					} else if (user.role === 'tutor') {
+						window.location.href = 'tutor-dashboard.html';
+					} else {
+						window.location.href = 'index.html';
+					}
+					return;
+				}
+			} catch (error) {
+				console.log('Backend not available, trying local authentication...');
+			}
+
+			// Fallback: Check localStorage for demo accounts
+			try {
+				const storedData = localStorage.getItem('studentData');
+				if (storedData) {
+					const user = JSON.parse(storedData);
+					if (user.email === email && user.password === pass) {
+						localStorage.setItem('loggedIn', 'true');
+						localStorage.setItem('userRole', user.role || 'student');
+						
+						// Redirect based on role
+						if (user.role === 'student') {
+							window.location.href = 'student-dashboard.html';
+						} else if (user.role === 'tutor') {
+							window.location.href = 'tutor-dashboard.html';
+						} else {
+							window.location.href = 'index.html';
+						}
+						return;
+					}
+				}
+			} catch (localError) {
+				console.error('Local storage error:', localError);
+			}
+
+			// If we get here, login failed
+			alert('Invalid email or password. Please check your credentials or sign up first.');
 		});
 	})();
 	</script>

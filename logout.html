@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<title>Signed Out</title>
+	<style>
+		.logout-container {
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			background: linear-gradient(135deg, var(--body) 0%, var(--extra) 100%);
+			padding: 2rem;
+		}
+
+		.logout-content {
+			text-align: center;
+			background: white;
+			padding: 3rem;
+			border-radius: 20px;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+			max-width: 500px;
+		}
+
+		.logout-icon {
+			font-size: 5rem;
+			color: var(--accent);
+			margin-bottom: 1rem;
+			animation: bounce 1s ease-in-out;
+		}
+
+		@keyframes bounce {
+			0%, 100% { transform: translateY(0); }
+			50% { transform: translateY(-20px); }
+		}
+
+		.logout-content h1 {
+			color: var(--slider);
+			font-size: 2.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.logout-content p {
+			color: #666;
+			font-size: 1.2rem;
+			margin-bottom: 2rem;
+			line-height: 1.6;
+		}
+
+		.redirect-btn {
+			display: inline-block;
+			padding: 1rem 2rem;
+			background-color: var(--logo);
+			color: #333;
+			text-decoration: none;
+			border-radius: 8px;
+			font-size: 1.1rem;
+			font-weight: 600;
+			transition: all 0.3s ease;
+			margin: 0.5rem;
+		}
+
+		.redirect-btn:hover {
+			background-color: var(--accent);
+			transform: translateY(-3px);
+			box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+		}
+
+		.home-btn {
+			background-color: var(--slider);
+			color: white;
+		}
+
+		.home-btn:hover {
+			background-color: var(--accent);
+		}
+
+		@media (max-width: 768px) {
+			.logout-content {
+				padding: 2rem;
+			}
+
+			.logout-content h1 {
+				font-size: 2rem;
+			}
+
+			.logout-icon {
+				font-size: 4rem;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="logout-container">
+		<div class="logout-content">
+			<div class="logout-icon">
+				<i class="fas fa-check-circle"></i>
+			</div>
+			<h1>Successfully Signed Out</h1>
+			<p>Thank you for using Student Tutor Connect System!</p>
+			<p>Your session has been terminated securely. We hope to see you again soon.</p>
+			<div style="margin-top: 2rem;">
+				<a href="login.html" class="redirect-btn">Login Again</a>
+				<a href="index.html" class="redirect-btn home-btn">Return to Home</a>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Auto redirect to home after 5 seconds
+		setTimeout(function() {
+			window.location.href = 'index.html';
+		}, 5000);
+	</script>
+</body>
+</html>
+

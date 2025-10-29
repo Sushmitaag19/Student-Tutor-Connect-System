@@ -1,41 +1,50 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+require('dotenv').config({ path: './connection.env' });
 
-/**
- * Database Connection Pool
- * 
- * This module creates and exports a reusable PostgreSQL connection pool.
- * Connection pooling is essential for managing multiple concurrent database connections
- * efficiently without exhausting database resources.
- */
-
-const pool = new Pool({
+const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
+    port: parseInt(process.env.DB_PORT) || 5432,
     database: process.env.DB_NAME || 'Student_tutor',
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    max: 20, // Maximum number of clients in the pool
-    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-    connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection cannot be established
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'Weareyes123',
+    max: 20, 
+    idleTimeoutMillis: 30000, 
+    connectionTimeoutMillis: 5000,
+};
+
+console.log('📡 Initializing database connection with config:', {
+    host: dbConfig.host,
+    port: dbConfig.port,
+    database: dbConfig.database,
+    user: dbConfig.user,
 });
 
-/**
- * Test the database connection
- */
-pool.on('connect', () => {
-    console.log('✅ Database connected successfully');
-});
+const pool = new Pool(dbConfig);
+
+// Test database connection on startup
+pool.connect()
+    .then(client => {
+        console.log('✅ Database connected successfully');
+        console.log('📊 Connection details:', {
+            database: client.database,
+            host: dbConfig.host,
+            port: dbConfig.port
+        });
+        client.release();
+    })
+    .catch(err => {
+        console.error('❌ Failed to connect to database:', err.message);
+        console.error('💡 Please check:');
+        console.error('   1. PostgreSQL is running');
+        console.error('   2. Database "Student_tutor" exists');
+        console.error('   3. Username and password in connection.env');
+        console.error('   4. Server can access the database');
+    });
 
 pool.on('error', (err) => {
     console.error('❌ Unexpected database pool error:', err);
-    process.exit(-1);
 });
 
-/**
- * Graceful shutdown handler
- * Closes all database connections when the application terminates
- */
 process.on('SIGINT', async () => {
     console.log('\n⚠️  Application shutting down...');
     await pool.end();

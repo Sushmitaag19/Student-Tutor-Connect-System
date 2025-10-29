@@ -1,26 +1,25 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, 'connection.env') });
 
-// Import routes
 const authRoutes = require('./routes/auth');
 const tutorRoutes = require('./routes/tutor');
 const studentRoutes = require('./routes/student');
+const testRoutes = require('./routes/test');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/tutor', tutorRoutes);
 app.use('/api/student', studentRoutes);
+app.use('/api/test', testRoutes);
 
-// Root route
 app.get('/', (req, res) => {
     res.json({
         message: 'Student Tutor Connect System API',
@@ -28,12 +27,12 @@ app.get('/', (req, res) => {
         endpoints: {
             auth: '/api/auth',
             tutor: '/api/tutor',
-            student: '/api/student'
+            student: '/api/student',
+            test: '/api/test'
         }
     });
 });
 
-// 404 handler
 app.use('*', (req, res) => {
     res.status(404).json({
         error: 'Route not found',
@@ -41,7 +40,6 @@ app.use('*', (req, res) => {
     });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
     console.error('Error:', err);
     res.status(err.status || 500).json({
@@ -50,7 +48,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);

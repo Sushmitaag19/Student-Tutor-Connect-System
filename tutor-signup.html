@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -181,4 +181,440 @@
 	})();
 	</script>
 </body>
-</html> 
+</html>  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tutor Sign Up</title>
+	<link rel="stylesheet" href="./assets/style.css">
+	<!-- Embedded CSS directly in HTML file -->
+	<style>
+		/* Complete CSS rewrite for centered, modern form design */
+
+		* {
+		  margin: 0;
+		  padding: 0;
+		  box-sizing: border-box;
+		}
+
+		body {
+		  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+		  background: var(--body);
+		  min-height: 100vh;
+		  display: flex;
+		  flex-direction: column;
+		}
+
+		.form-container {
+		  flex: 1;
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  padding: 2rem;
+		  margin-top: 100px ;
+		}
+
+		.form-wrapper {
+		  background: white;
+		  padding: 3rem;
+		  border-radius: 12px;
+		  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+		  width: 100%;
+		  max-width: 550px;
+		}
+
+		.form-wrapper h2 {
+		  font-size: 2.5rem;
+		  color: var(--logo);
+		  text-align: center;
+		  margin-bottom: 2rem;
+		  font-weight: 600;
+		}
+
+		.form-group {
+		  margin-bottom: 1.5rem;
+		  display: flex;
+		  flex-direction: column;
+		}
+
+		.form-group label {
+		  font-size: 1.1rem;
+		  color: #333;
+		  margin-bottom: 0.5rem;
+		  font-weight: 500;
+		}
+
+		.form-group input,
+		.form-group select {
+		  padding: 0.75rem 1rem;
+		  font-size: 1rem;
+		  border: 2px solid #e0e0e0;
+		  border-radius: 6px;
+		  transition: all 0.3s ease;
+		  font-family: inherit;
+		}
+
+		.form-group select{
+			height: 50px;
+		}
+
+		.form-group input:focus,
+		.form-group select:focus {
+		  outline: none;
+		  border-color: var(--logo);
+		  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+		  background-color: #f8fbff;
+		}
+
+		.form-group select {
+		  background-color: white;
+		  color: #333;
+		  cursor: pointer;
+		}
+
+		.error {
+		  color: #c0392b;
+		  font-size: 0.85rem;
+		  margin-top: 0.3rem;
+		  min-height: 1.2rem;
+		}
+
+		.checkbox-group {
+		  flex-direction: row;
+		  align-items: flex-start;
+		  margin-bottom: 2rem;
+		}
+
+		.checkbox-label {
+		  display: flex;
+		  align-items: center;
+		  gap: 0.75rem;
+		  font-size: 1rem;
+		  font-weight: normal;
+		  cursor: pointer;
+		}
+
+		.checkbox-label input[type="checkbox"] {
+		  width: 20px;
+		  height: 20px;
+		  cursor: pointer;
+		  margin: 0;
+		  padding: 0;
+		}
+
+		.checkbox-label a {
+		  color: var(--logo);
+		  text-decoration: none;
+		  transition: color 0.3s ease;
+		}
+
+		.checkbox-label a:hover {
+		  color: var(--logo);
+		  text-decoration: underline;
+		}
+
+		.submit-btn {
+		  width: 100%;
+		  padding: 0.9rem 1.5rem;
+		  font-size: 1.1rem;
+		  background-color: var(--logo);
+		  color: white;
+		  border: none;
+		  border-radius: 6px;
+		  cursor: pointer;
+		  font-weight: 600;
+		  transition: all 0.3s ease;
+		}
+
+		.submit-btn:hover {
+		  background-color: var(--logo);
+		  transform: translateY(-2px);
+		  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+		}
+
+		.submit-btn:active {
+		  transform: translateY(0);
+		}
+
+		/* Responsive Design */
+		@media (max-width: 768px) {
+		  .navbar {
+		    flex-direction: column;
+		    gap: 1rem;
+		  }
+
+		  .nav ul {
+		    flex-wrap: wrap;
+		    justify-content: center;
+		    gap: 1rem;
+		  }
+
+		  .form-container {
+		    padding: 1rem;
+		  }
+
+		  .form-wrapper {
+		    padding: 2rem;
+		  }
+
+		  .form-wrapper h2 {
+		    font-size: 2rem;
+		  }
+
+		  .form-group label {
+		    font-size: 1rem;
+		  }
+
+		  .form-group input,
+		  .form-group select {
+		    font-size: 0.95rem;
+		  }
+		}
+
+		@media (max-width: 480px) {
+		  .form-wrapper {
+		    padding: 1.5rem;
+		  }
+
+		  .form-wrapper h2 {
+		    font-size: 1.75rem;
+		    margin-bottom: 1.5rem;
+		  }
+
+		  .form-group {
+		    margin-bottom: 1.2rem;
+		  }
+
+		  .form-group label {
+		    font-size: 0.95rem;
+		  }
+
+		  .form-group input,
+		  .form-group select {
+		    font-size: 0.9rem;
+		    padding: 0.65rem 0.85rem;
+		  }
+
+		  .submit-btn {
+		    font-size: 1rem;
+		    padding: 0.8rem 1rem;
+		  }
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar">
+		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<div class="nav">
+			<ul class="list">
+				<li><a href="aboutus.html" class="nb">About us</a></li>
+				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+				<li><a href="login.html"><button type="button">Login</button></a></li>
+				<li><a href="register.html"><button type="button">Sign in</button></a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<!-- Wrapped form in centered container -->
+	<div class="form-container">
+		<div class="form-wrapper">
+			<h2>Tutor Sign Up</h2>
+			<form class="form" id="tutorForm" novalidate>
+				<div class="form-group">
+					<label for="t-name">Full Name:</label>
+					<input type="text" name="name" id="t-name" required>
+					<div class="error" id="err-t-name"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-email">Email:</label>
+					<input type="email" name="email" id="t-email" required>
+					<div class="error" id="err-t-email"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-pass">Password:</label>
+					<input type="password" name="password" id="t-pass" required minlength="6">
+					<div class="error" id="err-t-pass"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-level">Highest Educational Level:</label>
+					<select name="level" id="t-level" required>
+						<option value="">Select level</option>
+						<option value="Bachelors">Bachelors</option>
+						<option value="Masters">Masters</option>
+						<option value="MPhil">MPhil</option>
+						<option value="PhD">PhD</option>
+						<option value="Other">Other</option>
+					</select>
+					<div class="error" id="err-t-level"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-avatar">Profile Picture:</label>
+					<input type="file" name="avatar" id="t-avatar" accept="image/*" required>
+					<div class="error" id="err-t-avatar"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-subject">Subject you teach:</label>
+					<select name="subject" id="t-subject" required>
+						<option value="">Select subject</option>
+						<option value="Math">Math</option>
+						<option value="Physics">Physics</option>
+						<option value="English">English</option>
+						<option value="Computer Science">Computer Science</option>
+						<option value="Chemistry">Chemistry</option>
+						<option value="Biology">Biology</option>
+						<option value="Nepali">Nepali</option>
+					</select>
+					<div class="error" id="err-t-subject"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-exp">Experience (years):</label>
+					<input type="number" name="experience" id="t-exp" min="0" step="1" required>
+					<div class="error" id="err-t-exp"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-rate">Hourly Rate (NPR/hr):</label>
+					<input type="number" name="rate" id="t-rate" min="0" step="100" required>
+					<div class="error" id="err-t-rate"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-mode">Mode:</label>
+					<select name="mode" id="t-mode" required>
+						<option value="">Select mode</option>
+						<option value="Online">Online</option>
+						<option value="Offline">Offline</option>
+						<option value="Hybrid">Hybrid</option>
+					</select>
+					<div class="error" id="err-t-mode"></div>
+				</div>
+
+				<div class="form-group">
+					<label for="t-location">Location (City):</label>
+					<input type="text" name="location" id="t-location" required>
+					<div class="error" id="err-t-location"></div>
+				</div>
+
+				<div class="form-group checkbox-group">
+					<label for="t-terms" class="checkbox-label">
+						<input type="checkbox" id="t-terms" required>
+						<span>I agree to the <a href="terms.html" target="_blank">Terms and Conditions</a></span>
+					</label>
+					<div class="error" id="err-t-terms"></div>
+				</div>
+
+				<button type="submit" class="submit-btn">Create account</button>
+			</form>
+		</div>
+	</div>
+
+	<!-- Embedded JavaScript directly in HTML file -->
+	<script>
+		;(() => {
+		  function setError(id, msg) {
+		    document.getElementById(id).textContent = msg || ""
+		  }
+
+		  function emailOk(v) {
+		    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+		  }
+
+		  document.getElementById("tutorForm").addEventListener("submit", (e) => {
+		    let ok = true
+		    const name = document.getElementById("t-name").value.trim()
+		    const email = document.getElementById("t-email").value.trim()
+		    const pass = document.getElementById("t-pass").value
+		    const level = document.getElementById("t-level").value
+		    const avatar = document.getElementById("t-avatar").files[0]
+		    const subject = document.getElementById("t-subject").value
+		    const exp = document.getElementById("t-exp").value
+		    const rate = document.getElementById("t-rate").value
+		    const mode = document.getElementById("t-mode").value
+		    const location = document.getElementById("t-location").value.trim()
+		    const terms = document.getElementById("t-terms").checked
+
+		    // Clear all errors
+		    setError("err-t-name")
+		    setError("err-t-email")
+		    setError("err-t-pass")
+		    setError("err-t-level")
+		    setError("err-t-avatar")
+		    setError("err-t-subject")
+		    setError("err-t-exp")
+		    setError("err-t-rate")
+		    setError("err-t-mode")
+		    setError("err-t-location")
+		    setError("err-t-terms")
+
+		    // Validate fields
+		    if (name.length < 2) {
+		      setError("err-t-name", "Please enter your full name.")
+		      ok = false
+		    }
+		    if (!emailOk(email)) {
+		      setError("err-t-email", "Enter a valid email address.")
+		      ok = false
+		    }
+		    if (pass.length < 6) {
+		      setError("err-t-pass", "Password must be at least 6 characters.")
+		      ok = false
+		    }
+		    if (!level) {
+		      setError("err-t-level", "Select your highest level.")
+		      ok = false
+		    }
+		    if (!avatar || !/^image\//.test(avatar.type)) {
+		      setError("err-t-avatar", "Please upload a profile image.")
+		      ok = false
+		    }
+		    if (!subject) {
+		      setError("err-t-subject", "Select a subject.")
+		      ok = false
+		    }
+		    if (exp === "" || Number(exp) < 0) {
+		      setError("err-t-exp", "Enter valid experience.")
+		      ok = false
+		    }
+		    if (rate === "" || Number(rate) < 0) {
+		      setError("err-t-rate", "Enter a valid rate.")
+		      ok = false
+		    }
+		    if (!mode) {
+		      setError("err-t-mode", "Select a mode.")
+		      ok = false
+		    }
+		    if (location.length < 2) {
+		      setError("err-t-location", "Enter your city.")
+		      ok = false
+		    }
+		    if (!terms) {
+		      setError("err-t-terms", "You must agree to the Terms and Conditions.")
+		      ok = false
+		    }
+
+		    if (!ok) {
+		      e.preventDefault()
+		      return
+		    }
+
+		    // Save to localStorage on successful validation
+		    try {
+		      localStorage.setItem("loggedIn", "true")
+		    } catch (err) {
+		      console.error("localStorage error:", err)
+		    }
+		  })
+		})()
+	</script>
+</body>
+</html>
