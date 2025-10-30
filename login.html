@@ -109,7 +109,7 @@
 			// Try API first, fallback to localStorage
 			try {
 				// Try backend API
-				const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+                const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
@@ -118,18 +118,21 @@
 						email: email,
 						password: pass
 					}),
-					timeout: 5000
+                    timeout: 5000,
+                    credentials: 'include'
 				});
 
 				const loginResult = await loginResponse.json();
 
-				if (loginResponse.ok) {
+                if (loginResponse.ok) {
 					// Store user data
-					const user = loginResult.user;
+                    const user = loginResult.user;
+                    const token = loginResult.token;
 					
 					localStorage.setItem('loggedIn', 'true');
 					localStorage.setItem('userRole', user.role);
-					localStorage.setItem('studentData', JSON.stringify(user));
+                    localStorage.setItem('studentData', JSON.stringify(user));
+                    if (token) localStorage.setItem('authToken', token);
 
 					// Redirect based on role
 					if (user.role === 'student') {
@@ -169,7 +172,7 @@
 				console.error('Local storage error:', localError);
 			}
 
-			// If we get here, login failed
+            // If we get here, login failed
 			alert('Invalid email or password. Please check your credentials or sign up first.');
 		});
 	})();

@@ -16,6 +16,7 @@ CREATE TABLE students(
     student_id SERIAL NOT NULL,
     user_id INT UNIQUE REFERENCES users(user_id) ON DELETE CASCADE,
     academic_level VARCHAR(50),
+    subjects TEXT[], -- Array of subjects to allow multiple subject selection
     preferred_mode VARCHAR(10) CHECK(preferred_mode IN ('online', 'offline', 'hybrid')),
     budget NUMERIC(10, 2),
     availability TEXT

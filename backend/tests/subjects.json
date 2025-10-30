@@ -1,0 +1,24 @@
+{
+  "Math": [
+    { "q": "Derivative of x^2 is?", "a": ["x", "2x", "x^3", "2x^2"], "c": 1 },
+    { "q": "Integral of 1/x dx is?", "a": ["x", "ln|x|+C", "e^x", "x^2/2"], "c": 1 },
+    { "q": "Solve: 2+2*3", "a": ["12", "10", "8", "6"], "c": 2 }
+  ],
+  "Physics": [
+    { "q": "Unit of force?", "a": ["Joule", "Watt", "Newton", "Pascal"], "c": 2 },
+    { "q": "Speed =", "a": ["distance/time", "time/distance", "mass*acc", "work/time"], "c": 0 },
+    { "q": "Ohm law", "a": ["I=VR", "V=IR", "R=VI", "P=IV"], "c": 1 }
+  ],
+  "English": [
+    { "q": "Synonym of quick", "a": ["slow", "rapid", "late", "still"], "c": 1 },
+    { "q": "Antonym of begin", "a": ["start", "open", "commence", "end"], "c": 3 },
+    { "q": "Past tense of go", "a": ["goed", "went", "gone", "goes"], "c": 1 }
+  ],
+  "Computer Science": [
+    { "q": "Binary of 2", "a": ["10", "11", "01", "00"], "c": 0 },
+    { "q": "Time complexity of binary search", "a": ["O(n)", "O(log n)", "O(n^2)", "O(1)"], "c": 1 },
+    { "q": "Queue is", "a": ["LIFO", "FIFO", "LILO", "FILO"], "c": 1 }
+  ]
+}
+
+

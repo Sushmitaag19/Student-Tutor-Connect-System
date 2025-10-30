@@ -1,5 +1,8 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const pool = require('../db');
+const auth = require('../middleware/auth');
 const router = express.Router();
 
 /**
@@ -148,6 +151,74 @@ router.get('/schema', async (req, res) => {
             message: 'Failed to check schema',
             error: error.message
         });
+        client.release();
+    }
+});
+
+/**
+ * @route   GET /api/test/quiz/:subject
+ * @desc    Retrieve quiz questions by subject (protected)
+ * @access  Private (JWT)
+ */
+router.get('/quiz/:subject', auth, async (req, res) => {
+    try {
+        const subject = req.params.subject;
+        const filePath = path.join(__dirname, '..', 'tests', 'subjects.json');
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const data = JSON.parse(raw);
+        const questions = data[subject];
+        if (!questions) return res.status(404).json({ error: 'Subject not found' });
+        // Do not send correct answers to client
+        const sanitized = questions.map(q => ({ q: q.q, a: q.a }));
+        res.json({ subject, questions: sanitized, total: sanitized.length });
+    } catch (err) {
+        console.error('Quiz load error:', err);
+        res.status(500).json({ error: 'Failed to load quiz' });
+    }
+});
+
+/**
+ * @route   POST /api/test/quiz/submit
+ * @desc    Grade quiz and update tutor verification if passed (>= 80%)
+ * @access  Private (JWT)
+ */
+router.post('/quiz/submit', auth, async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const { subject, answers } = req.body; // answers: array of selected indices
+        if (!subject || !Array.isArray(answers)) {
+            return res.status(400).json({ error: 'Invalid payload' });
+        }
+        const filePath = path.join(__dirname, '..', 'tests', 'subjects.json');
+        const raw = fs.readFileSync(filePath, 'utf-8');
+        const data = JSON.parse(raw);
+        const questions = data[subject];
+        if (!questions) return res.status(404).json({ error: 'Subject not found' });
+
+        const total = questions.length;
+        let score = 0;
+        for (let i = 0; i < Math.min(total, answers.length); i++) {
+            if (answers[i] === questions[i].c) score++;
+        }
+        const percentage = Math.round((score / total) * 100);
+        const passed = percentage >= 80;
+
+        if (passed) {
+            // update tutors.verified = true and set subject_chosen if empty
+            await client.query(
+                `UPDATE tutors t
+                 SET verified = TRUE, subject_chosen = COALESCE(subject_chosen, $2)
+                 FROM users u
+                 WHERE t.user_id = u.user_id AND u.user_id = $1`,
+                [req.user.user_id, subject]
+            );
+        }
+
+        res.json({ subject, score, total, percentage, passed });
+    } catch (err) {
+        console.error('Quiz submit error:', err);
+        res.status(500).json({ error: 'Failed to grade quiz' });
+    } finally {
         client.release();
     }
 });

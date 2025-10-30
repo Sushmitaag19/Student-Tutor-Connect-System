@@ -1,5 +1,6 @@
 const express = require('express');
 const pool = require('../db');
+const auth = require('../middleware/auth');
 const router = express.Router();
 
 /**
@@ -196,6 +197,31 @@ router.get('/all', async (req, res) => {
             error: 'Failed to fetch tutors',
             message: 'An error occurred while fetching tutors'
         });
+    } finally {
+        client.release();
+    }
+});
+
+/**
+ * @route   GET /api/tutor/me
+ * @desc    Get current tutor profile (JWT)
+ * @access  Private
+ */
+router.get('/me', auth, async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            `SELECT t.tutor_id, t.user_id, t.first_name, t.last_name, t.subject_chosen,
+                    t.verified AS is_verified, t.bio, t.experience, t.hourly_rate,
+                    t.preferred_mode, t.availability, t.profile_picture
+             FROM tutors t WHERE t.user_id = $1`,
+            [req.user.user_id]
+        );
+        if (!result.rows.length) return res.status(404).json({ error: 'Tutor profile not found' });
+        res.json({ tutor: result.rows[0] });
+    } catch (err) {
+        console.error('Tutor /me error:', err);
+        res.status(500).json({ error: 'Failed to fetch tutor profile' });
     } finally {
         client.release();
     }

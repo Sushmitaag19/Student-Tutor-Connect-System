@@ -414,7 +414,7 @@
 				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
 				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
 				<li><a href="login.html"><button type="button">Login</button></a></li>
-				<li><a href="register.html"><button type="button">Sign in</button></a></li>
+				<li><a href="register.html"><button type="button">Sign up</button></a></li>
 			</ul>
 		</div>
 	</nav>
@@ -448,9 +448,9 @@
 						<option value="">Select level</option>
 						<option value="Bachelors">Bachelors</option>
 						<option value="Masters">Masters</option>
-						<option value="MPhil">MPhil</option>
-						<option value="PhD">PhD</option>
-						<option value="Other">Other</option>
+						<option value="plusTwo">+2</option>
+						<option value="primary">Primary Class</option>
+						<option value="secondary">Secondary Class</option>
 					</select>
 					<div class="error" id="err-t-level"></div>
 				</div>
@@ -520,7 +520,8 @@
 
 	<!-- Embedded JavaScript directly in HTML file -->
 	<script>
-		;(() => {
+        ;(() => {
+          const API_BASE_URL = 'http://localhost:5000/api';
 		  function setError(id, msg) {
 		    document.getElementById(id).textContent = msg || ""
 		  }
@@ -529,7 +530,7 @@
 		    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
 		  }
 
-		  document.getElementById("tutorForm").addEventListener("submit", (e) => {
+          document.getElementById("tutorForm").addEventListener("submit", async (e) => {
 		    let ok = true
 		    const name = document.getElementById("t-name").value.trim()
 		    const email = document.getElementById("t-email").value.trim()
@@ -602,17 +603,33 @@
 		      ok = false
 		    }
 
-		    if (!ok) {
-		      e.preventDefault()
-		      return
-		    }
+            if (!ok) {
+              e.preventDefault()
+              return
+            }
 
-		    // Save to localStorage on successful validation
-		    try {
-		      localStorage.setItem("loggedIn", "true")
-		    } catch (err) {
-		      console.error("localStorage error:", err)
-		    }
+            e.preventDefault()
+            try {
+              const [first_name, ...rest] = name.split(' ')
+              const last_name = rest.join(' ') || '-'
+              const resp = await fetch(`${API_BASE_URL}/auth/tutor-signup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ first_name, last_name, email, password: pass, subject_chosen: subject })
+              })
+              const data = await resp.json()
+              if (!resp.ok) {
+                alert(data.error || 'Signup failed')
+                return
+              }
+              localStorage.setItem('authToken', data.token)
+              localStorage.setItem('userRole', 'tutor')
+              // redirect to onboarding quiz for subject
+              window.location.href = `tutor-onboarding.html?subject=${encodeURIComponent(subject)}`
+            } catch (err) {
+              console.error('Signup error:', err)
+              alert('Network error during signup')
+            }
 		  })
 		})()
 	</script>

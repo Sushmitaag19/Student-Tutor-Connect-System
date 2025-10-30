@@ -65,6 +65,59 @@
 		});
 	}
 
+	// --- Session/Authentication helpers (cookie-based) ---
+	const API_BASE_URL = 'http://localhost:5000/api';
+	async function fetchMe() {
+		try {
+			const res = await fetch(API_BASE_URL + '/auth/me', { credentials: 'include' });
+			if (!res.ok) return null;
+			const data = await res.json();
+			return data && data.user ? data.user : null;
+		} catch { return null; }
+	}
+
+	async function logout() {
+		try {
+			await fetch(API_BASE_URL + '/auth/logout', { method: 'POST', credentials: 'include' });
+		} catch {}
+		try { localStorage.clear(); } catch {}
+		navigate('login.html');
+	}
+
+	function buildStudentNavbar() {
+		const nav = document.createElement('nav');
+		nav.className = 'navbar';
+		nav.innerHTML = '' +
+			'<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>' +
+			'<div class="nav"><ul class="list">' +
+				'<li><a href="student-dashboard.html" class="nb">Dashboard</a></li>' +
+				'<li><a href="tutor.html" class="nb">Find Tutors</a></li>' +
+				'<li><a href="profile.html" class="nb">Profile</a></li>' +
+				'<li><button id="logout-btn" type="button">Log Out</button></li>' +
+			'</ul></div>';
+		return nav;
+	}
+
+	async function ensureNavbar() {
+		const user = await fetchMe();
+		if (!user || user.role !== 'student') return; // show public navbar if not student
+		const current = document.querySelector('nav.navbar');
+		const studentNav = buildStudentNavbar();
+		if (current && current.parentNode) current.parentNode.replaceChild(studentNav, current);
+		const btn = document.getElementById('logout-btn');
+		if (btn) btn.addEventListener('click', logout);
+	}
+
+	async function protectStudentPage() {
+		const user = await fetchMe();
+		if (!user || user.role !== 'student') {
+			alert('Please log in as a student to continue.');
+			navigate('login.html');
+			return false;
+		}
+		return true;
+	}
+
 	function initRegisterPage() {
 		const tutorBtn = document.getElementById('for-tutor');
 		const studentBtn = document.getElementById('for-student');
@@ -172,8 +225,10 @@
 		if (statusHolder) statusHolder.textContent = tutor && tutor.onboardingCompleted ? 'Onboarding complete' : 'Pending onboarding';
 	}
 
-	document.addEventListener('DOMContentLoaded', function () {
+	document.addEventListener('DOMContentLoaded', async function () {
 		bindGlobalNav();
+		// Always attempt to render the student navbar when logged in
+		await ensureNavbar();
 		const page = document.body && document.body.getAttribute('data-page');
 		switch (page) {
 			case 'register':
@@ -189,6 +244,7 @@
 				initTutorOnboarding();
 				break;
 			case 'student-dashboard':
+				if (!(await protectStudentPage())) return;
 				initStudentDashboard();
 				break;
 			case 'tutor-dashboard':

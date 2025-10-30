@@ -19,6 +19,7 @@ router.post('/profile', async (req, res) => {
         const {
             user_id,
             academic_level,
+            preferred_subjects,
             preferred_mode,
             budget,
             availability
@@ -77,12 +78,23 @@ router.post('/profile', async (req, res) => {
         // Begin transaction
         await client.query('BEGIN');
 
+        // Process subjects: convert to array if it's a string or comma-separated string
+        let subjectsArray = null;
+        if (preferred_subjects) {
+            if (Array.isArray(preferred_subjects)) {
+                subjectsArray = preferred_subjects;
+            } else if (typeof preferred_subjects === 'string') {
+                // Split comma-separated string into array
+                subjectsArray = preferred_subjects.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            }
+        }
+
         // Insert student profile with parameterized query
         const studentResult = await client.query(
-            `INSERT INTO students (user_id, academic_level, preferred_mode, budget, availability)
-             VALUES ($1, $2, $3, $4, $5)
-             RETURNING student_id, user_id, academic_level, preferred_mode, budget, availability`,
-            [user_id, academic_level || null, preferred_mode || null, budget || null, availability || null]
+            `INSERT INTO students (user_id, academic_level, subjects, preferred_mode, budget, availability)
+             VALUES ($1, $2, $3, $4, $5, $6)
+             RETURNING student_id, user_id, academic_level, subjects, preferred_mode, budget, availability`,
+            [user_id, academic_level || null, subjectsArray || null, preferred_mode || null, budget || null, availability || null]
         );
 
         const newStudent = studentResult.rows[0];
@@ -97,7 +109,11 @@ router.post('/profile', async (req, res) => {
 
     } catch (error) {
         // Rollback transaction on error
-        await client.query('ROLLBACK');
+        try {
+            await client.query('ROLLBACK');
+        } catch (rollbackError) {
+            console.error('Rollback error:', rollbackError);
+        }
 
         // Handle specific database errors
         if (error.code === '23503') {
@@ -107,10 +123,31 @@ router.post('/profile', async (req, res) => {
             });
         }
 
+        // Handle column not found error (42883 = undefined_column)
+        if (error.code === '42883' || (error.message.includes('column') && error.message.includes('does not exist'))) {
+            console.error('Database schema error - column may not exist:', error);
+            return res.status(500).json({
+                error: 'Database schema error',
+                message: 'The subjects column may not exist in the database. Please run the migration script: backend/migration_add_subjects_column.sql'
+            });
+        }
+
         console.error('Student profile creation error:', error);
+        console.error('Error details:', {
+            code: error.code,
+            message: error.message,
+            detail: error.detail,
+            hint: error.hint
+        });
+        
         res.status(500).json({
             error: 'Profile creation failed',
-            message: 'An error occurred while creating the student profile'
+            message: process.env.NODE_ENV === 'development' ? error.message : 'An error occurred while creating the student profile',
+            details: process.env.NODE_ENV === 'development' ? {
+                code: error.code,
+                detail: error.detail,
+                hint: error.hint
+            } : undefined
         });
     } finally {
         client.release();
@@ -129,7 +166,7 @@ router.get('/profile/:user_id', async (req, res) => {
         const { user_id } = req.params;
 
         const result = await client.query(
-            'SELECT student_id, user_id, academic_level, preferred_mode, budget, availability FROM students WHERE user_id = $1',
+            'SELECT student_id, user_id, academic_level, subjects, preferred_mode, budget, availability FROM students WHERE user_id = $1',
             [user_id]
         );
 

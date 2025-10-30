@@ -23,7 +23,7 @@
 				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
 				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
 				<li><a href="login.html"><button type="button">Login</button></a></li>
-				<li><a href="register.html"><button type="button">Sign in</button></a></li>
+				<li><a href="register.html"><button type="button">Sign up</button></a></li>
 			</ul>
 		</div>
 	</nav>
@@ -40,70 +40,29 @@
 
 	<script>
 	(function(){
+		const API_BASE_URL = 'http://localhost:5000/api';
 		var params = new URLSearchParams(window.location.search);
 		var subject = params.get('subject') || 'Math';
 		document.getElementById('quiz-title').textContent = subject + ' Quiz';
 
-		var bank = {
-			'Math': [
-				{q:'Derivative of x^2 is?', a:['x','2x','x^3','2x^2'], c:1},
-				{q:'Integral of 1/x dx is?', a:['x','ln|x|+C','e^x','x^2/2'], c:1},
-				{q:'Solve: 2+2*3', a:['12','10','8','6'], c:2},
-				{q:'sin(90°)=', a:['0','1','-1','0.5'], c:1},
-				{q:'(a+b)^2=', a:['a^2+b^2','a^2+2ab+b^2','2ab','a^2-b^2'], c:1},
-				{q:'Prime number among:', a:['21','27','29','33'], c:2},
-				{q:'Limit x->0 of sin x / x', a:['0','1','∞','x'], c:1},
-				{q:'Median of [1,3,9]', a:['1','3','5','9'], c:1},
-				{q:'Slope-intercept form y=', a:['mx+b','ax^2+bx+c','x/y','ab+cd'], c:0},
-				{q:'Area of circle', a:['πr','2πr','πr^2','r^2'], c:2},
-				{q:'Solve for x: 3x=12', a:['2','3','4','6'], c:2},
-				{q:'Standard deviation measures', a:['center','spread','shape','size'], c:1}
-			],
-			'Physics': [
-				{q:"Unit of force?", a:['Joule','Watt','Newton','Pascal'], c:2},
-				{q:'Speed =', a:['distance/time','time/distance','mass*acc','work/time'], c:0},
-				{q:'g on Earth ~', a:['9.8 m/s^2','9.8 N','9.8 m','98 m/s^2'], c:0},
-				{q:'Ohm law', a:['I=VR','V=IR','R=VI','P=IV'], c:1},
-				{q:'Energy unit', a:['Joule','Newton','Pascal','Ampere'], c:0},
-				{q:'Vector quantity', a:['speed','mass','temperature','velocity'], c:3},
-				{q:'Momentum =', a:['m/a','m+v','m*v','m-v'], c:2},
-				{q:'Work =', a:['F+d','F/d','F*d','F^2'], c:2},
-				{q:'Power unit', a:['J','W','N','Pa'], c:1},
-				{q:'SI unit of charge', a:['Coulomb','Volt','Ohm','Tesla'], c:0},
-				{q:'Sound speed highest in', a:['air','water','steel','vacuum'], c:2},
-				{q:'Lens forming real image', a:['Concave','Convex','Planar','Cylinder'], c:1}
-			],
-			'English': [
-				{q:'Their/There/They\'re: choose possession', a:['Their','There','They\'re','They are'], c:0},
-				{q:'Synonym of quick', a:['slow','rapid','late','still'], c:1},
-				{q:'Antonym of begin', a:['start','open','commence','end'], c:3},
-				{q:'Past tense of go', a:['goed','went','gone','goes'], c:1},
-				{q:'Article before apple', a:['a','an','the','none'], c:1},
-				{q:'Identify verb: She runs fast.', a:['She','runs','fast','.'], c:1},
-				{q:'Plural of child', a:['childs','childes','children','child'], c:2},
-				{q:'Choose correct: ___ are many.', a:['Their','There','They\'re','They are'], c:1},
-				{q:'Capital of sentence', a:['first letter','last letter','none','all caps'], c:0},
-				{q:'Homophone of sea', a:['see','cee','sie','c'], c:0},
-				{q:'Punctuation for question', a:['.','!','?',';'], c:2},
-				{q:'Comparative of good', a:['gooder','more good','better','best'], c:2}
-			],
-			'Computer Science': [
-				{q:'Binary of 2', a:['10','11','01','00'], c:0},
-				{q:'Time complexity of binary search', a:['O(n)','O(log n)','O(n^2)','O(1)'], c:1},
-				{q:'Queue is', a:['LIFO','FIFO','LILO','FILO'], c:1},
-				{q:'HTML stands for', a:['HighText ML','HyperText ML','HyperText Markup Language','Home Tool ML'], c:2},
-				{q:'CSS used for', a:['logic','styling','database','network'], c:1},
-				{q:'JS type of []', a:['string','number','array','object'], c:3},
-				{q:'HTTP code 404', a:['OK','Not Found','Server Error','Redirect'], c:1},
-				{q:'Database SQL means', a:['Structured Query Language','Simple Query Language','Standard Quick Language','None'], c:0},
-				{q:'Git command to clone', a:['git pull','git clone','git fork','git copy'], c:1},
-				{q:'const means', a:['reassign allowed','block-scoped','function-scoped','global'], c:1},
-				{q:'Boolean values', a:['yes/no','on/off','true/false','1/0'], c:2},
-				{q:'JSON is', a:['markup','binary','format','protocol'], c:2}
-			]
-		};
+		var questions = [];
+		const token = localStorage.getItem('authToken');
+		if (!token) {
+			alert('You must sign in first.');
+			window.location.href = 'login.html';
+			return;
+		}
+		fetch(`${API_BASE_URL}/test/quiz/${encodeURIComponent(subject)}`, {
+			headers: { Authorization: `Bearer ${token}` }
+		}).then(r=>r.json()).then(data=>{
+			if (data && Array.isArray(data.questions)) {
+				questions = data.questions;
+				render();
+			} else {
+				alert('No quiz available for this subject.');
+			}
+		}).catch(()=> alert('Failed to load quiz.'))
 
-		var questions = bank[subject] || bank['Math'];
 		var idx = 0, score = 0, timer = 60, intervalId = null, selected = null;
 
 		function render(){
@@ -133,18 +92,29 @@
 
 		function next(){
 			if(intervalId) clearInterval(intervalId);
-			if(selected === questions[idx].c){ score++; }
+			// server does grading; on client we just track selection index order
+			if (selected != null) { if(!window._answers) window._answers = []; window._answers[idx] = selected; }
 			idx++;
 			if(idx>=questions.length){ finish(); return; }
 			render();
 		}
 
 		function finish(){
-			document.querySelector('.quiz').innerHTML = '<h2>Quiz Completed</h2><p>Score: '+score+' / '+questions.length+'</p><a href="tutor-dashboard.html"><button class="login">Continue</button></a>';
+			const answers = (window._answers || []).map(v=> (typeof v==='number'? v : -1));
+			fetch(`${API_BASE_URL}/test/quiz/submit`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+				body: JSON.stringify({ subject, answers })
+			}).then(r=>r.json()).then(result=>{
+				const msg = result.passed ? 'You passed! Verification granted.' : 'You did not reach 80%. Try again later.';
+				document.querySelector('.quiz').innerHTML = '<h2>Quiz Completed</h2><p>'+msg+'</p><p>Score: '+(result.score||0)+' / '+(result.total||questions.length)+'</p><a href="tutor-dashboard.html"><button class="login">Continue</button></a>';
+			}).catch(()=>{
+				document.querySelector('.quiz').innerHTML = '<h2>Quiz Completed</h2><p>Could not submit results. Please try again.</p>';
+			});
 		}
 
 		document.getElementById('next').onclick = next;
-		render();
+		// render will be called once quiz data loads
 	})();
 	</script>
 </body>

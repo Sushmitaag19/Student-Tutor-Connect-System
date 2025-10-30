@@ -1,7 +1,20 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const pool = require('../db');
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_key_change_me';
+const COOKIE_NAME = 'st_jwt';
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+function issueSession(res, token) {
+    const isProd = (process.env.NODE_ENV === 'production');
+    res.cookie(COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'strict' : 'lax',
+        maxAge: ONE_DAY_MS
+    });
+}
 
 /**
  * @route   POST /api/auth/register
@@ -44,11 +57,12 @@ router.post('/register', async (req, res) => {
             });
         }
 
-        // Validate password length
-        if (password.length < 6) {
+        // Validate password strength
+        const pwdOk = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-={}\[\]:;"'`~<>,.?/\\]{8,}$/.test(password);
+        if (!pwdOk) {
             return res.status(400).json({
-                error: 'Password too short',
-                message: 'Password must be at least 6 characters long'
+                error: 'Weak password',
+                message: 'Password must be at least 8 characters, include letters and numbers'
             });
         }
 
@@ -160,11 +174,16 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // Sign JWT
+        const token = jwt.sign({ user_id: user.user_id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+        issueSession(res, token);
+
         // Remove password from response
         delete user.password;
 
         res.json({
             message: 'Login successful',
+            token,
             user: {
                 user_id: user.user_id,
                 full_name: user.full_name,
@@ -183,6 +202,122 @@ router.post('/login', async (req, res) => {
     } finally {
         client.release();
     }
+});
+
+/**
+ * @route   POST /api/auth/tutor-signup
+ * @desc    Register tutor user and create tutor profile with subject
+ * @access  Public
+ */
+router.post('/tutor-signup', async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        const { first_name, last_name, email, password, subject_chosen } = req.body;
+
+        if (!first_name || !last_name || !email || !password || !subject_chosen) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Invalid email format' });
+        }
+
+        const pwdOk = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-={}\[\]:;"'`~<>,.?/\\]{8,}$/.test(password);
+        if (!pwdOk) {
+            return res.status(400).json({ error: 'Weak password', message: 'Min 8 chars, letters and numbers' });
+        }
+
+        await client.query('BEGIN');
+
+        // Ensure unique email
+        const existing = await client.query('SELECT 1 FROM users WHERE email = $1', [email]);
+        if (existing.rows.length) {
+            await client.query('ROLLBACK');
+            return res.status(409).json({ error: 'Email already exists' });
+        }
+
+        const hashed = await bcrypt.hash(password, 10);
+        const fullName = `${first_name} ${last_name}`.trim();
+
+        const userRes = await client.query(
+            `INSERT INTO users (full_name, email, password, role)
+             VALUES ($1, $2, $3, 'tutor') RETURNING user_id, full_name, email, role, created_at`,
+            [fullName, email, hashed]
+        );
+
+        const user = userRes.rows[0];
+
+        // Ensure tutor columns exist; insert with minimal data
+        const tutorRes = await client.query(
+            `INSERT INTO tutors (user_id, bio, experience, hourly_rate, preferred_mode, verified, availability, profile_picture, first_name, last_name, subject_chosen)
+             VALUES ($1, NULL, NULL, NULL, NULL, FALSE, NULL, NULL, $2, $3, $4)
+             RETURNING tutor_id, user_id, verified, subject_chosen, first_name, last_name`,
+            [user.user_id, first_name, last_name, subject_chosen]
+        );
+
+        await client.query('COMMIT');
+
+        const token = jwt.sign({ user_id: user.user_id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+        issueSession(res, token);
+
+        res.status(201).json({
+            message: 'Tutor registered. Proceed to qualification test.',
+            token,
+            user,
+            tutor: tutorRes.rows[0]
+        });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Tutor signup error:', error);
+        res.status(500).json({ error: 'Tutor signup failed' });
+    } finally {
+        client.release();
+    }
+});
+
+/**
+ * @route   GET /api/auth/me
+ * @desc    Return current user from cookie/JWT
+ * @access  Private
+ */
+router.get('/me', async (req, res) => {
+    const authHeader = req.headers.authorization || '';
+    const bearer = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    const cookieToken = req.cookies && (req.cookies[COOKIE_NAME] || req.cookies.jwt);
+    const token = bearer || cookieToken;
+    if (!token) return res.status(401).json({ error: 'Not authenticated' });
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const client = await pool.connect();
+        try {
+            const q = await client.query(
+                'SELECT user_id, full_name, email, role, created_at FROM users WHERE user_id = $1',
+                [decoded.user_id]
+            );
+            if (!q.rows.length) return res.status(401).json({ error: 'Invalid session' });
+            return res.json({ user: q.rows[0] });
+        } finally {
+            client.release();
+        }
+    } catch (e) {
+        return res.status(401).json({ error: 'Invalid or expired session' });
+    }
+});
+
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Clear session cookie
+ * @access  Public
+ */
+router.post('/logout', (req, res) => {
+    res.clearCookie(COOKIE_NAME, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+    });
+    res.json({ message: 'Logged out' });
 });
 
 module.exports = router;
