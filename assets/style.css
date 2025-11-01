@@ -385,6 +385,7 @@ body{
     font-size: 1.1rem;
     margin-top: 20px;
 }
+
 /* aboutus.html  */
 
 .slogan h1{
@@ -536,100 +537,58 @@ body{
 .t-container span, .searchForm span, .tCard span{
     color: var(--logo);
 }
-.searchForm{
-    color: var(--font);
-    background-color: var(--nav);
-}
-.searchForm h2, .tCard h2{
+.find-tutor{
+    padding: 50px;
+    background-color: var(--extra);
     text-align: center;
-    padding-top: 40px;
-    font-size: 2rem;
-}
-#searchForm{
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 20px;
+}
+.finding-steps{
+    display: flex;
+    gap: 100px;
     justify-content: center;
     align-items: center;
+    margin-top: 20px;
 }
-label{
-    font-size: 1.1rem;
-    color: var(--footer);
-    font-weight: 600;
+.finding-steps img{
+    height: 150px;
+    border-radius: 20px;
 }
-.select{
+.finding-steps img:hover{
+    border-radius: 50px;
+    object-fit: contain;
+    border: 2px solid var(--highlight);
+}
+.finding-steps h3{
+    font-size: 1.3rem;
+    color: var(--accent);
+}
+.level-up{
+    background-color: var(--slider);
     display: flex;
     flex-direction: column;
-    width: 350px;
-    padding: 20px 0;
-    flex-grow: 1;
-}
-form{
-    background-color: var(--nav);
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 10px 10px 0  var(--shadow);
-}
-.formGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  row-gap: 20px;
-  column-gap: 100px;
-}
-select{
-    height: 40px;
-    margin-top: 10px;
-    width: 330px;
-    border: 1px solid var(--accent);
-    background-color: transparent;
-    color: var(--font);
-    font-size: 1rem;
-    border-radius: 10px;
-    padding-left: 10px;
-
-}
-select:focus-within{
-    border: 2px solid var(--logo);
-}
-#search-bar{
-    margin-top: 30px;
-    width: 600px;
-}
-.formButtons{
-    text-align: center;
-    display: flex;
-    gap: 50px;
-    z-index: 1;
-}
-.search-btn:hover, .clear:hover{
-    box-shadow: 0 0 5px 5px rgba(0, 0, 0, 0.5);
-    transform: scale(1.1);
-}
-#tutor-cards{
-    display: grid;
-    grid-template-columns: repeat(4, 300px);
-    grid-template-rows: repeat(3, auto);
-    gap: 5rem;
-    padding: 10px;
-}
-.tcard{
-    height: 500px;
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    border-radius: 20px;
-    border: var(--logo) 2px solid;
-    padding: 20px;
-    align-items: center;
     justify-content: center;
-    text-align: left;
-    gap: 5px;
-    margin-bottom: 20px;
+    align-items:center;
+    padding: 40px;
+    gap: 15px;
+    color: var(--body);
 }
-.tcard img{
-    height: 120px;
+.level-up img{
     border-radius: 50%;
+    height: 200px;
+    width: 200px;
 }
+.level-up h1{
+    color: var(--highlight);
+}
+.level-up button a{
+    text-decoration: none;
+    color: var(--extra);
+}
+
 /* Become a tutor */
 #tutor{
     padding-top: 70px;

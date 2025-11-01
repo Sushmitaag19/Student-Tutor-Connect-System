@@ -49,7 +49,7 @@ router.post('/register', async (req, res) => {
             });
         }
 
-        // Validate email format (basic validation)
+        // Validate email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({
@@ -87,7 +87,7 @@ router.post('/register', async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        // Insert new user with parameterized query (SQL injection prevention)
+        // Insert new user with parameterized query 
         const userResult = await client.query(
             `INSERT INTO users (full_name, email, password, role) 
              VALUES ($1, $2, $3, $4) 
@@ -178,7 +178,6 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign({ user_id: user.user_id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
         issueSession(res, token);
 
-        // Remove password from response
         delete user.password;
 
         res.json({
@@ -213,9 +212,9 @@ router.post('/tutor-signup', async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const { first_name, last_name, email, password, subject_chosen } = req.body;
+        const { name, email, password, education_level, subject, experience_years, hourly_rate, teaching_mode, location, profile_picture } = req.body;
 
-        if (!first_name || !last_name || !email || !password || !subject_chosen) {
+        if (!name || !email || !password || !education_level || !subject || experience_years === undefined || !hourly_rate || !teaching_mode || !location) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
@@ -239,22 +238,21 @@ router.post('/tutor-signup', async (req, res) => {
         }
 
         const hashed = await bcrypt.hash(password, 10);
-        const fullName = `${first_name} ${last_name}`.trim();
 
         const userRes = await client.query(
             `INSERT INTO users (full_name, email, password, role)
              VALUES ($1, $2, $3, 'tutor') RETURNING user_id, full_name, email, role, created_at`,
-            [fullName, email, hashed]
+            [name, email, hashed]
         );
 
         const user = userRes.rows[0];
 
-        // Ensure tutor columns exist; insert with minimal data
+        // Insert tutor with proper schema
         const tutorRes = await client.query(
-            `INSERT INTO tutors (user_id, bio, experience, hourly_rate, preferred_mode, verified, availability, profile_picture, first_name, last_name, subject_chosen)
-             VALUES ($1, NULL, NULL, NULL, NULL, FALSE, NULL, NULL, $2, $3, $4)
-             RETURNING tutor_id, user_id, verified, subject_chosen, first_name, last_name`,
-            [user.user_id, first_name, last_name, subject_chosen]
+            `INSERT INTO tutors (user_id, name, education_level, subject, experience_years, hourly_rate, teaching_mode, location, profile_picture, verification_status, is_available)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'pending', true)
+             RETURNING tutor_id, user_id, name, education_level, subject, experience_years, hourly_rate, teaching_mode, location, verification_status, is_available`,
+            [user.user_id, name, education_level, subject, experience_years, hourly_rate, teaching_mode, location, profile_picture || null]
         );
 
         await client.query('COMMIT');
@@ -263,7 +261,7 @@ router.post('/tutor-signup', async (req, res) => {
         issueSession(res, token);
 
         res.status(201).json({
-            message: 'Tutor registered. Proceed to qualification test.',
+            message: 'Tutor registered successfully. You can now log in.',
             token,
             user,
             tutor: tutorRes.rows[0]
@@ -271,7 +269,7 @@ router.post('/tutor-signup', async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Tutor signup error:', error);
-        res.status(500).json({ error: 'Tutor signup failed' });
+        res.status(500).json({ error: 'Tutor signup failed', details: error.message });
     } finally {
         client.release();
     }

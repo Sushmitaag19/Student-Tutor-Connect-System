@@ -66,7 +66,7 @@
 	}
 
 	// --- Session/Authentication helpers (cookie-based) ---
-	const API_BASE_URL = 'http://localhost:5000/api';
+    const API_BASE_URL = 'http://localhost:5000/api';
 	async function fetchMe() {
 		try {
 			const res = await fetch(API_BASE_URL + '/auth/me', { credentials: 'include' });
@@ -92,7 +92,22 @@
 			'<div class="nav"><ul class="list">' +
 				'<li><a href="student-dashboard.html" class="nb">Dashboard</a></li>' +
 				'<li><a href="tutor.html" class="nb">Find Tutors</a></li>' +
+				'<li><a href="verified-tutors.html" class="nb">Verified Tutors</a></li>' +
 				'<li><a href="profile.html" class="nb">Profile</a></li>' +
+				'<li><button id="logout-btn" type="button">Log Out</button></li>' +
+			'</ul></div>';
+		return nav;
+	}
+
+	function buildTutorNavbar() {
+		const nav = document.createElement('nav');
+		nav.className = 'navbar';
+		nav.innerHTML = '' +
+			'<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>' +
+			'<div class="nav"><ul class="list">' +
+				'<li><a href="tutor-dashboard.html" class="nb">Dashboard</a></li>' +
+				'<li><a href="students-list.html" class="nb">Find Students</a></li>' +
+				'<li><a href="aboutus.html" class="nb">About us</a></li>' +
 				'<li><button id="logout-btn" type="button">Log Out</button></li>' +
 			'</ul></div>';
 		return nav;
@@ -100,12 +115,19 @@
 
 	async function ensureNavbar() {
 		const user = await fetchMe();
-		if (!user || user.role !== 'student') return; // show public navbar if not student
+		if (!user) return; // show public navbar if not logged in
 		const current = document.querySelector('nav.navbar');
-		const studentNav = buildStudentNavbar();
-		if (current && current.parentNode) current.parentNode.replaceChild(studentNav, current);
-		const btn = document.getElementById('logout-btn');
-		if (btn) btn.addEventListener('click', logout);
+		let navbar = null;
+		if (user.role === 'student') {
+			navbar = buildStudentNavbar();
+		} else if (user.role === 'tutor') {
+			navbar = buildTutorNavbar();
+		}
+		if (navbar && current && current.parentNode) {
+			current.parentNode.replaceChild(navbar, current);
+			const btn = document.getElementById('logout-btn');
+			if (btn) btn.addEventListener('click', logout);
+		}
 	}
 
 	async function protectStudentPage() {

@@ -192,5 +192,47 @@ router.get('/profile/:user_id', async (req, res) => {
     }
 });
 
+/**
+ * @route   GET /api/student/all
+ * @desc    Get all students
+ * @access  Public
+ */
+router.get('/all', async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        const result = await client.query(
+            `SELECT 
+                s.student_id,
+                s.user_id,
+                u.full_name,
+                u.email,
+                s.academic_level,
+                s.subjects,
+                s.preferred_mode,
+                s.budget,
+                s.availability,
+                u.created_at
+            FROM students s
+            JOIN users u ON s.user_id = u.user_id
+            ORDER BY s.student_id DESC`
+        );
+
+        res.json({
+            students: result.rows,
+            count: result.rows.length
+        });
+
+    } catch (error) {
+        console.error('Error fetching students:', error);
+        res.status(500).json({
+            error: 'Failed to fetch students',
+            message: 'An error occurred while fetching students'
+        });
+    } finally {
+        client.release();
+    }
+});
+
 module.exports = router;
 

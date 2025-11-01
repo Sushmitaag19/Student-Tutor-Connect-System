@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<title>Students List</title>
+	<style>
+		.container {
+			max-width: 1400px;
+			margin: 100px auto 40px;
+			padding: 20px;
+		}
+		.header {
+			background: white;
+			padding: 30px;
+			border-radius: 12px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+			margin-bottom: 30px;
+		}
+		.header h1 {
+			color: var(--logo);
+			margin-bottom: 10px;
+		}
+		.header p {
+			color: #666;
+			font-size: 1.1rem;
+		}
+		.students-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+			gap: 25px;
+		}
+		.student-card {
+			background: white;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			overflow: hidden;
+			transition: all 0.3s ease;
+		}
+		.student-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+		}
+		.student-header {
+			background: linear-gradient(135deg, #6c757d 0%, #4a90e2 100%);
+			padding: 20px;
+			color: white;
+		}
+		.student-header h3 {
+			margin: 0 0 5px 0;
+			font-size: 1.3rem;
+		}
+		.student-header .email {
+			opacity: 0.9;
+			font-size: 0.9rem;
+		}
+		.student-body {
+			padding: 20px;
+		}
+		.info-row {
+			display: flex;
+			justify-content: space-between;
+			padding: 12px 0;
+			border-bottom: 1px solid #f0f0f0;
+		}
+		.info-row:last-child {
+			border-bottom: none;
+		}
+		.info-label {
+			color: #888;
+			font-weight: 600;
+			font-size: 0.95rem;
+		}
+		.info-value {
+			color: #333;
+			font-weight: 500;
+			text-align: right;
+			max-width: 60%;
+			word-wrap: break-word;
+		}
+		.budget-highlight {
+			color: #28a745;
+			font-size: 1.1rem;
+			font-weight: bold;
+		}
+		.subjects-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 5px;
+		}
+		.subject-tag {
+			background: var(--logo);
+			color: white;
+			padding: 4px 10px;
+			border-radius: 12px;
+			font-size: 0.85rem;
+			font-weight: 500;
+		}
+		.loading {
+			text-align: center;
+			padding: 40px;
+			color: #666;
+		}
+		.empty-state {
+			text-align: center;
+			padding: 60px 20px;
+			background: white;
+			border-radius: 12px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+		}
+		.empty-state h3 {
+			color: #666;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar">
+		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<div class="nav">
+			<ul class="list">
+				<li><a href="aboutus.html" class="nb">About us</a></li>
+				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+				<li><a href="login.html"><button type="button">Login</button></a></li>
+				<li><a href="register.html"><button type="button">Sign up</button></a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="header">
+			<h1>Registered Students</h1>
+			<p>All students who have signed up on our platform</p>
+		</div>
+
+		<div id="students-container">
+			<div class="loading">Loading students...</div>
+		</div>
+	</div>
+
+	<script>
+		(async function() {
+			const API_BASE_URL = 'http://localhost:5000/api';
+			const container = document.getElementById('students-container');
+
+			try {
+				console.log('Fetching students from:', `${API_BASE_URL}/student/all`);
+				
+				const response = await fetch(`${API_BASE_URL}/student/all`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					},
+					credentials: 'include'
+				});
+
+				console.log('Response status:', response.status, response.statusText);
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					console.error('Server error response:', errorText);
+					
+					let errorMessage = `Server error: ${response.status}`;
+					if (errorText.includes('<!DOCTYPE')) {
+						errorMessage = 'Server returned HTML instead of JSON. Check if backend is running correctly.';
+					} else if (errorText) {
+						try {
+							const errorJson = JSON.parse(errorText);
+							errorMessage = errorJson.error || errorJson.message || errorMessage;
+						} catch (e) {
+							errorMessage = errorText.substring(0, 100) || errorMessage;
+						}
+					}
+					
+					container.innerHTML = `
+						<div class="empty-state">
+							<h3>Error loading students</h3>
+							<p>${errorMessage}</p>
+						</div>
+					`;
+					return;
+				}
+
+				const contentType = response.headers.get('content-type');
+				if (!contentType || !contentType.includes('application/json')) {
+					const text = await response.text();
+					console.error('Expected JSON but got:', text.substring(0, 200));
+					container.innerHTML = `
+						<div class="empty-state">
+							<h3>Error loading students</h3>
+							<p>Server returned non-JSON response. Check backend API.</p>
+						</div>
+					`;
+					return;
+				}
+
+				const data = await response.json();
+				console.log('Received data:', data);
+
+				const students = data.students || [];
+
+				if (students.length === 0) {
+					container.innerHTML = `
+						<div class="empty-state">
+							<h3>No students registered yet</h3>
+							<p>Students will appear here once they sign up</p>
+						</div>
+					`;
+					return;
+				}
+
+				displayStudents(students);
+
+			} catch (error) {
+				console.error('Error fetching students:', error);
+				
+				let errorMessage = 'Network error. Please check your connection and ensure the server is running.';
+				
+				if (error.message.includes('Failed to fetch')) {
+					errorMessage = 'Cannot connect to server. Make sure your backend is running on localhost:5000.';
+				} else if (error.message.includes('HTML instead of JSON')) {
+					errorMessage = 'Server returned an error page. Check if the API endpoint is correct.';
+				} else {
+					errorMessage = error.message;
+				}
+
+				container.innerHTML = `
+					<div class="empty-state">
+						<h3>Error loading students</h3>
+						<p>${errorMessage}</p>
+						<p style="margin-top: 20px; font-size: 0.9rem; color: #888;">
+							Troubleshooting tips:<br>
+							• Ensure backend server is running<br>
+							• Check console for detailed errors<br>
+							• Verify API endpoint URL
+						</p>
+					</div>
+				`;
+			}
+		})();
+
+		function displayStudents(students) {
+			const container = document.getElementById('students-container');
+			container.innerHTML = '<div class="students-grid" id="students-grid"></div>';
+			const grid = document.getElementById('students-grid');
+
+			students.forEach(student => {
+				const card = document.createElement('div');
+				card.className = 'student-card';
+				
+				let subjectsDisplay = 'N/A';
+				if (student.subjects) {
+					if (typeof student.subjects === 'string') {
+						subjectsDisplay = student.subjects;
+					} else if (Array.isArray(student.subjects)) {
+						subjectsDisplay = student.subjects.join(', ');
+					}
+				}
+
+				card.innerHTML = `
+					<div class="student-header">
+						<h3>${student.full_name || 'Unknown'}</h3>
+						<div class="email">${student.email || 'N/A'}</div>
+					</div>
+					<div class="student-body">
+						<div class="info-row">
+							<span class="info-label">Academic Level:</span>
+							<span class="info-value">${student.academic_level || 'N/A'}</span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Preferred Subjects:</span>
+							<span class="info-value">
+								${subjectsDisplay !== 'N/A' ? `<span class="subject-tag">${subjectsDisplay}</span>` : 'N/A'}
+							</span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Preferred Mode:</span>
+							<span class="info-value">${student.preferred_mode || 'N/A'}</span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Budget:</span>
+							<span class="info-value"><span class="budget-highlight">NPR ${student.budget || 'N/A'}</span></span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Availability:</span>
+							<span class="info-value">${student.availability || 'N/A'}</span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">Joined:</span>
+							<span class="info-value">${student.created_at ? new Date(student.created_at).toLocaleDateString() : 'N/A'}</span>
+						</div>
+					</div>
+				`;
+				
+				grid.appendChild(card);
+			});
+		}
+	</script>
+</body>
+</html>
+

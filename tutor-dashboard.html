@@ -5,21 +5,219 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="./assets/style.css">
 	<title>Tutor Dashboard</title>
+	<style>
+		.dashboard-container {
+			max-width: 1200px;
+			margin: 120px auto 40px;
+			padding: 20px;
+		}
+		.dashboard-header {
+			background: white;
+			padding: 30px;
+			border-radius: 12px;
+			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+			margin-bottom: 30px;
+		}
+		.profile-section {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 20px;
+			margin-top: 20px;
+		}
+		.profile-card {
+			background: #f8f9fa;
+			padding: 20px;
+			border-radius: 8px;
+		}
+		.profile-card h3 {
+			color: var(--logo);
+			margin-bottom: 15px;
+		}
+		.info-item {
+			display: flex;
+			justify-content: space-between;
+			padding: 10px 0;
+			border-bottom: 1px solid #e0e0e0;
+		}
+		.info-label {
+			font-weight: 600;
+			color: #666;
+		}
+		.info-value {
+			color: #333;
+		}
+		.status-badge {
+			display: inline-block;
+			padding: 5px 15px;
+			border-radius: 20px;
+			font-size: 0.9rem;
+			font-weight: 600;
+		}
+		.status-pending {
+			background: #fff3cd;
+			color: #856404;
+		}
+		.status-approved {
+			background: #d1e7dd;
+			color: #0f5132;
+		}
+		.status-rejected {
+			background: #f8d7da;
+			color: #842029;
+		}
+		.logout-btn {
+			background: #dc3545;
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 6px;
+			cursor: pointer;
+			font-size: 1rem;
+		}
+		.logout-btn:hover {
+			background: #c82333;
+		}
+	</style>
 </head>
 <body>
 	<nav class="navbar">
-		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<a href="#" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
 		<div class="nav">
 			<ul class="list">
-				<li>Welcome, <span>Tutor</span></li>
-				<li>Pending onboarding</li>
+				<li id="welcome-msg">Welcome, Tutor</li>
+				<li><a href="./students-list.html">Find students</a></li>
+				<li><button class="logout-btn" id="logout-btn">Logout</button></li>
 			</ul>
 		</div>
 	</nav>
 
-	<div class="features" style="max-width: 960px; margin: 24px auto;">
-		<h2>Your Tutor Dashboard</h2>
-		<p>Manage your profile and incoming student requests here. (Stub)</p>
+	<div class="dashboard-container">
+		<div class="dashboard-header">
+			<h2>Your Tutor Dashboard</h2>
+			<div class="profile-section">
+				<div class="profile-card">
+					<h3>Personal Information</h3>
+					<div class="info-item">
+						<span class="info-label">Name:</span>
+						<span class="info-value" id="tutor-name">-</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Email:</span>
+						<span class="info-value" id="tutor-email">-</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Subject:</span>
+						<span class="info-value" id="tutor-subject">-</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Education Level:</span>
+						<span class="info-value" id="tutor-education">-</span>
+					</div>
+				</div>
+				<div class="profile-card">
+					<h3>Professional Details</h3>
+					<div class="info-item">
+						<span class="info-label">Experience:</span>
+						<span class="info-value" id="tutor-experience">-</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Hourly Rate:</span>
+						<span class="info-value" id="tutor-rate">-</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Teaching Mode:</span>
+						<span class="info-value" id="tutor-mode">-</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Location:</span>
+						<span class="info-value" id="tutor-location">-</span>
+					</div>
+				</div>
+				<div class="profile-card">
+					<h3>Account Status</h3>
+					<div class="info-item">
+						<span class="info-label">Verification:</span>
+						<span class="info-value">
+							<span class="status-badge" id="verification-status">-</span>
+						</span>
+					</div>
+					<div class="info-item">
+						<span class="info-label">Availability:</span>
+						<span class="info-value" id="tutor-availability">-</span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
+
+	<script>
+		(async function() {
+			const API_BASE_URL = 'http://localhost:5000/api';
+			const token = localStorage.getItem('authToken');
+			
+			if (!token) {
+				alert('You must be logged in to view the dashboard.');
+				window.location.href = 'login.html';
+				return;
+			}
+
+			// Fetch tutor profile
+			try {
+				const response = await fetch(`${API_BASE_URL}/tutor/me`, {
+					headers: {
+						'Authorization': `Bearer ${token}`
+					},
+					credentials: 'include'
+				});
+
+				if (!response.ok) {
+					if (response.status === 401) {
+						alert('Session expired. Please log in again.');
+						localStorage.clear();
+						window.location.href = 'login.html';
+						return;
+					}
+					throw new Error('Failed to fetch tutor profile');
+				}
+
+				const data = await response.json();
+				const tutor = data.tutor;
+
+				// Populate dashboard
+				document.getElementById('welcome-msg').textContent = `Welcome, ${tutor.name}`;
+				document.getElementById('tutor-name').textContent = tutor.name || '-';
+				document.getElementById('tutor-email').textContent = tutor.email || '-';
+				document.getElementById('tutor-subject').textContent = tutor.subject || '-';
+				document.getElementById('tutor-education').textContent = tutor.education_level || '-';
+				document.getElementById('tutor-experience').textContent = tutor.experience_years ? `${tutor.experience_years} years` : '-';
+				document.getElementById('tutor-rate').textContent = tutor.hourly_rate ? `NPR ${tutor.hourly_rate}/hr` : '-';
+				document.getElementById('tutor-mode').textContent = tutor.teaching_mode || '-';
+				document.getElementById('tutor-location').textContent = tutor.location || '-';
+				document.getElementById('tutor-availability').textContent = tutor.is_available ? 'Available' : 'Not Available';
+				
+				const statusEl = document.getElementById('verification-status');
+				statusEl.textContent = tutor.verification_status || 'pending';
+				statusEl.className = 'status-badge status-' + (tutor.verification_status || 'pending');
+
+			} catch (error) {
+				console.error('Error fetching tutor profile:', error);
+				alert('Failed to load tutor profile. Please try again.');
+			}
+
+			// Logout handler
+			document.getElementById('logout-btn').addEventListener('click', async function() {
+				try {
+					await fetch(`${API_BASE_URL}/auth/logout`, {
+						method: 'POST',
+						credentials: 'include'
+					});
+				} catch (err) {
+					console.error('Logout error:', err);
+				}
+				localStorage.clear();
+				window.location.href = 'login.html';
+			});
+		})();
+	</script>
 </body>
-</html> 
+</html>

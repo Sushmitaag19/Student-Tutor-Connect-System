@@ -179,7 +179,7 @@ router.get('/quiz/:subject', auth, async (req, res) => {
 
 /**
  * @route   POST /api/test/quiz/submit
- * @desc    Grade quiz and update tutor verification if passed (>= 80%)
+ * @desc    Grade quiz and update tutor verification if passed (>= 11 correct out of 20)
  * @access  Private (JWT)
  */
 router.post('/quiz/submit', auth, async (req, res) => {
@@ -200,21 +200,20 @@ router.post('/quiz/submit', auth, async (req, res) => {
         for (let i = 0; i < Math.min(total, answers.length); i++) {
             if (answers[i] === questions[i].c) score++;
         }
-        const percentage = Math.round((score / total) * 100);
-        const passed = percentage >= 80;
+        const passed = score >= 11;
 
         if (passed) {
-            // update tutors.verified = true and set subject_chosen if empty
+            // update tutors verification_status to 'approved'
             await client.query(
                 `UPDATE tutors t
-                 SET verified = TRUE, subject_chosen = COALESCE(subject_chosen, $2)
+                 SET verification_status = 'approved', subject = COALESCE(subject, $2)
                  FROM users u
                  WHERE t.user_id = u.user_id AND u.user_id = $1`,
                 [req.user.user_id, subject]
             );
         }
 
-        res.json({ subject, score, total, percentage, passed });
+        res.json({ subject, score, total, passed });
     } catch (err) {
         console.error('Quiz submit error:', err);
         res.status(500).json({ error: 'Failed to grade quiz' });

@@ -6,27 +6,21 @@
 	<link rel="stylesheet" href="./assets/style.css">
 	<title>Tutor Onboarding</title>
 	<style>
-		.quiz{max-width:860px;margin:40px auto;background:var(--nav);padding:24px;border-radius:16px;box-shadow:0 10px 10px 0 var(--shadow)}
-		.quiz h2{margin-bottom:10px}
-		.timer{font-weight:700;color:var(--accent);margin-bottom:10px}
+		body {
+			padding-top: 40px;
+		}
+		.quiz{max-width:860px;margin:20px auto;background:var(--nav);padding:24px;border-radius:16px;box-shadow:0 10px 10px 0 var(--shadow)}
+		.quiz h2{margin-bottom:10px;color:var(--accent)}
+		.timer{font-weight:700;color:var(--accent);margin-bottom:15px;font-size:1.1rem}
 		.options{display:flex;flex-direction:column;gap:10px;margin:10px 0}
-		.option{background:#fff;border:1px solid var(--accent);border-radius:10px;padding:10px;cursor:pointer}
+		.option{background:#fff;border:2px solid var(--accent);border-radius:10px;padding:10px;cursor:pointer;transition:all 0.3s ease}
+		.option:hover{background:#f0f0f0;transform:translateY(-2px)}
+		.option.selected{background:var(--logo);color:#fff;border-color:var(--logo)}
 		.controls{display:flex;gap:12px;margin-top:10px}
+		#question{font-size:1.2rem;font-weight:600;margin-bottom:15px}
 	</style>
 </head>
 <body>
-	<nav class="navbar">
-		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
-		<div class="nav">
-			<ul class="list">
-				<li><a href="aboutus.html" class="nb">About us</a></li>
-				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
-				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
-				<li><a href="login.html"><button type="button">Login</button></a></li>
-				<li><a href="register.html"><button type="button">Sign up</button></a></li>
-			</ul>
-		</div>
-	</nav>
 
 	<div class="quiz">
 		<h2 id="quiz-title">Subject Quiz</h2>
@@ -58,12 +52,13 @@
 			if (data && Array.isArray(data.questions)) {
 				questions = data.questions;
 				render();
+				startTimer();
 			} else {
 				alert('No quiz available for this subject.');
 			}
 		}).catch(()=> alert('Failed to load quiz.'))
 
-		var idx = 0, score = 0, timer = 60, intervalId = null, selected = null;
+		var idx = 0, score = 0, totalTime = 60, remainingTime = 60, intervalId = null, selected = null;
 
 		function render(){
 			document.getElementById('question').textContent = (idx+1)+'. '+questions[idx].q;
@@ -74,47 +69,58 @@
 				var div = document.createElement('div');
 				div.className = 'option';
 				div.textContent = txt;
-				div.onclick = function(){ selected = i; };
+				div.onclick = function(){ 
+					selected = i;
+					opts.querySelectorAll('.option').forEach(function(opt){ opt.classList.remove('selected'); });
+					
+					div.classList.add('selected');
+				};
 				opts.appendChild(div);
 			});
-			resetTimer();
 		}
 
-		function resetTimer(){
+		function startTimer(){
 			if(intervalId) clearInterval(intervalId);
-			timer = 60;
-			document.getElementById('time').textContent = timer;
 			intervalId = setInterval(function(){
-				timer--; document.getElementById('time').textContent = timer;
-				if(timer<=0){ next(); }
+				remainingTime--; 
+				document.getElementById('time').textContent = remainingTime;
+				if(remainingTime<=0){ 
+					clearInterval(intervalId);
+					finish(); 
+				}
 			},1000);
 		}
 
 		function next(){
-			if(intervalId) clearInterval(intervalId);
-			// server does grading; on client we just track selection index order
 			if (selected != null) { if(!window._answers) window._answers = []; window._answers[idx] = selected; }
 			idx++;
-			if(idx>=questions.length){ finish(); return; }
+			if(idx>=questions.length){ 
+				clearInterval(intervalId);
+				finish(); 
+				return; 
+			}
 			render();
 		}
 
 		function finish(){
+			if(intervalId) clearInterval(intervalId);
 			const answers = (window._answers || []).map(v=> (typeof v==='number'? v : -1));
 			fetch(`${API_BASE_URL}/test/quiz/submit`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
 				body: JSON.stringify({ subject, answers })
 			}).then(r=>r.json()).then(result=>{
-				const msg = result.passed ? 'You passed! Verification granted.' : 'You did not reach 80%. Try again later.';
-				document.querySelector('.quiz').innerHTML = '<h2>Quiz Completed</h2><p>'+msg+'</p><p>Score: '+(result.score||0)+' / '+(result.total||questions.length)+'</p><a href="tutor-dashboard.html"><button class="login">Continue</button></a>';
+				if(result.passed) {
+					document.querySelector('.quiz').innerHTML = '<h2>🎉 Congratulations!</h2><p>You passed the quiz and verification has been granted.</p><p>Score: '+(result.score||0)+' / '+(result.total||questions.length)+'</p><a href="tutor-dashboard.html"><button class="login">Go to Dashboard</button></a>';
+				} else {
+					document.querySelector('.quiz').innerHTML = '<h2>😔 Oops!</h2><p>You scored '+(result.score||0)+' / '+(result.total||questions.length)+'. You need at least 11 correct answers to pass.</p><p>Better luck next time!</p><a href="tutor-dashboard.html"><button class="login">Go to Dashboard</button></a>';
+				}
 			}).catch(()=>{
-				document.querySelector('.quiz').innerHTML = '<h2>Quiz Completed</h2><p>Could not submit results. Please try again.</p>';
+				document.querySelector('.quiz').innerHTML = '<h2>Quiz Completed</h2><p>Could not submit results. Please try again.</p><a href="tutor-dashboard.html"><button class="login">Go to Dashboard</button></a>';
 			});
 		}
 
 		document.getElementById('next').onclick = next;
-		// render will be called once quiz data loads
 	})();
 	</script>
 </body>

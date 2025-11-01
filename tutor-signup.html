@@ -438,7 +438,7 @@
 
 				<div class="form-group">
 					<label for="t-pass">Password:</label>
-					<input type="password" name="password" id="t-pass" required minlength="6">
+					<input type="password" name="password" id="t-pass" required minlength="8">
 					<div class="error" id="err-t-pass"></div>
 				</div>
 
@@ -518,7 +518,6 @@
 		</div>
 	</div>
 
-	<!-- Embedded JavaScript directly in HTML file -->
 	<script>
         ;(() => {
           const API_BASE_URL = 'http://localhost:5000/api';
@@ -566,8 +565,8 @@
 		      setError("err-t-email", "Enter a valid email address.")
 		      ok = false
 		    }
-		    if (pass.length < 6) {
-		      setError("err-t-pass", "Password must be at least 6 characters.")
+		    if (pass.length < 8) {
+		      setError("err-t-pass", "Password must be at least 8 characters with letters and numbers.")
 		      ok = false
 		    }
 		    if (!level) {
@@ -609,13 +608,44 @@
             }
 
             e.preventDefault()
+            
+            // Convert image to base64
+            let profilePictureBase64 = null;
+            if (avatar) {
+              try {
+                profilePictureBase64 = await new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    // Get base64 string (remove data:image/...;base64, prefix if needed)
+                    const base64 = reader.result;
+                    resolve(base64);
+                  };
+                  reader.onerror = reject;
+                  reader.readAsDataURL(avatar);
+                });
+              } catch (imgError) {
+                console.error('Error reading image:', imgError);
+                setError("err-t-avatar", "Failed to read image file.")
+                return;
+              }
+            }
+            
             try {
-              const [first_name, ...rest] = name.split(' ')
-              const last_name = rest.join(' ') || '-'
               const resp = await fetch(`${API_BASE_URL}/auth/tutor-signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ first_name, last_name, email, password: pass, subject_chosen: subject })
+                body: JSON.stringify({ 
+                  name: name,
+                  email: email, 
+                  password: pass, 
+                  education_level: level,
+                  subject: subject,
+                  experience_years: parseInt(exp),
+                  hourly_rate: parseFloat(rate),
+                  teaching_mode: mode,
+                  location: location,
+                  profile_picture: profilePictureBase64
+                })
               })
               const data = await resp.json()
               if (!resp.ok) {
@@ -624,8 +654,10 @@
               }
               localStorage.setItem('authToken', data.token)
               localStorage.setItem('userRole', 'tutor')
-              // redirect to onboarding quiz for subject
-              window.location.href = `tutor-onboarding.html?subject=${encodeURIComponent(subject)}`
+              localStorage.setItem('userData', JSON.stringify(data.user))
+              
+              alert('Registration successful! Please take the qualification quiz to become verified.')
+              window.location.href = 'tutor-onboarding.html?subject=' + encodeURIComponent(subject)
             } catch (err) {
               console.error('Signup error:', err)
               alert('Network error during signup')
