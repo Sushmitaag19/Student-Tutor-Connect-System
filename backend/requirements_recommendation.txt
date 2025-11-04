@@ -1,4 +1,0 @@
-flask==3.0.0
-numpy==1.24.3
-# Optional: flask-cors==4.0.0 (CORS is handled manually in the code)
-

@@ -1,13 +1,9 @@
-"""
-Flask Application for Hybrid Student-Tutor Recommendation System
-"""
 
 from flask import Flask, request, jsonify
 from recommendation_system import get_recommendations, MOCK_STUDENTS, MOCK_TUTORS
 
 app = Flask(__name__)
 
-# Manual CORS handling (if flask-cors is not available)
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -15,27 +11,10 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
     return response
 
-# ============================================================================
-# API ENDPOINTS
-# ============================================================================
 
 @app.route('/api/recommendations', methods=['GET', 'POST'])
 def recommendations():
-    """
-    Get tutor recommendations for a student
-    
-    GET Parameters or POST JSON Body:
-    - subject: Preferred subject (e.g., 'Math', 'Physics', 'English')
-    - mode: Preferred mode (e.g., 'Online', 'Offline', 'Hybrid')
-    - level: Academic level (e.g., 'High School', 'University')
-    - preferred_price_range: Price preference (e.g., 'low', 'medium', 'high')
-    - experience_preference: Experience level preference (e.g., 'beginner', 'intermediate', 'advanced')
-    - student_id: Optional student ID for collaborative filtering
-    - top_k: Optional number of top recommendations to return
-    
-    Returns:
-        JSON response with ranked list of tutor recommendations
-    """
+   
     try:
         # Get parameters from GET or POST
         if request.method == 'POST':
@@ -88,12 +67,7 @@ def recommendations():
 
 @app.route('/api/recommendations/mock-data', methods=['GET'])
 def get_mock_data():
-    """
-    Get mock data for testing
-    
-    Returns:
-        JSON response with mock students and tutors
-    """
+
     return jsonify({
         'success': True,
         'mock_students': MOCK_STUDENTS,
@@ -102,21 +76,12 @@ def get_mock_data():
 
 @app.route('/api/recommendations/health', methods=['GET'])
 def health_check():
-    """
-    Health check endpoint
-    
-    Returns:
-        JSON response indicating service status
-    """
     return jsonify({
         'status': 'healthy',
         'service': 'Recommendation System',
         'version': '1.0.0'
     }), 200
 
-# ============================================================================
-# MAIN
-# ============================================================================
 
 if __name__ == '__main__':
     print("Starting Recommendation System Flask App...")

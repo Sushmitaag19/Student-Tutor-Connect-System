@@ -25,7 +25,6 @@ console.log('Initializing database connection with config:', {
 
 const pool = new Pool(dbConfig);
 
-// Test database connection on startup
 pool.connect()
     .then(client => {
         console.log(' Database connected successfully');

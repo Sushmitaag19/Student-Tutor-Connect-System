@@ -16,16 +16,7 @@ function issueSession(res, token) {
     });
 }
 
-/**
- * @route   POST /api/auth/register
- * @desc    Register a new user
- * @access  Public
- * 
- * Security Features:
- * - Password hashing with bcrypt
- * - Parameterized queries to prevent SQL injection
- * - Input validation
- */
+
 router.post('/register', async (req, res) => {
     const client = await pool.connect();
     
@@ -124,16 +115,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-/**
- * @route   POST /api/auth/login
- * @desc    Authenticate user and return user data
- * @access  Public
- * 
- * Security Features:
- * - Parameterized queries to prevent SQL injection
- * - Secure password comparison using bcrypt
- * - Does not expose whether email exists or not in generic errors
- */
+
 router.post('/login', async (req, res) => {
     const client = await pool.connect();
 

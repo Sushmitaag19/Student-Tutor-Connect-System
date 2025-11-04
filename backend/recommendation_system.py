@@ -1,17 +1,8 @@
-"""
-Hybrid Student-Tutor Recommendation System
-Combines Content-Based Filtering (Logistic Regression) and Collaborative Filtering
-"""
-
 import numpy as np
 import math
 from typing import Dict, List, Tuple, Any
 
-# ============================================================================
-# MOCK DATA
-# ============================================================================
 
-# Mock Student Profile Data
 MOCK_STUDENTS = {
     'student_1': {
         'subject': 'Math',
@@ -142,8 +133,6 @@ MOCK_TUTORS = {
     }
 }
 
-# Mock Student-Tutor Interaction Matrix (ratings/preferences)
-# Format: {student_id: {tutor_id: rating}}
 MOCK_INTERACTIONS = {
     'student_1': {
         'tutor_1': 5.0,  # Highly rated
@@ -169,16 +158,13 @@ MOCK_INTERACTIONS = {
     }
 }
 
-# ============================================================================
-# FEATURE VECTORIZATION
-# ============================================================================
 
 def encode_categorical_feature(value: str, categories: List[str]) -> int:
     """Encode categorical feature to numeric index"""
     try:
         return categories.index(value)
     except ValueError:
-        return 0  # Default to first category if not found
+        return 0  
 
 def normalize_numeric_feature(value: float, min_val: float, max_val: float) -> float:
     """Normalize numeric feature to [0, 1] range"""
@@ -187,16 +173,7 @@ def normalize_numeric_feature(value: float, min_val: float, max_val: float) -> f
     return (value - min_val) / (max_val - min_val)
 
 def vectorize_student(student_prefs: Dict[str, Any]) -> np.ndarray:
-    """
-    Convert student preferences to numeric feature vector
-    
-    Features:
-    - subject (encoded: Math=0, Physics=1, English=2, Computer Science=3, etc.)
-    - mode (encoded: Online=0, Offline=1, Hybrid=2)
-    - level (encoded: High School=0, University=1)
-    - price_range (encoded: low=0, medium=1, high=2)
-    - experience_preference (encoded: beginner=0, intermediate=1, advanced=2)
-    """
+   
     subjects = ['Math', 'Physics', 'English', 'Computer Science', 'Chemistry', 'Biology', 'Nepali']
     modes = ['Online', 'Offline', 'Hybrid']
     levels = ['High School', 'University', 'Middle School', 'Primary']
@@ -218,17 +195,7 @@ def vectorize_student(student_prefs: Dict[str, Any]) -> np.ndarray:
     return vector
 
 def vectorize_tutor(tutor_profile: Dict[str, Any], student_prefs: Dict[str, Any]) -> np.ndarray:
-    """
-    Convert tutor profile to numeric feature vector relative to student preferences
     
-    Features:
-    - subject_match (1 if matches, 0 otherwise)
-    - mode_match (1 if matches, 0 otherwise)
-    - experience_years (normalized)
-    - hourly_rate (normalized based on student's price preference)
-    - education_level (encoded)
-    - rating (normalized)
-    """
     subjects = ['Math', 'Physics', 'English', 'Computer Science', 'Chemistry', 'Biology', 'Nepali']
     modes = ['Online', 'Offline', 'Hybrid']
     education_levels = ['Bachelors', 'Masters', 'PhD']

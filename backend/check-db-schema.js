@@ -17,10 +17,10 @@ async function checkSchema() {
         `);
         
         if (result.rows.length > 0) {
-            console.log('✅ subjects column exists in students table');
+            console.log('subjects column exists in students table');
             console.log('   Type:', result.rows[0].data_type);
         } else {
-            console.log('❌ subjects column does NOT exist in students table');
+            console.log(' subjects column does NOT exist in students table');
             console.log('   Please run: backend/migration_add_subjects_column.sql');
             
             // Show all columns in students table
@@ -46,14 +46,14 @@ async function checkSchema() {
         `);
         
         if (!tableCheck.rows[0].exists) {
-            console.log('\n❌ students table does not exist!');
+            console.log('\n students table does not exist!');
             console.log('   Please run: backend/database_setup.sql');
         } else {
-            console.log('\n✅ students table exists');
+            console.log('\n students table exists');
         }
         
     } catch (error) {
-        console.error('❌ Error checking schema:', error.message);
+        console.error(' Error checking schema:', error.message);
         console.error('   Make sure your database is running and connected');
     } finally {
         client.release();
