@@ -132,6 +132,21 @@
 						<span class="info-label">Location:</span>
 						<span class="info-value" id="tutor-location">-</span>
 					</div>
+					<button id="edit-tutor-profile" class="logout-btn" style="background:#0d6efd;margin-top:10px;">Edit Profile</button>
+				</div>
+				<div class="profile-card" id="tutor-edit-card" style="display:none;background:#fff;">
+					<h3>Edit Profile</h3>
+					<form id="tutorEditForm">
+						<label>Subject <input type="text" id="edit-subject"></label><br>
+						<label>Education Level <input type="text" id="edit-education"></label><br>
+						<label>Experience (years) <input type="number" id="edit-experience" min="0"></label><br>
+						<label>Hourly Rate <input type="number" id="edit-rate" min="0" step="0.01"></label><br>
+						<label>Teaching Mode <input type="text" id="edit-mode"></label><br>
+						<label>Location <input type="text" id="edit-location"></label><br>
+						<label>Available <input type="checkbox" id="edit-available"></label><br>
+						<button type="submit" class="logout-btn" style="background:#198754">Save</button>
+						<button type="button" id="cancel-edit" class="logout-btn" style="background:#6c757d">Cancel</button>
+					</form>
 				</div>
 				<div class="profile-card">
 					<h3>Account Status</h3>
@@ -200,6 +215,15 @@
 				document.getElementById('tutor-location').textContent = tutor.location || '-';
 				document.getElementById('tutor-availability').textContent = tutor.is_available ? 'Available' : 'Not Available';
 				
+				// prefill edit form
+				document.getElementById('edit-subject').value = tutor.subject || '';
+				document.getElementById('edit-education').value = tutor.education_level || '';
+				document.getElementById('edit-experience').value = tutor.experience_years || '';
+				document.getElementById('edit-rate').value = tutor.hourly_rate || '';
+				document.getElementById('edit-mode').value = tutor.teaching_mode || '';
+				document.getElementById('edit-location').value = tutor.location || '';
+				document.getElementById('edit-available').checked = !!tutor.is_available;
+				
 				const statusEl = document.getElementById('verification-status');
 				statusEl.textContent = tutor.verification_status || 'pending';
 				statusEl.className = 'status-badge status-' + (tutor.verification_status || 'pending');
@@ -208,6 +232,41 @@
 				console.error('Error fetching tutor profile:', error);
 				alert('Failed to load tutor profile. Please try again.');
 			}
+
+			// edit interactions
+			document.getElementById('edit-tutor-profile').addEventListener('click', () => {
+				document.getElementById('tutor-edit-card').style.display = 'block';
+			});
+			document.getElementById('cancel-edit').addEventListener('click', () => {
+				document.getElementById('tutor-edit-card').style.display = 'none';
+			});
+			document.getElementById('tutorEditForm').addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const payload = {
+					subject: document.getElementById('edit-subject').value || undefined,
+					education_level: document.getElementById('edit-education').value || undefined,
+					experience_years: document.getElementById('edit-experience').value ? parseInt(document.getElementById('edit-experience').value,10) : undefined,
+					hourly_rate: document.getElementById('edit-rate').value ? parseFloat(document.getElementById('edit-rate').value) : undefined,
+					teaching_mode: document.getElementById('edit-mode').value || undefined,
+					location: document.getElementById('edit-location').value || undefined,
+					is_available: document.getElementById('edit-available').checked
+				};
+				try {
+					const res = await fetch(`${API_BASE_URL}/tutor/me`, {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+						credentials: 'include',
+						body: JSON.stringify(payload)
+					});
+					if (!res.ok) throw new Error('Update failed');
+					const data = await res.json();
+					alert('Profile updated');
+					location.reload();
+				} catch (err) {
+					console.error('Update tutor profile error:', err);
+					alert('Failed to update profile');
+				}
+			});
 
 			document.getElementById('logout-btn').addEventListener('click', async function() {
 				try {

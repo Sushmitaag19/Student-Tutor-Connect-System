@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<title>Student Dashboard</title>
+	<style>
+		.dashboard-container {
+			padding-top: 100px;
+			min-height: 100vh;
+			background-color: var(--body);
+		}
+
+		.dashboard-nav {
+			background: linear-gradient(135deg, var(--slider) 0%, var(--accent) 100%);
+			padding: 1.5rem 2rem;
+			color: white;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+		}
+
+		.dashboard-nav h2 {
+			margin: 0;
+			font-size: 1.5rem;
+			font-weight: 600;
+		}
+
+		.dashboard-nav .user-info {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.dashboard-nav .username {
+			font-size: 1.1rem;
+			font-weight: 500;
+		}
+
+		.dashboard-nav ul {
+			list-style: none;
+			display: flex;
+			gap: 2rem;
+			align-items: center;
+			margin: 0;
+			padding: 0;
+		}
+
+		.dashboard-nav ul li a {
+			color: white;
+			text-decoration: none;
+			font-size: 1.1rem;
+			padding: 0.5rem 1rem;
+			border-radius: 6px;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.dashboard-nav ul li a:hover {
+			background-color: rgba(255,255,255,0.2);
+			transform: translateY(-2px);
+		}
+
+		.sign-out-btn {
+			background-color: #dc3545;
+			padding: 0.6rem 1.2rem;
+			border-radius: 6px;
+			border: none;
+			color: white;
+			cursor: pointer;
+			font-size: 1rem;
+			transition: all 0.3s ease;
+		}
+
+		.sign-out-btn:hover {
+			background-color: #c82333;
+			transform: translateY(-2px);
+		}
+
+		.dashboard-content {
+			padding: 2rem;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.welcome-section {
+			background: white;
+			padding: 2rem;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			margin-bottom: 2rem;
+		}
+
+		.welcome-section h1 {
+			color: var(--accent);
+			font-size: 2rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.welcome-section p {
+			color: #666;
+			font-size: 1.1rem;
+		}
+
+		.section {
+			background: white;
+			padding: 2rem;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			margin-bottom: 2rem;
+		}
+
+		.section h2 {
+			color: var(--slider);
+			font-size: 1.8rem;
+			margin-bottom: 1.5rem;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.notification-item {
+			padding: 1rem;
+			border-left: 4px solid var(--logo);
+			margin-bottom: 1rem;
+			background-color: #f8f9fa;
+			border-radius: 6px;
+			transition: all 0.3s ease;
+		}
+
+		.notification-item:hover {
+			background-color: #e9ecef;
+			transform: translateX(5px);
+		}
+
+		.notification-item.unread {
+			background-color: #fff3cd;
+			border-left-color: #ffc107;
+		}
+
+		.notification-item h3 {
+			color: var(--slider);
+			font-size: 1.2rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.notification-item p {
+			color: #666;
+			margin: 0;
+		}
+
+		.notification-item .timestamp {
+			font-size: 0.85rem;
+			color: #999;
+			margin-top: 0.5rem;
+		}
+
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 1.5rem;
+			margin-top: 1rem;
+		}
+
+		.stat-card {
+			background: linear-gradient(135deg, var(--logo) 0%, #ffd700 100%);
+			padding: 1.5rem;
+			border-radius: 12px;
+			color: #333;
+			text-align: center;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			transition: transform 0.3s ease;
+		}
+
+		.stat-card:hover {
+			transform: translateY(-5px);
+		}
+
+		.stat-card h3 {
+			font-size: 2rem;
+			margin: 0;
+			font-weight: bold;
+		}
+
+		.stat-card p {
+			margin: 0.5rem 0 0 0;
+			font-size: 1rem;
+			opacity: 0.9;
+		}
+
+		.quick-actions {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 1rem;
+			margin-top: 1rem;
+		}
+
+		.action-btn {
+			padding: 1.5rem;
+			background-color: var(--slider);
+			color: white;
+			text-align: center;
+			text-decoration: none;
+			border-radius: 12px;
+			transition: all 0.3s ease;
+			font-size: 1.1rem;
+			font-weight: 600;
+		}
+
+		.action-btn:hover {
+			background-color: var(--accent);
+			transform: translateY(-3px);
+			box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+		}
+
+		@media (max-width: 768px) {
+			.dashboard-nav {
+				flex-direction: column;
+				gap: 1rem;
+			}
+
+			.dashboard-nav ul {
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+
+			.dashboard-content {
+				padding: 1rem;
+			}
+
+			.welcome-section h1 {
+				font-size: 1.5rem;
+			}
+
+			.stats-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="dashboard-nav">
+		<a href="#" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+        
+		<div class="user-info">
+			<span class="username" id="displayName">Student</span>
+			<ul>
+				<li><a href="./verified-tutors.html"><i class="fas fa-search"></i> Find Tutor</a></li>
+				<li><a href="#notifications" onclick="showNotifications()"><i class="fas fa-bell"></i> Notifications</a></li>
+				<li><button class="sign-out-btn" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button></li>
+			</ul>
+		</div>
+	</div>
+<div class="slogan">
+        <h1>StudentTutor Connect System is on the mission to offer great tutoring offers in <span>affordable price to all</span>.</h1>
+    </div>
+
+    <div class="about">
+         <h1>Our Features</h1>
+
+        <div class="about1">
+            <div class="desc">
+                <h2>Our Misson</h2>
+                <p>Student Tutor Connect System aims to provide a great tutoring session for both tutors and students. <br> <br>
+                The general tutoring sessions are long terms and so many times unproductive leading to major loss of time, efforts and of course money.
+                Studnt Tutor Connect System aims to fill the gap between students and tutors providing complete control over time, schedule and course.
+                Students can browse through multiple choices of tutors and select the ones that meet their requirements in terms of cost, course, time, mode of learning and location. <br> <br>
+                We’re building a future where access to high quality learning is stress-free for those who can afford it, and funded directly through schools for those who can't. Online tuition, delivering high quality learning in a safe, convenient, and affordable way.
+                </p>
+            </div>
+            <div class="img-container"><img src="./assets/images/a1.png" alt="Learning" height="400px" width="auto"></div>
+        </div>
+
+         <div class="about1">
+             <div class="img-container2">
+                <img src="./assets/images/s7.png" alt="Learning" height="400px" width="auto">
+            </div>
+            <div class="desc">
+                <h2>Our Tutors</h2>
+                <p>Our handpicked tutors have the subject expertise to explain tricky concepts. But the biggest thing Student Tutor Connect System tutors have is the relationship and rapport they build with students. All our tutors are current or recent undergraduates at British universities, and come from all walks of life. So they don’t just know pythagorean triangles; they know the exams they’ll come up in. And perhaps most importantly, they know how it feels to take them. They’re more than tutors; they’re mentors. </p>
+            </div>
+        </div>
+
+        
+        <div class="about1">
+            <div class="desc">
+                <h2>What is it like working with us ?</h2>
+                <p>
+ Well, people are at the heart of everything we do. There are so many different career paths at Student Tutor Connect System, from Software Engineer to Customer Operations. From Marketing to the Data team.
+  But we don’t just get our heads down and do our own jobs. We all go out of our way to support each other, and solve problems together. 
+  Expectations around high performance are clear and we help each other to do our best work. 
+  We don’t think a great company culture is just free yoga sessions and summer socials (although we do that stuff too). We think it’s about creating a supportive environment where everyone can perform at their best, and be their authentic self, every day. Whoever you are.
+
+                </p>
+            </div>
+            <div class="img-container3"><img src="./assets/images/a5.png" alt="Learning" height="350px" width="350px"></div>
+        </div>
+
+        </div>
+
+        <div class="offers">
+            <h1>What Student Tutor Connect System offers </h1>
+            <p>"Service so good, it speaks for itself."</p>
+
+            <div class="oDesc">
+                <div class="o1">
+                    <img src="./assets/images/o1.png" alt="time" height="100px">
+                    <h2>Flexibility</h2>
+                    <p>You have full control and felxibility over your schedule both as a teacher as well as student and schedule your session as per your availability. </p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o2.png" alt="reward" height="100px">
+                    <h2>Rewards</h2>
+                    <p>Build or help build educational journey and advance towards the betterment in academic or career.</p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o3.png" alt="time" height="100px">
+                    <h2>Constant growth</h2>
+                    <p>Student Tutor Connect System drives you to evolve constantly and regularly through enhanced communication, problem solving and interpersonal skills. </p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o4.png" alt="time" height="100px">
+                    <h2>Online or offline</h2>
+                    <p>Teach and learn from the comfort of your home, in your local community or online and tailor the teaching and learning to your preferences and style. </p>
+                </div>
+            </div>
+
+             <div class="oDesc">
+                <div class="o1">
+                    <img src="./assets/images/o5.png" alt="time" height="100px">
+                    <h2>Set your rates</h2>
+                    <p>You’re in control. Decide how much you want to charge or pay based on your experience, subject, and time. No middleman cutting into your earnings.</p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o6.png" alt="reward" height="100px">
+                    <h2>1000+ subjects</h2>
+                    <p>From academic tutoring to creative skills, test prep, language, coding, business, music, and more; there's a place for every passion and expertise.</p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o7.png" alt="time" height="100px">
+                    <h2>Local and global reach</h2>
+                    <p>Get discovered by students in your area and around the world. Expand your impact without limits, all from the comfort of your home without any limitations. </p>
+                </div>
+
+                 <div class="o1">
+                    <img src="./assets/images/o8.png" alt="time" height="100px">
+                    <h2>Create your own course</h2>
+                    <p>Turn your knowledge into a structured course. Share it, sell it, or use it to attract more students. Build your brand and teach on your terms without limits. </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="feedback">
+            <h2 style="margin-bottom:8px; text-align: center; font-size: 2rem; color: var(--accent);">Share your feedback</h2>
+            <div class="wrap">
+                <form id="feedbackForm" novalidate>
+                    <label>Name
+                        <input type="text" id="fb-name" required>
+                        <span class="error" id="err-fb-name"></span>
+                    </label>
+                    <label>Email
+                        <input type="email" id="fb-email" required>
+                        <span class="error" id="err-fb-email"></span>
+                    </label>
+                    <label>Rating
+                        <select id="fb-rating" required>
+                            <option value="">Select</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                        <span class="error" id="err-fb-rating"></span>
+                    </label>
+                    <label >Feedback
+                        <textarea id="fb-text" required></textarea>
+                        <span class="error" id="err-fb-text"></span>
+                    </label>
+                    <button type="submit" class="login">Submit</button>
+                </form>
+                <div class="messages" id="feedbackList">
+                    <h3 style="margin-bottom:8px; text-align: center; font-size: 1.rem; color: var(--accent);">Recent Feedback</h3>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="satisfy">
+            <img src="./assets/images/o9.png" alt="satisfaction">
+            <p>Student Tutor Connect System's online lessons are just as effective as in-person classes - you won't miss out on anything! <br>
+                You'll also be learning with the best online tutors. <br>
+We are so confident about the quality of our lessons, that in the unlikely event you're not 100% satisfied, we'll give you a full refund.</p>
+<a href="tutor.html"><button type="submit">Discover your perfect tutor</button></a>
+        </div>
+</body>
+
+
+    <footer>
+        <h3>Quick links</h3>
+        <div class="ftr">
+        <ul>
+            <li><a href="aboutus.html">About us</a></li>
+            <li><a href="faqs.html">FAQs</a></li>
+            <li><a href="tutor.html">Find a tutor</a></li>
+            <li><a href="becomeTutor.html">Become a tutor</a></li>
+            <li><a href="terms.html">Terms and Conditions</a></li>  
+        </ul>
+        <div class="contacts">
+            <p><i class="fa-solid fa-envelope"></i> : student.connect.tutor@email.com</p>
+            <p><i class="fa-solid fa-phone"></i> : 987654321</p>
+            <span>
+            <p><a href="www.facebook.com"><i class="fa-brands fa-facebook"></i></a></p>
+            <p><a href="www.twitter.com"><i class="fa-brands fa-x-twitter"></i></a></p>
+            <p><a href="www.instagram.com"><i class="fa-brands fa-instagram"></i></a></p>
+            <p><a href="www.linkedin.com"><i class="fa-brands fa-linkedin"></i></a></p>
+            </span>
+        </div>
+        <div class="start" style="width: 200px;">
+             <button class="login"><a href="./register.html">Register now</a></button>
+            <button class="login"><a href="./login.html">Log in</a></button>   
+        </div>
+        <img src="./assets/images/pill-logo.png" alt="Logo" height="100px">
+        </div>
+    </footer>
+
+    </body>
+    </html>

@@ -12,7 +12,6 @@ function ensureStore(){ if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { re
 function load(){ ensureStore(); return JSON.parse(fs.readFileSync(FB_FILE, 'utf-8')); }
 function save(data){ fs.writeFileSync(FB_FILE, JSON.stringify(data, null, 2)); }
 
-// Stubbed sentiment analysis (ML removed)
 function analyzeSentimentPython(text){
   return Promise.resolve(null);
 }

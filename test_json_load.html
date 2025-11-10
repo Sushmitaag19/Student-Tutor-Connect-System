@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test JSON Load</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .tutor-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .tutor-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .tutor-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Testing JSON Load for Tutor Profiles</h1>
+    <div id="status"></div>
+    <div id="results"></div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+
+        async function testLoadJSON() {
+            try {
+                statusDiv.innerHTML = '<div class="status">Loading tutor_profiles.json...</div>';
+                
+                const response = await fetch('./tutor_profiles.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const tutors = await response.json();
+                
+                statusDiv.innerHTML = `<div class="status success">✓ Successfully loaded ${tutors.length} tutors!</div>`;
+                
+                // Display first 5 tutors
+                let html = '<h2>First 5 Tutors:</h2>';
+                tutors.slice(0, 5).forEach(tutor => {
+                    html += `
+                        <div class="tutor-card">
+                            <h3>${tutor.name} (${tutor.tutor_id})</h3>
+                            <p><strong>Subjects:</strong> ${Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : tutor.subjects}</p>
+                            <p><strong>Education:</strong> ${tutor.education_level}</p>
+                            <p><strong>Experience:</strong> ${tutor.experience_years} years</p>
+                            <p><strong>Rate:</strong> $${tutor.hourly_rate}/hr</p>
+                            <p><strong>Mode:</strong> ${tutor.teaching_mode}</p>
+                            <p><strong>Location:</strong> ${tutor.location}</p>
+                            <p><strong>Rating:</strong> ${tutor.rating}/5</p>
+                            <p><strong>Verified:</strong> ${tutor.verification_status || 'Yes'}</p>
+                        </div>
+                    `;
+                });
+                
+                html += `<h3>Total Tutors in JSON: ${tutors.length}</h3>`;
+                html += `<h3>Sample JSON Structure:</h3><pre>${JSON.stringify(tutors[0], null, 2)}</pre>`;
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status error">✗ Error loading JSON: ${error.message}</div>`;
+                resultsDiv.innerHTML = `
+                    <h3>Troubleshooting:</h3>
+                    <ul>
+                        <li>Make sure tutor_profiles.json is in the same directory as this HTML file</li>
+                        <li>Check browser console for CORS errors (press F12)</li>
+                        <li>Make sure the JSON file is valid (no syntax errors)</li>
+                        <li>Try running this from a local server (not file://)</li>
+                    </ul>
+                    <h3>Error Details:</h3>
+                    <pre>${error.stack || error.message}</pre>
+                `;
+                console.error('Full error:', error);
+            }
+        }
+
+        // Run test on page load
+        testLoadJSON();
+    </script>
+</body>
+</html>

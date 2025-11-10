@@ -1,470 +1,10 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="./assets/style.css">
-	<title>Verified Tutors</title>
-	<style>
-		.dashboard-container {
-			padding-top: 100px;
-			min-height: 100vh;
-			background-color: var(--body);
-		}
-
-		.dashboard-nav {
-			background: linear-gradient(135deg, var(--slider) 0%, var(--accent) 100%);
-			padding: 1.5rem 2rem;
-			color: white;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-		}
-
-		.dashboard-nav h2 {
-			margin: 0;
-			font-size: 1.5rem;
-			font-weight: 600;
-		}
-
-		.dashboard-nav .user-info {
-			display: flex;
-			align-items: center;
-			gap: 1rem;
-		}
-
-		.dashboard-nav .username {
-			font-size: 1.1rem;
-			font-weight: 500;
-		}
-
-		.dashboard-nav ul {
-			list-style: none;
-			display: flex;
-			gap: 2rem;
-			align-items: center;
-			margin: 0;
-			padding: 0;
-		}
-
-		.dashboard-nav ul li a {
-			color: white;
-			text-decoration: none;
-			font-size: 1.1rem;
-			padding: 0.5rem 1rem;
-			border-radius: 6px;
-			transition: all 0.3s ease;
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-		}
-
-		.dashboard-nav ul li a:hover {
-			background-color: rgba(255,255,255,0.2);
-			transform: translateY(-2px);
-		}
-
-		.sign-out-btn {
-			background-color: #dc3545;
-			padding: 0.6rem 1.2rem;
-			border-radius: 6px;
-			border: none;
-			color: white;
-			cursor: pointer;
-			font-size: 1rem;
-			transition: all 0.3s ease;
-		}
-
-		.sign-out-btn:hover {
-			background-color: #c82333;
-			transform: translateY(-2px);
-		}
-
-		.dashboard-content {
-			padding: 2rem;
-			max-width: 1200px;
-			margin: 0 auto;
-		}
-
-		.welcome-section {
-			background: white;
-			padding: 2rem;
-			border-radius: 12px;
-			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-			margin-bottom: 2rem;
-		}
-
-		.welcome-section h1 {
-			color: var(--accent);
-			font-size: 2rem;
-			margin-bottom: 0.5rem;
-		}
-
-		.welcome-section p {
-			color: #666;
-			font-size: 1.1rem;
-		}
-
-		.container {
-			max-width: 1400px;
-			margin: 100px auto 40px;
-			padding: 20px;
-			display: flex;
-			flex-direction: column;
-		}
-		.header {
-			background: white;
-			padding: 30px;
-			border-radius: 12px;
-			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-			margin-bottom: 30px;
-		}
-		.header h1 {
-			color: var(--logo);
-			margin-bottom: 10px;
-		}
-		.header p {
-			color: #666;
-			font-size: 1.1rem;
-		}
-		.tutors-grid {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-			gap: 25px;
-		}
-		.tutor-card {
-			background: white;
-			border-radius: 12px;
-			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-			overflow: hidden;
-			transition: all 0.3s ease;
-			cursor: pointer;
-		}
-		.tutor-card:hover {
-			transform: translateY(-5px);
-			box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-		}
-		.tutor-header {
-			background: linear-gradient(135deg, var(--logo) 0%, #4a90e2 100%);
-			padding: 20px;
-			color: white;
-		}
-		.tutor-header h3 {
-			margin: 0 0 5px 0;
-			font-size: 1.3rem;
-		}
-		.tutor-header .subject {
-			opacity: 0.9;
-			font-size: 0.95rem;
-		}
-		.verified-badge {
-			display: inline-block;
-			background: rgba(255,255,255,0.3);
-			padding: 4px 12px;
-			border-radius: 20px;
-			font-size: 0.85rem;
-			margin-top: 8px;
-		}
-		.tutor-body {
-			padding: 20px;
-		}
-		.info-row {
-			display: flex;
-			justify-content: space-between;
-			padding: 12px 0;
-			border-bottom: 1px solid #f0f0f0;
-		}
-		.info-row:last-child {
-			border-bottom: none;
-		}
-		.info-label {
-			color: #888;
-			font-weight: 600;
-			font-size: 0.95rem;
-		}
-		.info-value {
-			color: #333;
-			font-weight: 500;
-			text-align: right;
-		}
-		.rate-highlight {
-			color: var(--logo);
-			font-size: 1.2rem;
-			font-weight: bold;
-		}
-		.availability {
-			display: inline-block;
-			padding: 5px 12px;
-			border-radius: 15px;
-			font-size: 0.85rem;
-			font-weight: 600;
-		}
-		.availability.available {
-			background: #d1e7dd;
-			color: #0f5132;
-		}
-		.availability.unavailable {
-			background: #f8d7da;
-			color: #842029;
-		}
-		.loading {
-			text-align: center;
-			padding: 40px;
-			color: #666;
-		}
-		.empty-state {
-			text-align: center;
-			padding: 60px 20px;
-			background: white;
-			border-radius: 12px;
-			box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-		}
-		.empty-state h3 {
-			color: #666;
-			margin-bottom: 10px;
-		}
-	</style>
-</head>
-<body>
-	<div class="dashboard-nav">
-		<a href="#" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
-        
-		<div class="user-info">
-			<a class="username" id="displayNameLink" href="student-dashboard.html">Student</a>
-			<ul>
-				<li><a href="./verified-tutors.html"><i class="fas fa-search"></i> Find Tutor</a></li>
-				<li><a href="#notifications" onclick="showNotifications()"><i class="fas fa-bell"></i> Notifications</a></li>
-				<li><button class="sign-out-btn" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button></li>
-			</ul>
-		</div>
-	</div>
-
-	<div class="container">
-		<div class="header">
-			<h1>Verified Tutors</h1>
-			<p>Browse through our certified and verified tutors ready to help you learn</p>
-		</div>
-
-		<div id="tutors-container">
-			<div class="loading">Loading verified tutors...</div>
-		</div>
-	</div>
-
-	<script>
-			document.addEventListener('DOMContentLoaded', function() {
-			
-			const isLoggedIn = localStorage.getItem('loggedIn');
-			const studentData = localStorage.getItem('studentData');
-
-			if (!isLoggedIn) {
-				alert('Please login first');
-				window.location.href = 'login.html';
-				return;
-			}
-
-			if (studentData) {
-				try {
-					const data = JSON.parse(studentData);
-					if (data.full_name) {
-						document.getElementById('displayNameLink').textContent = data.full_name;
-					}
-				} catch (e) {
-					console.error('Error parsing student data:', e);
-				}
-			}
-
-			updateNotificationCount();
-		});
-
-		function showNotifications() {
-			const notificationsSection = document.getElementById('notifications');
-			notificationsSection.scrollIntoView({ behavior: 'smooth' });
-		}
-
-		function updateNotificationCount() {
-			const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
-			const el = document.getElementById('notifCount');
-			if (el) el.textContent = unreadNotifications;
-		}
-
-		function handleSignOut() {
-			if (confirm('Are you sure you want to sign out?')) {
-				localStorage.removeItem('loggedIn');
-				localStorage.removeItem('studentData');
-				localStorage.removeItem('userRole');
-				
-				window.location.href = 'logout.html';
-			}
-		}
-
-		document.querySelectorAll('a[href="#notifications"]').forEach(link => {
-			link.addEventListener('click', function(e) {
-				e.preventDefault();
-				showNotifications();
-			});
-		});
-		(async function() {
-			const API_BASE_URL = 'http://localhost:5000/api';
-			const container = document.getElementById('tutors-container');
-
-			try {
-				console.log('Fetching verified tutors from:', `${API_BASE_URL}/tutor/verified`);
-				
-				const response = await fetch(`${API_BASE_URL}/tutor/verified`, {
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					},
-					credentials: 'include'
-				});
-
-				console.log('Response status:', response.status, response.statusText);
-
-				if (!response.ok) {
-					const errorText = await response.text();
-					console.error('Server error response:', errorText);
-					
-					let errorMessage = `Server error: ${response.status}`;
-					if (errorText.includes('<!DOCTYPE')) {
-						errorMessage = 'Server returned HTML instead of JSON. Check if backend is running correctly.';
-					} else if (errorText) {
-						try {
-							const errorJson = JSON.parse(errorText);
-							errorMessage = errorJson.error || errorJson.message || errorMessage;
-						} catch (e) {
-							errorMessage = errorText.substring(0, 100) || errorMessage;
-						}
-					}
-					
-					container.innerHTML = `
-						<div class="empty-state">
-							<h3>Error loading tutors</h3>
-							<p>${errorMessage}</p>
-						</div>
-					`;
-					return;
-				}
-
-				const contentType = response.headers.get('content-type');
-				if (!contentType || !contentType.includes('application/json')) {
-					const text = await response.text();
-					console.error('Expected JSON but got:', text.substring(0, 200));
-					container.innerHTML = `
-						<div class="empty-state">
-							<h3>Error loading tutors</h3>
-							<p>Server returned non-JSON response. Check backend API.</p>
-						</div>
-					`;
-					return;
-				}
-
-				const data = await response.json();
-				console.log('Received data:', data);
-
-				const tutors = data.tutors || [];
-
-				if (tutors.length === 0) {
-					container.innerHTML = `
-						<div class="empty-state">
-							<h3>No verified tutors yet</h3>
-							<p>Check back later for verified tutors</p>
-						</div>
-					`;
-					return;
-				}
-
-				displayTutors(tutors);
-
-			} catch (error) {
-				console.error('Error fetching tutors:', error);
-				
-				let errorMessage = 'Network error. Please check your connection and ensure the server is running.';
-				
-				if (error.message.includes('Failed to fetch')) {
-					errorMessage = 'Cannot connect to server. Make sure your backend is running on localhost:5000.';
-				} else if (error.message.includes('HTML instead of JSON')) {
-					errorMessage = 'Server returned an error page. Check if the API endpoint is correct.';
-				} else {
-					errorMessage = error.message;
-				}
-
-				container.innerHTML = `
-					<div class="empty-state">
-						<h3>Error loading tutors</h3>
-						<p>${errorMessage}</p>
-						<p style="margin-top: 20px; font-size: 0.9rem; color: #888;">
-							Troubleshooting tips:<br>
-							• Ensure backend server is running<br>
-							• Check console for detailed errors<br>
-							• Verify API endpoint URL
-						</p>
-					</div>
-				`;
-			}
-		})();
-
-		function displayTutors(tutors) {
-			const container = document.getElementById('tutors-container');
-			container.innerHTML = '<div class="tutors-grid" id="tutors-grid"></div>';
-			const grid = document.getElementById('tutors-grid');
-
-			tutors.forEach(tutor => {
-				const card = document.createElement('div');
-				card.className = 'tutor-card';
-				
-				const availabilityClass = tutor.is_available ? 'available' : 'unavailable';
-				const availabilityText = tutor.is_available ? 'Available' : 'Not Available';
-				
-				card.innerHTML = `
-					<div class="tutor-header">
-						<h3>${tutor.name || tutor.full_name || 'Unknown'}</h3>
-						<div class="subject">Subject: ${tutor.subject || 'N/A'}</div>
-						<span class="verified-badge">✓ Verified</span>
-					</div>
-					<div class="tutor-body">
-						<div class="info-row">
-							<span class="info-label">Education:</span>
-							<span class="info-value">${tutor.education_level || 'N/A'}</span>
-						</div>
-						<div class="info-row">
-							<span class="info-label">Experience:</span>
-							<span class="info-value">${tutor.experience_years || 0} years</span>
-						</div>
-						<div class="info-row">
-							<span class="info-label">Hourly Rate:</span>
-							<span class="info-value"><span class="rate-highlight">NPR ${tutor.hourly_rate || 'N/A'}</span>/hr</span>
-						</div>
-						<div class="info-row">
-							<span class="info-label">Mode:</span>
-							<span class="info-value">${tutor.teaching_mode || 'N/A'}</span>
-						</div>
-						<div class="info-row">
-							<span class="info-label">Location:</span>
-							<span class="info-value">${tutor.location || 'N/A'}</span>
-						</div>
-						<div class="info-row">
-							<span class="info-label">Status:</span>
-							<span class="info-value"><span class="availability ${availabilityClass}">${availabilityText}</span></span>
-						</div>
-					</div>
-				`;
-				
-				grid.appendChild(card);
-			});
-		}
-	</script>
-</body>
-</html>
- -->
-
- <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="./assets/style.css">
+	<script src="./tutor_profiles_data.js"></script>
 	<title>Verified Tutors</title>
 	<style>
 		.dashboard-container {
@@ -740,31 +280,90 @@
 		.recommended-badge { display:inline-block; background:#ffd54f; color:#222; font-weight:700; padding:4px 10px; border-radius:12px; font-size:0.8rem; margin-left:8px; }
 		.tutor-card.recommended { box-shadow: 0 10px 24px rgba(255, 213, 79, 0.3); outline: 2px solid #ffd54f; }
 		/* Select button styles */
-		.card-actions { display:flex; justify-content:flex-end; padding: 8px 12px 12px; gap: 8px; }
+		.card-actions { 
+			display: flex; 
+			justify-content: space-between; 
+			align-items: center;
+			padding: 12px 14px; 
+			gap: 8px; 
+			border-top: 1px solid #f0f0f0;
+		}
+		.feedback-actions {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			flex-wrap: wrap;
+		}
 		.select-btn {
 			background: var(--logo);
 			color: #fff;
 			border: none;
-			padding: 10px 16px;
-			border-radius: 8px;
+			padding: 8px 14px;
+			border-radius: 6px;
 			cursor: pointer;
 			font-weight: 600;
-			transition: opacity .2s ease, transform .1s ease;
+			font-size: 0.9rem;
+			transition: all .2s ease;
+			white-space: nowrap;
 		}
-		.select-btn:hover { transform: translateY(-1px); }
-		.select-btn[disabled] { opacity: .6; cursor: not-allowed; transform: none; }
+		.select-btn:hover { 
+			transform: translateY(-1px); 
+			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+		}
+		.select-btn[disabled] { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
 		.select-btn.loading { background: #6c757d; }
 		.select-btn.pending { background: #f0ad4e; color: #222; }
+		.select-btn.secondary { background: #6c757d; }
 		/* Feedback styles */
-		.feedback-panel{ border-top:1px solid #eee; padding:10px 12px; margin-top:6px; display:none; }
-		.feedback-form{ display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-		.feedback-form select{ padding:6px 8px; border:1px solid #ddd; border-radius:6px; font-size:.9rem; }
-		.feedback-list{ display:flex; flex-direction:column; gap:6px; max-height:180px; overflow:auto; }
-		.feedback-item{ font-size:.9rem; color:#444; border:1px solid #f0f0f0; border-radius:6px; padding:6px 8px; }
-		.feedback-actions{ display:flex; gap:6px; align-items:center; }
-		.card-actions .select-btn{ padding:6px 10px; }
-		.select-btn.secondary{ background:#6c757d; }
-		.rating-stats{ font-size:.9rem; color:#333; margin-bottom:8px; }
+		.feedback-panel{ 
+			padding: 12px 14px; 
+			margin-top: 0px; 
+			display: none;
+			background: #f9f9f9;
+			border-top: 1px solid #e0e0e0;
+		}
+		.feedback-form{ 
+			display: flex; 
+			gap: 8px; 
+			align-items: center; 
+			margin-bottom: 10px; 
+			flex-wrap: wrap;
+		}
+		.feedback-form select{ 
+			padding: 6px 10px; 
+			border: 1px solid #ddd; 
+			border-radius: 6px; 
+			font-size: .9rem; 
+		}
+		.feedback-form label {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 0.9rem;
+			color: #666;
+			font-weight: 500;
+		}
+		.feedback-list{ 
+			display: flex; 
+			flex-direction: column; 
+			gap: 6px; 
+			max-height: 180px; 
+			overflow: auto; 
+		}
+		.feedback-item{ 
+			font-size: .9rem; 
+			color: #444; 
+			border: 1px solid #e8e8e8; 
+			border-radius: 6px; 
+			padding: 8px 10px;
+			background: white;
+		}
+		.rating-stats{ 
+			font-size: .9rem; 
+			color: #333; 
+			margin-bottom: 10px;
+			font-weight: 500;
+		}
 	</style>
 </head>
 <body>
@@ -772,7 +371,7 @@
 		<a href="#" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
         
 		<div class="user-info">
-			<a class="username" id="displayNameLink" href="student-dashboard.html">Student</a>
+			<a class="username" id="displayNameLink" href="student-dashboard.html" style="text-decoration: none; color: white;">Student</a>
 			<ul>
 				<li><a href="./verified-tutors.html"><i class="fas fa-search"></i> Find Tutor</a></li>
 				<li><a href="#notifications" onclick="showNotifications()"><i class="fas fa-bell"></i> Notifications</a></li>
@@ -798,8 +397,7 @@
 			<div class="controls-bar">
 				<label>Sort by:
 					<select id="sortBy">
-						<option value="ml">ML Match</option>
-						<option value="compat">Compatibility</option>
+						<option value="compat">Best Match</option>
 						<option value="rating">Rating</option>
 						<option value="experience">Experience</option>
 					</select>
@@ -834,46 +432,53 @@
 		let allTutors = []; // Store all tutors globally for filtering
 		let selectedTutorId = null; // Prevent multiple selections in UI
 		const API_BASE_URL = 'http://localhost:5000/api';
-		let cfScoresMap = null; // collaborative filtering scores by tutor_id
 
 		function getAuthHeaders(){
 			const token = localStorage.getItem('authToken');
 			return token ? { 'Authorization': `Bearer ${token}` } : {};
 		}
 
-		function buildDummyTutors(){
-			const list = [
-				{ tutor_id: 101, name: 'Aarav Sharma', subject: 'Math', experience_years: 5, hourly_rate: 1200, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.7 },
-				{ tutor_id: 102, name: 'Maya Gurung', subject: 'Physics', experience_years: 7, hourly_rate: 1500, teaching_mode: 'Offline', location: 'Pokhara', rating: 4.6 },
-				{ tutor_id: 103, name: 'Sita Rai', subject: 'English', experience_years: 3, hourly_rate: 900, teaching_mode: 'Online', location: 'Lalitpur', rating: 4.5 },
-				{ tutor_id: 104, name: 'Ramesh Karki', subject: 'Computer Science', experience_years: 6, hourly_rate: 1600, teaching_mode: 'Hybrid', location: 'Bhaktapur', rating: 4.8 },
-				{ tutor_id: 105, name: 'Priya Thapa', subject: 'Chemistry', experience_years: 4, hourly_rate: 1100, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.4 },
-				{ tutor_id: 106, name: 'Nabin Shrestha', subject: 'Biology', experience_years: 8, hourly_rate: 1700, teaching_mode: 'Offline', location: 'Pokhara', rating: 4.7 },
-				{ tutor_id: 107, name: 'Kiran Lama', subject: 'Math', experience_years: 2, hourly_rate: 800, teaching_mode: 'Online', location: 'Dharan', rating: 4.2 },
-				{ tutor_id: 108, name: 'Anita Khadka', subject: 'Physics', experience_years: 5, hourly_rate: 1300, teaching_mode: 'Hybrid', location: 'Kathmandu', rating: 4.6 },
-				{ tutor_id: 109, name: 'Sunita KC', subject: 'English', experience_years: 9, hourly_rate: 1800, teaching_mode: 'Offline', location: 'Lalitpur', rating: 4.9 },
-				{ tutor_id: 110, name: 'Raju Poudel', subject: 'Math', experience_years: 4, hourly_rate: 1000, teaching_mode: 'Online', location: 'Biratnagar', rating: 4.3 },
-				{ tutor_id: 111, name: 'Sarita Adhikari', subject: 'Computer Science', experience_years: 3, hourly_rate: 1200, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.4 },
-				{ tutor_id: 112, name: 'Bikash Shahi', subject: 'Chemistry', experience_years: 10, hourly_rate: 2000, teaching_mode: 'Offline', location: 'Pokhara', rating: 4.8 },
-				{ tutor_id: 113, name: 'Manisha Raut', subject: 'Biology', experience_years: 6, hourly_rate: 1400, teaching_mode: 'Hybrid', location: 'Kathmandu', rating: 4.6 },
-				{ tutor_id: 114, name: 'Prakash Bista', subject: 'Physics', experience_years: 7, hourly_rate: 1550, teaching_mode: 'Online', location: 'Bhaktapur', rating: 4.7 },
-				{ tutor_id: 115, name: 'Binita Rana', subject: 'English', experience_years: 5, hourly_rate: 1150, teaching_mode: 'Offline', location: 'Lalitpur', rating: 4.5 },
-				{ tutor_id: 116, name: 'Shreya Shakya', subject: 'Math', experience_years: 1, hourly_rate: 700, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.1 },
-				{ tutor_id: 117, name: 'Dipesh Maharjan', subject: 'Computer Science', experience_years: 4, hourly_rate: 1250, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.4 },
-				{ tutor_id: 118, name: 'Ritika Acharya', subject: 'Chemistry', experience_years: 2, hourly_rate: 900, teaching_mode: 'Hybrid', location: 'Dharan', rating: 4.2 },
-				{ tutor_id: 119, name: 'Kamal Basnet', subject: 'Biology', experience_years: 8, hourly_rate: 1750, teaching_mode: 'Offline', location: 'Pokhara', rating: 4.7 },
-				{ tutor_id: 120, name: 'Neha Khanal', subject: 'Math', experience_years: 6, hourly_rate: 1350, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.6 },
-				{ tutor_id: 121, name: 'Suman Bhattarai', subject: 'English', experience_years: 3, hourly_rate: 950, teaching_mode: 'Online', location: 'Birgunj', rating: 4.3 },
-				{ tutor_id: 122, name: 'Asmita Regmi', subject: 'Physics', experience_years: 9, hourly_rate: 1850, teaching_mode: 'Offline', location: 'Butwal', rating: 4.8 },
-				{ tutor_id: 123, name: 'Kushal Thapa', subject: 'Computer Science', experience_years: 5, hourly_rate: 1400, teaching_mode: 'Hybrid', location: 'Kathmandu', rating: 4.6 },
-				{ tutor_id: 124, name: 'Roshni Koirala', subject: 'Biology', experience_years: 4, hourly_rate: 1200, teaching_mode: 'Online', location: 'Itahari', rating: 4.5 }
-			];
-			return list.map(t => ({
-				...t,
-				verification_status: 'approved',
-				is_available: true
-			}));
+	async function buildDummyTutors(){
+		// Load tutors from generated data (loaded via script tag)
+		try {
+			// Check if data is available from the loaded JS file
+			if (typeof TUTOR_PROFILES_DATA !== 'undefined' && Array.isArray(TUTOR_PROFILES_DATA)) {
+				const tutors = TUTOR_PROFILES_DATA;
+				// Map fields to match expected format and ensure all are verified
+				return tutors.map((t, idx) => ({
+					tutor_id: t.tutor_id ? parseInt(t.tutor_id.replace('TUT', '')) : (200 + idx),
+					name: t.name,
+					subject: Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || t.subject || 'N/A'),
+					experience_years: t.experience_years || 0,
+					hourly_rate: t.hourly_rate || 0,
+					teaching_mode: t.teaching_mode || 'Online',
+					location: t.location || 'N/A',
+					rating: t.rating || 4.5,
+					education_level: t.education_level || 'N/A',
+					specialization: t.specialization || '',
+					bio: t.bio || '',
+					verification_status: 'approved',
+					is_available: true,
+					preferred_student_level: Array.isArray(t.preferred_student_level) ? t.preferred_student_level : [],
+					languages: Array.isArray(t.languages) ? t.languages : [],
+					teaching_style: t.teaching_style || ''
+				}));
+			}
+		} catch (err) {
+			console.warn('Could not load tutor_profiles_data.js, using basic fallback', err);
 		}
+		// Fallback data if JSON fails to load
+		const list = [
+			{ tutor_id: 101, name: 'Aarav Sharma', subject: 'Math', experience_years: 5, hourly_rate: 1200, teaching_mode: 'Online', location: 'Kathmandu', rating: 4.7, education_level: 'MS in Mathematics' },
+			{ tutor_id: 102, name: 'Maya Gurung', subject: 'Physics', experience_years: 7, hourly_rate: 1500, teaching_mode: 'Offline', location: 'Pokhara', rating: 4.6, education_level: 'PhD in Physics' },
+			{ tutor_id: 103, name: 'Sita Rai', subject: 'English', experience_years: 3, hourly_rate: 900, teaching_mode: 'Online', location: 'Lalitpur', rating: 4.5, education_level: 'BA in English' }
+		];
+		return list.map(t => ({
+			...t,
+			verification_status: 'approved',
+			is_available: true
+		}));
+	}
 
 		function scoreCompatibility(tutor, prefs){
 			if (!prefs) return 0;
@@ -911,36 +516,12 @@
 			}catch{return null;}
 		}
 
-		async function fetchRecommendations(){
-			try{
-				const res = await fetch(`${API_BASE_URL}/tutor/recommendations`, { credentials:'include', headers: getAuthHeaders() });
-				if(!res.ok) return { mlMap:null, cfMap:null };
-				const data = await res.json();
-				const arr = data && (data.recommendations || []);
-				// Build maps
-				const mlMap = new Map();
-				const cfMap = new Map();
-				arr.forEach(r => {
-					if (r.tutor_id != null){
-						const tid = Number(r.tutor_id);
-						const p = typeof r.match_probability === 'number' ? r.match_probability : (typeof r.probability === 'number' ? r.probability : null);
-						if (p != null) mlMap.set(tid, Number(p));
-						// Try to pick up CF score if present in payload
-						const cf = (typeof r.cf_score === 'number') ? r.cf_score : (r.scores && typeof r.scores.cf === 'number' ? r.scores.cf : null);
-						if (cf != null) cfMap.set(tid, Number(cf));
-					}
-				});
-				return { mlMap, cfMap };
-			}catch{return { mlMap:null, cfMap:null };}
-		}
 
 		async function applyRecommendationsAndDisplay(tutors){
-			const [prefs, rec] = await Promise.all([fetchStudentPrefs(), fetchRecommendations()]);
-			const mlMap = rec && rec.mlMap; cfScoresMap = rec && rec.cfMap;
+			const prefs = await fetchStudentPrefs();
 			const enriched = tutors.map(t => {
-				const ml = (mlMap && mlMap.get(Number(t.tutor_id))) ?? null;
 				const compat = scoreCompatibility(t, prefs);
-				return { ...t, _ml: ml!=null ? ml : null, _compat: compat };
+				return { ...t, _compat: compat };
 			});
 			allTutors = enriched;
 			populateSubjectsFilter(enriched);
@@ -981,10 +562,11 @@
 			notificationsSection.scrollIntoView({ behavior: 'smooth' });
 		}
 
-		function updateNotificationCount() {
-			const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
-			document.getElementById('notifCount').textContent = unreadNotifications;
-		}
+	function updateNotificationCount() {
+		const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
+		const notifEl = document.getElementById('notifCount');
+		if (notifEl) notifEl.textContent = unreadNotifications;
+	}
 
 		function handleSignOut() {
 			if (confirm('Are you sure you want to sign out?')) {
@@ -1031,9 +613,7 @@
 			if (mode){ list = list.filter(t => String(t.teaching_mode||'').toLowerCase() === mode.toLowerCase()); }
 			if (budget>0){ list = list.filter(t => Number(t.hourly_rate||0) <= budget); }
 			// sort
-			if (sortBy === 'ml'){
-				list.sort((a,b) => (b._ml||0)-(a._ml||0) || (b._compat||0)-(a._compat||0) || (b.rating||0)-(a.rating||0));
-			}else if (sortBy === 'compat'){
+			if (sortBy === 'compat'){
 				list.sort((a,b) => (b._compat||0)-(a._compat||0) || (b.rating||0)-(a.rating||0));
 			}else if (sortBy === 'rating'){
 				list.sort((a,b) => (b.rating||0)-(a.rating||0));
@@ -1106,23 +686,51 @@
 				const data = await response.json();
 				console.log('Received data:', data);
 
-				let tutors = data.tutors || [];
-				if (!Array.isArray(tutors) || tutors.length < 1) {
-					// Try fetching all tutors from DB as fallback before using local dummy list
-					try {
-						const allRes = await fetch(`${API_BASE_URL}/tutor/all`, { credentials:'include', headers: Object.assign({ 'Accept':'application/json' }, getAuthHeaders()) });
-						if (allRes.ok) {
-							const allData = await allRes.json();
-							tutors = Array.isArray(allData.tutors) ? allData.tutors : [];
-						}
-					} catch {}
-					if (!Array.isArray(tutors) || tutors.length < 1) {
-						// Fallback to local dummy list of 20+
-						tutors = buildDummyTutors();
+			let tutors = data.tutors || [];
+			console.log('Initial tutors from API:', tutors.length);
+			
+			// ALWAYS load JSON tutors and merge with API tutors
+			console.log('Loading tutors from JSON file to merge with API tutors...');
+			const jsonTutors = await buildDummyTutors();
+			console.log('Loaded', jsonTutors.length, 'tutors from JSON file');
+			
+			// Merge API tutors with JSON tutors (avoid duplicates by tutor_id)
+			const tutorMap = new Map();
+			
+			// Add API tutors first (they have priority)
+			if (Array.isArray(tutors)) {
+				tutors.forEach(t => {
+					if (t.tutor_id) tutorMap.set(Number(t.tutor_id), t);
+				});
+			}
+			
+			// Add JSON tutors (skip if tutor_id already exists from API)
+			if (Array.isArray(jsonTutors)) {
+				jsonTutors.forEach(t => {
+					const id = Number(t.tutor_id);
+					if (!tutorMap.has(id)) {
+						tutorMap.set(id, t);
 					}
-				}
-				allTutors = tutors;
-				await applyRecommendationsAndDisplay(tutors);
+				});
+			}
+			
+			// Convert map back to array
+			tutors = Array.from(tutorMap.values());
+			console.log('Total tutors after merging:', tutors.length)
+			
+			if (!Array.isArray(tutors) || tutors.length === 0) {
+				container.innerHTML = `
+					<div class="empty-state">
+						<h3>No tutors available</h3>
+						<p>Unable to load tutor data. Please try again later.</p>
+					</div>
+				`;
+				return;
+			}
+			
+			allTutors = tutors;
+			console.log('Final tutor count:', allTutors.length);
+			await applyRecommendationsAndDisplay(tutors);
 
 			} catch (error) {
 				console.error('Error fetching tutors:', error);
@@ -1164,10 +772,11 @@
 			});
 		})();
 
-		function displayTutors(tutors) {
-			const container = document.getElementById('tutors-container');
-			
-			if (!tutors || tutors.length === 0) {
+	function displayTutors(tutors) {
+		console.log('displayTutors called with', tutors ? tutors.length : 0, 'tutors');
+		const container = document.getElementById('tutors-container');
+		
+		if (!tutors || tutors.length === 0) {
 				container.innerHTML = `
 					<div class="empty-state">
 						<h3>No tutors found</h3>
@@ -1181,13 +790,8 @@
 			container.innerHTML = `
 				<div id="rec-section" class="section" style="display:none;">
 					<h2 class="section-title">Recommended for you</h2>
-					<p class="section-subtitle">Based on your preferences and interaction history</p>
+					<p class="section-subtitle">Based on your preferences</p>
 					<div class="tutors-grid" id="rec-grid"></div>
-				</div>
-				<div id="cf-section" class="section" style="display:none;">
-					<h2 class="section-title">Recommended by Collaborative Filtering</h2>
-					<p class="section-subtitle">Popular among similar students</p>
-					<div class="tutors-grid" id="cf-grid"></div>
 				</div>
 				<div id="all-section" class="section">
 					<h2 class="section-title">All Tutors</h2>
@@ -1195,19 +799,11 @@
 				</div>
 			`;
 			const recGrid = document.getElementById('rec-grid');
-			const cfGrid = document.getElementById('cf-grid');
 			const allGrid = document.getElementById('all-grid');
 
 			// Build recommended list: compatibility > 50%
 			let recList = tutors.filter(t => (t._compat || 0) > 0.5)
 				.sort((a,b) => (b._compat||0) - (a._compat||0));
-			// Build CF list if cfScoresMap present (kept for visibility but not used to filter All)
-			let cfList = [];
-			if (cfScoresMap && cfScoresMap.size){
-				cfList = tutors.filter(t => cfScoresMap.has(Number(t.tutor_id)))
-					.sort((a,b)=> (cfScoresMap.get(Number(b.tutor_id))||0) - (cfScoresMap.get(Number(a.tutor_id))||0))
-					.slice(0,8);
-			}
 			// All list includes all tutors
 			const allList = tutors;
 
@@ -1217,23 +813,18 @@
 				list.forEach(tutor => {
 					const card = document.createElement('div');
 					card.className = 'tutor-card';
-					if (tutor._ml!=null && tutor._ml>=0.7) card.classList.add('recommended');
+					if (typeof tutor._compat === 'number' && tutor._compat >= 0.7) card.classList.add('recommended');
 					card.dataset.tutorId = tutor.tutor_id;
 					const rating = typeof tutor.rating === 'number' ? tutor.rating : (3.9 + Math.random()*1.1);
 					let matchLabel = '';
-					if (labelType === 'cf'){
-						const cf = cfScoresMap && cfScoresMap.get(Number(tutor.tutor_id));
-						if (typeof cf === 'number') matchLabel = `CF: ${(cf*100).toFixed(0)}%`;
-					} else {
-						matchLabel = (typeof tutor._ml === 'number') ? `Match: ${(tutor._ml*100).toFixed(0)}%` : (typeof tutor._compat === 'number' ? `Match: ${(tutor._compat*100).toFixed(0)}%` : '');
-					}
+					matchLabel = (typeof tutor._compat === 'number') ? `Match: ${(tutor._compat*100).toFixed(0)}%` : '';
 					
 					const availabilityClass = tutor.is_available ? 'available' : 'unavailable';
 					const availabilityText = tutor.is_available ? 'Available' : 'Not Available';
 					
 					card.innerHTML = `
 						<div class="tutor-header">
-							<h3>${tutor.name || tutor.full_name || 'Unknown'} ${ (tutor._ml!=null && tutor._ml>=0.7) ? '<span class=\"recommended-badge\">Recommended</span>' : ''}</h3>
+						<h3>${tutor.name || tutor.full_name || 'Unknown'} ${ (typeof tutor._compat === 'number' && tutor._compat>=0.7) ? '<span class=\"recommended-badge\">Recommended</span>' : ''}</h3>
 							<div class="subject">Subject: ${tutor.subject || 'N/A'}</div>
 							<span class="verified-badge">✓ Verified</span>
 						</div>
@@ -1315,10 +906,6 @@
 			if (recList.length > 0){
 				document.getElementById('rec-section').style.display = '';
 				renderCards(recList, recGrid, { labelType:'compat' });
-			}
-			if (cfList.length > 0){
-				document.getElementById('cf-section').style.display = '';
-				renderCards(cfList, cfGrid, { labelType:'cf' });
 			}
 			renderCards(allList, allGrid, { labelType:'compat' });
 		}
@@ -1409,5 +996,5 @@
 		}
 	</script>
 </body>
-</html>
+</html> 
 

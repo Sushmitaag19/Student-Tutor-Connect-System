@@ -1,5 +1,6 @@
 const express = require('express');
 const pool = require('../db');
+const auth = require('../middleware/auth');
 const router = express.Router();
 
 /**
@@ -187,6 +188,73 @@ router.get('/profile/:user_id', async (req, res) => {
             error: 'Failed to fetch profile',
             message: 'An error occurred while fetching the student profile'
         });
+    } finally {
+        client.release();
+    }
+});
+
+// Get current student profile (JWT)
+router.get('/me', auth, async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            'SELECT student_id, user_id, academic_level, subjects, preferred_mode, budget, availability FROM students WHERE user_id = $1',
+            [req.user.user_id]
+        );
+        if (!result.rows.length) return res.status(404).json({ error: 'Student profile not found' });
+        res.json({ student: result.rows[0] });
+    } catch (err) {
+        console.error('Student /me error:', err);
+        res.status(500).json({ error: 'Failed to fetch student profile' });
+    } finally {
+        client.release();
+    }
+});
+
+// Update current student profile
+router.put('/me', auth, async (req, res) => {
+    const client = await pool.connect();
+    try {
+        const allowed = ['academic_level','subjects','preferred_mode','budget','availability'];
+        const fields = [];
+        const values = [];
+        let idx = 1;
+        // normalize subjects to array if provided
+        if (Object.prototype.hasOwnProperty.call(req.body, 'subjects')) {
+            const subj = req.body.subjects;
+            if (typeof subj === 'string') {
+                req.body.subjects = subj.split(',').map(s => s.trim()).filter(Boolean);
+            }
+        }
+        for (const key of allowed) {
+            if (Object.prototype.hasOwnProperty.call(req.body, key)) {
+                fields.push(`${key} = $${idx++}`);
+                values.push(req.body[key]);
+            }
+        }
+        if (!fields.length) {
+            return res.status(400).json({ error: 'No valid fields provided to update' });
+        }
+        values.push(req.user.user_id);
+        await client.query('BEGIN');
+        const update = await client.query(
+            `UPDATE students SET ${fields.join(', ')} WHERE user_id = $${idx} RETURNING student_id`,
+            values
+        );
+        if (!update.rowCount) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Student profile not found' });
+        }
+        const result = await client.query(
+            'SELECT student_id, user_id, academic_level, subjects, preferred_mode, budget, availability FROM students WHERE user_id = $1',
+            [req.user.user_id]
+        );
+        await client.query('COMMIT');
+        return res.json({ message: 'Student profile updated', student: result.rows[0] });
+    } catch (err) {
+        try { await client.query('ROLLBACK'); } catch(_){}
+        console.error('Update student profile error:', err);
+        return res.status(500).json({ error: 'Failed to update student profile' });
     } finally {
         client.release();
     }

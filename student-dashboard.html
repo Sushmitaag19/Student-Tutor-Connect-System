@@ -264,6 +264,31 @@
 				<p>Find your perfect tutor and start learning today</p>
 			</div>
 
+			<div class="section" id="student-profile-section">
+				<h2><i class="fas fa-id-card"></i> Your Profile</h2>
+				<div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+					<div class="stat-card" style="background:#fff;box-shadow: 0 2px 8px rgba(0,0,0,0.08);text-align:left;">
+						<p><strong>Academic Level:</strong> <span id="s-academic">-</span></p>
+						<p><strong>Preferred Mode:</strong> <span id="s-mode">-</span></p>
+						<p><strong>Budget:</strong> <span id="s-budget">-</span></p>
+						<p><strong>Availability:</strong> <span id="s-availability">-</span></p>
+						<p><strong>Subjects:</strong> <span id="s-subjects">-</span></p>
+						<button id="edit-student-profile" class="sign-out-btn" style="background:#0d6efd;margin-top:10px;">Edit Profile</button>
+					</div>
+					<div class="stat-card" id="student-edit-card" style="display:none;background:#fff;box-shadow: 0 2px 8px rgba(0,0,0,0.08);text-align:left;">
+						<form id="studentEditForm">
+							<label>Academic Level <input type="text" id="se-academic"></label><br>
+							<label>Preferred Mode <input type="text" id="se-mode"></label><br>
+							<label>Budget <input type="number" id="se-budget" min="0" step="0.01"></label><br>
+							<label>Availability <input type="text" id="se-availability" placeholder="e.g., evenings, weekends"></label><br>
+							<label>Subjects (comma separated) <input type="text" id="se-subjects"></label><br>
+							<button type="submit" class="sign-out-btn" style="background:#198754">Save</button>
+							<button type="button" id="se-cancel" class="sign-out-btn" style="background:#6c757d">Cancel</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
 			<div class="section">
 				<h2><i class="fas fa-chart-line"></i> Your Statistics</h2>
 				<div class="stats-grid">
@@ -285,13 +310,13 @@
 			<div class="section">
 				<h2><i class="fas fa-bolt"></i> Quick Actions</h2>
 				<div class="quick-actions">
-					<a href="tutor.html" class="action-btn">
+					<a href="./verified-tutors.html" class="action-btn">
 						<i class="fas fa-search"></i><br>Search Tutors
 					</a>
 					<a href="#notifications" class="action-btn" onclick="showNotifications()">
 						<i class="fas fa-bell"></i><br>View Notifications
 					</a>
-					<a href="aboutus.html" class="action-btn">
+					<a href="./signed-about.html" class="action-btn">
 						<i class="fas fa-info-circle"></i><br>About Us
 					</a>
 				</div>
@@ -318,46 +343,15 @@
 					</div>
 				</div>
 			</div>
-
-			<!-- Feedback Section -->
-			<div class="section" id="feedback">
-				<h2><i class="fas fa-comment-dots"></i> Submit Feedback</h2>
-				<form id="feedbackForm">
-					<div style="margin-bottom: 1rem;">
-						<label for="tutorSelect" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select Tutor:</label>
-						<select id="tutorSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem;">
-							<option value="">Choose a tutor...</option>
-						</select>
-					</div>
-					<div style="margin-bottom: 1rem;">
-						<label for="feedbackScore" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Rating (1-5):</label>
-						<select id="feedbackScore" style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem;">
-							<option value="">Select rating...</option>
-							<option value="5">5 - Excellent</option>
-							<option value="4">4 - Very Good</option>
-							<option value="3">3 - Good</option>
-							<option value="2">2 - Fair</option>
-							<option value="1">1 - Poor</option>
-						</select>
-					</div>
-					<div style="margin-bottom: 1rem;">
-						<label for="feedbackText" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Review:</label>
-						<textarea id="feedbackText" rows="4" placeholder="Share your experience with this tutor..." style="width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem; resize: vertical;"></textarea>
-					</div>
-					<button type="submit" style="background-color: var(--slider); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: background-color 0.3s ease;">
-						<i class="fas fa-paper-plane"></i> Submit Feedback
-					</button>
-				</form>
-				<div id="feedbackMessage" style="margin-top: 1rem; padding: 1rem; border-radius: 6px; display: none;"></div>
-			</div>
 		</div>
 	</div>
 
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			
+		// Absolute API base so file:// pages still call HTTP and not file paths
+		const API_BASE_URL = 'http://localhost:5000/api';
+		document.addEventListener('DOMContentLoaded', async function() {
 			const isLoggedIn = localStorage.getItem('loggedIn');
-			const studentData = localStorage.getItem('studentData');
+			const token = localStorage.getItem('authToken');
 
 			if (!isLoggedIn) {
 				alert('Please login first');
@@ -365,16 +359,40 @@
 				return;
 			}
 
-			if (studentData) {
-				try {
-					const data = JSON.parse(studentData);
-					if (data.full_name) {
-						document.getElementById('displayName').textContent = data.full_name;
+			try {
+				const meRes = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include', headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+				if (meRes.ok) {
+					const me = await meRes.json();
+					if (me && me.user && me.user.full_name) {
+						document.getElementById('displayName').textContent = me.user.full_name;
 					}
-				} catch (e) {
-					console.error('Error parsing student data:', e);
 				}
-			}
+			} catch (_) {}
+
+			// load student profile
+			try {
+				const res = await fetch(`${API_BASE_URL}/student/me`, { credentials: 'include', headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+				if (res.ok) {
+					const data = await res.json();
+					const s = data.student;
+					document.getElementById('s-academic').textContent = s.academic_level || '-';
+					document.getElementById('s-mode').textContent = s.preferred_mode || '-';
+					document.getElementById('s-budget').textContent = s.budget != null ? `NPR ${s.budget}` : '-';
+					document.getElementById('s-availability').textContent = s.availability || '-';
+					document.getElementById('s-subjects').textContent = Array.isArray(s.subjects) ? s.subjects.join(', ') : (s.subjects || '-');
+					// prefill edit
+					document.getElementById('se-academic').value = s.academic_level || '';
+					document.getElementById('se-mode').value = s.preferred_mode || '';
+					document.getElementById('se-budget').value = s.budget || '';
+					document.getElementById('se-availability').value = s.availability || '';
+					document.getElementById('se-subjects').value = Array.isArray(s.subjects) ? s.subjects.join(', ') : (s.subjects || '');
+				} else if (res.status === 404) {
+					// Student profile doesn't exist yet, silently continue
+					console.log('Student profile not found, showing default values');
+				} else {
+					console.error('Failed to load student profile:', res.status);
+				}
+			} catch (e) { console.error('Failed to load student profile', e); }
 
 			updateNotificationCount();
 		});
@@ -388,6 +406,38 @@
 			const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
 			document.getElementById('notifCount').textContent = unreadNotifications;
 		}
+
+		document.getElementById('edit-student-profile').addEventListener('click', () => {
+			document.getElementById('student-edit-card').style.display = 'block';
+		});
+		document.getElementById('se-cancel').addEventListener('click', () => {
+			document.getElementById('student-edit-card').style.display = 'none';
+		});
+		document.getElementById('studentEditForm').addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const token = localStorage.getItem('authToken');
+			const payload = {
+				academic_level: document.getElementById('se-academic').value || undefined,
+				preferred_mode: document.getElementById('se-mode').value || undefined,
+				budget: document.getElementById('se-budget').value ? parseFloat(document.getElementById('se-budget').value) : undefined,
+				availability: document.getElementById('se-availability').value || undefined,
+				subjects: document.getElementById('se-subjects').value || undefined,
+			};
+			try {
+				const res = await fetch(`${API_BASE_URL}/student/me`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+					credentials: 'include',
+					body: JSON.stringify(payload)
+				});
+				if (!res.ok) throw new Error('Update failed');
+				alert('Profile updated');
+				location.reload();
+			} catch (err) {
+				console.error('Update student profile error:', err);
+				alert('Failed to update profile');
+			}
+		});
 
 		function handleSignOut() {
 			if (confirm('Are you sure you want to sign out?')) {
@@ -405,88 +455,6 @@
 				showNotifications();
 			});
 		});
-
-		// Feedback form functionality
-		async function loadTutorsForFeedback() {
-			try {
-				const response = await fetch('/api/tutor/verified');
-				const data = await response.json();
-				const tutorSelect = document.getElementById('tutorSelect');
-				
-				if (data.tutors && data.tutors.length > 0) {
-					data.tutors.forEach(tutor => {
-						const option = document.createElement('option');
-						option.value = tutor.tutor_id;
-						option.textContent = `${tutor.full_name} - ${tutor.subjects_taught?.join(', ') || 'Various Subjects'}`;
-						tutorSelect.appendChild(option);
-					});
-				}
-			} catch (error) {
-				console.error('Error loading tutors for feedback:', error);
-			}
-		}
-
-		// Handle feedback form submission
-		document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
-			e.preventDefault();
-			
-			const tutorId = document.getElementById('tutorSelect').value;
-			const score = document.getElementById('feedbackScore').value;
-			const review = document.getElementById('feedbackText').value;
-			const messageDiv = document.getElementById('feedbackMessage');
-			
-			if (!tutorId || !score) {
-				messageDiv.style.display = 'block';
-				messageDiv.style.backgroundColor = '#f8d7da';
-				messageDiv.style.color = '#721c24';
-				messageDiv.style.border = '1px solid #f5c6cb';
-				messageDiv.textContent = 'Please select a tutor and rating.';
-				return;
-			}
-			
-			try {
-				const response = await fetch('/api/feedback', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({
-						tutor_id: tutorId,
-						feedback_score: parseInt(score),
-						review: review
-					})
-				});
-				
-				const data = await response.json();
-				
-				if (response.ok) {
-					messageDiv.style.display = 'block';
-					messageDiv.style.backgroundColor = '#d4edda';
-					messageDiv.style.color = '#155724';
-					messageDiv.style.border = '1px solid #c3e6cb';
-					messageDiv.textContent = 'Feedback submitted successfully!';
-					
-					// Reset form
-					document.getElementById('feedbackForm').reset();
-				} else {
-					messageDiv.style.display = 'block';
-					messageDiv.style.backgroundColor = '#f8d7da';
-					messageDiv.style.color = '#721c24';
-					messageDiv.style.border = '1px solid #f5c6cb';
-					messageDiv.textContent = data.error || 'Error submitting feedback.';
-				}
-			} catch (error) {
-				console.error('Error submitting feedback:', error);
-				messageDiv.style.display = 'block';
-				messageDiv.style.backgroundColor = '#f8d7da';
-				messageDiv.style.color = '#721c24';
-				messageDiv.style.border = '1px solid #f5c6cb';
-				messageDiv.textContent = 'Network error. Please try again.';
-			}
-		});
-
-		// Load tutors when page loads
-		loadTutorsForFeedback();
 	</script>
 </body>
 </html>

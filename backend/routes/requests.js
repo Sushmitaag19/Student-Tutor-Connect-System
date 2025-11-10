@@ -102,7 +102,7 @@ router.post('/respond', auth, async (req, res) => {
   }catch(e){ console.error(e); res.status(500).json({ error:'Failed to respond' }); }
 });
 
-// New request_tutor endpoint for ML recommendations
+// Endpoint for students to request a tutor
 router.post('/request_tutor', auth, async (req, res) => {
   try {
     if(req.user.role !== 'student') return res.status(403).json({ error:'Only students can send requests' });

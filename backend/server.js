@@ -1,63 +1,3 @@
-// const express = require('express');
-// const cors = require('cors');
-// const cookieParser = require('cookie-parser');
-// const path = require('path');
-// require('dotenv').config({ path: path.join(__dirname, 'connection.env') });
-
-// const authRoutes = require('./routes/auth');
-// const tutorRoutes = require('./routes/tutor');
-// const studentRoutes = require('./routes/student');
-// const testRoutes = require('./routes/test');
-
-// const app = express();
-// const PORT = process.env.PORT || 5000;
-
-// const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
-// app.use(cors({ origin: allowedOrigin, credentials: true }));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
-
-// app.use('/api/auth', authRoutes);
-// app.use('/api/tutor', tutorRoutes);
-// app.use('/api/student', studentRoutes);
-// app.use('/api/test', testRoutes);
-
-// app.get('/', (req, res) => {
-//     res.json({
-//         message: 'Student Tutor Connect System API',
-//         version: '1.0.0',
-//         endpoints: {
-//             auth: '/api/auth',
-//             tutor: '/api/tutor',
-//             student: '/api/student',
-//             test: '/api/test'
-//         }
-//     });
-// });
-
-// app.use('*', (req, res) => {
-//     res.status(404).json({
-//         error: 'Route not found',
-//         message: `Cannot ${req.method} ${req.originalUrl}`
-//     });
-// });
-
-// app.use((err, req, res, next) => {
-//     console.error('Error:', err);
-//     res.status(err.status || 500).json({
-//         error: 'Internal server error',
-//         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-//     });
-// });
-
-// app.listen(PORT, () => {
-//     console.log(` Server running on http://localhost:${PORT}`);
-//     console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
-// });
-
-// module.exports = app;
-
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
@@ -88,7 +28,9 @@ app.use(cors(corsOptions));
 
 app.options('*', cors(corsOptions));
 
-app.use(express.json());
+// Increase body size limits to support large JSON (e.g., base64 images)
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 // Load routes with error handling
@@ -115,6 +57,15 @@ try {
   
   app.use('/api/feedback', require('./routes/feedback'));
   console.log('✓ Feedback routes loaded');
+  
+  // Mount recommendation routes (optional)
+  try {
+    const recommendationRoutes = require('./routes/recommendations');
+    app.use('/api', recommendationRoutes);
+    console.log('✓ Recommendation routes loaded');
+  } catch (e) {
+    console.warn('Recommendation routes not found; skipping.');
+  }
   
   // Log registered tutor routes for debugging
   if (tutorRoutes && tutorRoutes.stack) {
@@ -168,6 +119,19 @@ app.use('/api/*', (req, res) => {
   });
 });
 
+// Global error handler to ensure JSON responses (e.g., body too large or bad JSON)
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  if (err && err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Payload Too Large', message: 'Request body exceeds the allowed limit' });
+  }
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).json({ error: 'Invalid JSON', message: 'Malformed JSON in request body' });
+  }
+  console.error('Unhandled error:', err);
+  return res.status(500).json({ error: 'Internal server error' });
+});
+
 const PORT = process.env.PORT || 5000; 
 if (require.main === module) {
   app.listen(PORT, () => {
@@ -177,3 +141,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
