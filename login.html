@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -66,11 +66,11 @@
 		<h2>Login</h2>
 		<form class="form" action="student-dashboard.html" id="loginForm" novalidate>
 			<label>Email: <br>
-				<input type="email" name="email" id="l-email" required>
+				<input type="email" name="email" id="l-email" required autocomplete="username">
 				<div class="error" id="err-l-email"></div>
 			</label> <br><br>
 			<label>Password: <br>
-				<input type="password" name="password" id="l-pass" required minlength="6">
+				<input type="password" name="password" id="l-pass" required minlength="6" autocomplete="current-password">
 				<div class="error" id="err-l-pass"></div>
 			</label> <br><br>
 			<button type="submit" class="login">Login</button>
@@ -85,42 +85,51 @@
 		function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
 		function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 		
-		document.getElementById('loginForm').addEventListener('submit', async function(e){
-			e.preventDefault();
-			
-			var ok = true;
-			var email = document.getElementById('l-email').value.trim();
-			var pass = document.getElementById('l-pass').value;
-			
-			setError('err-l-email'); 
-			setError('err-l-pass');
-			
-			if(!emailOk(email)){ 
-				setError('err-l-email','Enter a valid email address.'); 
-				ok=false; 
-			}
-			if(pass.length < 6){ 
-				setError('err-l-pass','Password must be at least 6 characters.'); 
-				ok=false; 
-			}
-			
-			if(!ok) return;
+			document.getElementById('loginForm').addEventListener('submit', async function(e){
+				e.preventDefault();
+				
+				var ok = true;
+				var email = document.getElementById('l-email').value.trim();
+				var pass = document.getElementById('l-pass').value;
+				
+				setError('err-l-email'); 
+				setError('err-l-pass');
+				
+				if(!emailOk(email)){ 
+					setError('err-l-email','Enter a valid email address.'); 
+					ok=false; 
+				}
+				if(pass.length < 6){ 
+					setError('err-l-pass','Password must be at least 6 characters.'); 
+					ok=false; 
+				}
+				
+				if(!ok) return;
 
-			// Try API first, fallback to localStorage
-			try {
-				// Try backend API
+                // Quick admin shortcut
+                if (email === 'admin123@gmail.com' && pass === 'Admin123') {
+                    localStorage.setItem('loggedIn', 'true');
+                    localStorage.setItem('userRole', 'admin');
+                    localStorage.setItem('admin_email', email);
+                    window.location.href = 'admin.html';
+                    return;
+                }
+
+				// Try API first, fallback to localStorage
+				try {
+					// Try backend API
                 const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email: email,
-						password: pass
-					}),
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							email: email,
+							password: pass
+						}),
                     timeout: 5000,
                     credentials: 'include'
-				});
+					});
 
 				const loginResult = await loginResponse.json();
 
@@ -136,7 +145,7 @@
 
 					// Redirect based on role
 					if (user.role === 'student') {
-						window.location.href = 'student-dashboard.html';
+						window.location.href = './student-dashboard.html';
 					} else if (user.role === 'tutor') {
 						window.location.href = 'tutor-dashboard.html';
 					} else {
@@ -159,11 +168,11 @@
 						
 						// Redirect based on role
 						if (user.role === 'student') {
-							window.location.href = 'student-dashboard.html';
+							window.location.href = './student-dashboard.html';
 						} else if (user.role === 'tutor') {
-							window.location.href = 'tutor-dashboard.html';
+							window.location.href = './tutor-dashboard.html';
 						} else {
-							window.location.href = 'index.html';
+							window.location.href = './index.html';
 						}
 						return;
 					}
@@ -172,10 +181,529 @@
 				console.error('Local storage error:', localError);
 			}
 
-            // If we get here, login failed
 			alert('Invalid email or password. Please check your credentials or sign up first.');
 		});
 	})();
 	</script>
 </body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<title>Login</title>
+	
+	<style>
+		.features{
+			padding-top: 80px;
+			position: absolute;
+			height: 500px;
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+			margin-left:570px;
+		}
+		.features h2{
+			font-size: 3rem;
+			color: var(--accent);
+		}
+		.features form{
+			padding: 50px;
+			max-width: 480px;
+		}
+		.features form label{
+			font-size: 1.2rem;
+		}
+		.features form input{
+			padding: 10px 15px;
+			margin: 5px;
+			border-radius: 5px;
+			border: 2px solid var(--slider);
+			width: 300px;
+			font-size: 1.1rem;
+		}
+		.features form button{
+			margin-left: 100px;
+		}
+		.features a{ color: black; }
+		.features a:hover{ color: var(--accent); transform: scale(2); }
+		.error{ color:#c0392b; font-size: 0.9rem; margin-left: 6px; }
+
+		.remember-me-container {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin: 15px 0;
+			font-size: 1rem;
+		}
+		.remember-me-container input[type="checkbox"] {
+			width: 18px;
+			height: 18px;
+			cursor: pointer;
+			margin: 0;
+		}
+		.remember-me-container label {
+			font-size: 1rem;
+			margin: 0;
+			cursor: pointer;
+		}
+		@media (max-width: 1200px){ .features{ margin-left: 0; } }
+		@media (max-width: 640px){
+			.features{ position: static; padding: 80px 16px 24px 16px; align-items: center; }
+			.features form{ padding: 24px; width: 100%; }
+			.features form input{ width: 100%; }
+			.features form button{ margin-left: 0; width: 100%; }
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar">
+		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<div class="nav">
+			<ul class="list">
+				<li><a href="aboutus.html" class="nb">About us</a></li>
+				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="features">
+		<h2>Login</h2>
+		<form class="form" action="student-dashboard.html" id="loginForm" novalidate>
+			<label>Email: <br>
+				<input type="email" name="email" id="l-email" required autocomplete="username">
+				<div class="error" id="err-l-email"></div>
+			</label> <br><br>
+			<label>Password: <br>
+				<input type="password" name="password" id="l-pass" required minlength="6" autocomplete="current-password">
+				<div class="error" id="err-l-pass"></div>
+			</label> <br><br>
+			<div class="remember-me-container">
+				<input type="checkbox" id="rememberMe" name="rememberMe">
+				<label for="rememberMe">Remember me</label>
+			</div>
+			<br>
+			<button type="submit" class="login">Login</button>
+		</form>
+		<p style="margin-top: 12px; text-align:center; font-size: 1.3rem;">Don't have an account? <a href="register.html">Sign in</a></p>
+	</div>
+
+	<script>
+	(async function(){
+		const API_BASE_URL = 'http://localhost:5000/api';
+		
+		function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
+		function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+		
+		function loadRememberedEmail() {
+			const rememberMe = localStorage.getItem('rememberMe') === 'true';
+			const savedEmail = localStorage.getItem('savedEmail');
+			
+			if (rememberMe && savedEmail) {
+				document.getElementById('l-email').value = savedEmail;
+				document.getElementById('rememberMe').checked = true;
+			}
+		}
+		
+		function saveRememberedEmail() {
+			const rememberMeChecked = document.getElementById('rememberMe').checked;
+			const email = document.getElementById('l-email').value;
+			
+			if (rememberMeChecked) {
+				localStorage.setItem('rememberMe', 'true');
+				localStorage.setItem('savedEmail', email);
+			} else {
+				localStorage.removeItem('rememberMe');
+				localStorage.removeItem('savedEmail');
+			}
+		}
+		
+		loadRememberedEmail();
+		
+		document.getElementById('loginForm').addEventListener('submit', async function(e){
+			e.preventDefault();
+			
+			var ok = true;
+			var email = document.getElementById('l-email').value.trim();
+			var pass = document.getElementById('l-pass').value;
+			
+			setError('err-l-email'); 
+			setError('err-l-pass');
+			
+			if(!emailOk(email)){ 
+				setError('err-l-email','Enter a valid email address.'); 
+				ok=false; 
+			}
+			if(pass.length < 6){ 
+				setError('err-l-pass','Password must be at least 6 characters.'); 
+				ok=false; 
+			}
+			
+			if(!ok) return;
+
+            if (email === 'admin123@gmail.com' && pass === 'Admin123') {
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('userRole', 'admin');
+                localStorage.setItem('admin_email', email);
+                saveRememberedEmail();
+                window.location.href = 'admin.html';
+                return;
+            }
+
+			// Try API first, fallback to localStorage
+			try {
+				// Try backend API
+                const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						email: email,
+						password: pass
+					}),
+                    timeout: 5000,
+                    credentials: 'include'
+				});
+
+			const loginResult = await loginResponse.json();
+
+                if (loginResponse.ok) {
+                    const user = loginResult.user;
+                    const token = loginResult.token;
+				
+				localStorage.setItem('loggedIn', 'true');
+				localStorage.setItem('userRole', user.role);
+                    localStorage.setItem('studentData', JSON.stringify(user));
+                    if (token) localStorage.setItem('authToken', token);
+                    
+                    saveRememberedEmail();
+
+				if (user.role === 'student') {
+					window.location.href = './student-dashboard.html';
+				} else if (user.role === 'tutor') {
+					window.location.href = 'tutor-dashboard.html';
+				} else {
+					window.location.href = 'index.html';
+				}
+				return;
+			}
+		} catch (error) {
+			console.log('Backend not available, trying local authentication...');
+		}
+
+		try {
+			const storedData = localStorage.getItem('studentData');
+			if (storedData) {
+				const user = JSON.parse(storedData);
+				if (user.email === email && user.password === pass) {
+					localStorage.setItem('loggedIn', 'true');
+					localStorage.setItem('userRole', user.role || 'student');
+					
+					saveRememberedEmail();
+					
+					if (user.role === 'student') {
+						window.location.href = './student-dashboard.html';
+					} else if (user.role === 'tutor') {
+						window.location.href = './tutor-dashboard.html';
+					} else {
+						window.location.href = './index.html';
+					}
+					return;
+				}
+			}
+		} catch (localError) {
+			console.error('Local storage error:', localError);
+		}
+
+		alert('Invalid email or password. Please check your credentials or sign up first.');
+		});
+	})();
+	</script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./assets/style.css">
+	<title>Login</title>
+	
+	<style>
+		.features{
+			padding-top: 80px;
+			position: absolute;
+			height: 500px;
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+			margin-left:570px;
+		}
+		.features h2{
+			font-size: 3rem;
+			color: var(--accent);
+		}
+		.form-container {
+			background: white;
+			border: 2px solid var(--slider);
+			border-radius: 10px;
+			padding: 40px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			max-width: 450px;
+			width: 100%;
+		}
+		.features form{
+			padding: 0;
+			max-width: none;
+		}
+		.features form label{
+			font-size: 1.2rem;
+		}
+		.features form input{
+			padding: 10px 15px;
+			margin: 5px;
+			border-radius: 5px;
+			border: 2px solid var(--slider);
+			width: 300px;
+			font-size: 1.1rem;
+		}
+		.features form button{
+			margin-left: 100px;
+		}
+		.features a{ color: black; }
+		.features a:hover{ color: var(--accent); transform: scale(2); }
+		.error{ color:#c0392b; font-size: 0.9rem; margin-left: 6px; }
+		/* inline status/message styles */
+		.status{ margin-top: 10px; font-size: 0.95rem; }
+		.status.info{ color:#2c3e50; }
+		.status.success{ color:#1e8449; }
+		.status.error{ color:#c0392b; }
+		/* added checkbox styling for remember me */
+		.remember-me-container {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin: 15px 0;
+			font-size: 1rem;
+		}
+		.remember-me-container input[type="checkbox"] {
+			width: 18px;
+			height: 18px;
+			cursor: pointer;
+			margin: 0;
+		}
+		.remember-me-container label {
+			font-size: 1rem;
+			margin: 0;
+			cursor: pointer;
+		}
+		@media (max-width: 1200px){ .features{ margin-left: 0; } }
+		@media (max-width: 640px){
+			.features{ position: static; padding: 80px 16px 24px 16px; align-items: center; }
+			.form-container { padding: 24px; }
+			.features form{ padding: 0; width: 100%; }
+			.features form input{ width: 100%; }
+			.features form button{ margin-left: 0; width: 100%; }
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar">
+		<a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" height="80px" width="auto"></a>
+		<div class="nav">
+			<ul class="list">
+				<li><a href="aboutus.html" class="nb">About us</a></li>
+				<li><a href="tutor.html" class="nb">Find a tutor</a></li>
+				<li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="features">
+		<h2>Login</h2>
+		<div class="form-container">
+			<form class="form" action="student-dashboard.html" id="loginForm" novalidate>
+				<label>Email: <br>
+					<input type="email" name="email" id="l-email" required autocomplete="username">
+					<div class="error" id="err-l-email"></div>
+				</label> <br><br>
+				<label>Password: <br>
+					<input type="password" name="password" id="l-pass" required minlength="6" autocomplete="current-password">
+					<div class="error" id="err-l-pass"></div>
+				</label> <br><br>
+				<!-- added remember me checkbox -->
+				<div class="remember-me-container">
+					<input type="checkbox" id="rememberMe" name="rememberMe">
+					<label for="rememberMe">Remember me</label>
+				</div>
+				<br>
+				<button id="loginBtn" type="submit" class="login">Login</button>
+				<div id="login-status" class="status" role="alert" aria-live="polite"></div>
+			</form>
+			<p style="margin-top: 12px; text-align:center; font-size: 1.3rem;">Don't have an account? <a href="register.html">Sign in</a></p>
+		</div>
+	</div>
+
+	<script>
+	(async function(){
+		const API_BASE_URL = 'http://localhost:5000/api';
+		
+		function setError(id,msg){ document.getElementById(id).textContent = msg || ''; }
+		function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+		function showStatus(msg, type){
+			const el = document.getElementById('login-status');
+			if(!el) return; 
+			el.textContent = msg || '';
+			el.className = 'status ' + (type || 'info');
+		}
+		function setLoading(loading){
+			const btn = document.getElementById('loginBtn');
+			if(!btn) return;
+			btn.disabled = !!loading;
+			btn.textContent = loading ? 'Logging in…' : 'Login';
+		}
+		
+		function loadRememberedEmail() {
+			const rememberMe = localStorage.getItem('rememberMe') === 'true';
+			const savedEmail = localStorage.getItem('savedEmail');
+			
+			if (rememberMe && savedEmail) {
+				document.getElementById('l-email').value = savedEmail;
+				document.getElementById('rememberMe').checked = true;
+			}
+		}
+		
+		function saveRememberedEmail() {
+			const rememberMeChecked = document.getElementById('rememberMe').checked;
+			const email = document.getElementById('l-email').value;
+			
+			if (rememberMeChecked) {
+				localStorage.setItem('rememberMe', 'true');
+				localStorage.setItem('savedEmail', email);
+			} else {
+				localStorage.removeItem('rememberMe');
+				localStorage.removeItem('savedEmail');
+			}
+		}
+		
+		// Load saved email when page loads
+		loadRememberedEmail();
+		document.getElementById('l-email').addEventListener('input', function(){ showStatus('', 'info'); });
+		document.getElementById('l-pass').addEventListener('input', function(){ showStatus('', 'info'); });
+		
+		document.getElementById('loginForm').addEventListener('submit', async function(e){
+			e.preventDefault();
+			showStatus('', 'info');
+			setLoading(true);
+			
+			var ok = true;
+			var email = document.getElementById('l-email').value.trim().toLowerCase();
+			var pass = document.getElementById('l-pass').value;
+			
+			setError('err-l-email'); 
+			setError('err-l-pass');
+			
+			if(!emailOk(email)){ 
+				setError('err-l-email','Enter a valid email address.'); 
+				ok=false; 
+			}
+			if(pass.length < 6){ 
+				setError('err-l-pass','Password must be at least 6 characters.'); 
+				ok=false; 
+			}
+			
+			if(!ok){ setLoading(false); return; }
+
+			// Admin shortcut (local-only)
+			if (email === 'admin123@gmail.com' && pass === 'Admin123') {
+				localStorage.setItem('loggedIn', 'true');
+				localStorage.setItem('userRole', 'admin');
+				localStorage.setItem('admin_email', email);
+				saveRememberedEmail();
+				window.location.href = 'admin.html';
+				return;
+			}
+
+			// Try API first, fallback only if network error/timeout
+			try {
+				const controller = new AbortController();
+				const timer = setTimeout(() => controller.abort(), 8000);
+				const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email: email, password: pass }),
+					credentials: 'include',
+					signal: controller.signal
+				});
+				clearTimeout(timer);
+				let loginResult = null;
+				try { loginResult = await loginResponse.json(); } catch { loginResult = null; }
+				if (!loginResponse.ok) {
+					const msg = (loginResult && (loginResult.message || loginResult.error)) || 'Unable to log in. Please check your email and password.';
+					showStatus(msg, 'error');
+					setLoading(false);
+					return;
+				}
+
+				// Success: store session info
+				const user = loginResult.user;
+				const token = loginResult.token;
+				localStorage.setItem('loggedIn', 'true');
+				if (user && user.role) localStorage.setItem('userRole', user.role);
+				localStorage.setItem('studentData', JSON.stringify(user));
+				if (token) localStorage.setItem('authToken', token);
+				saveRememberedEmail();
+				showStatus('Login successful. Redirecting…', 'success');
+				// Redirect based on role
+				if (user && user.role === 'student') {
+					window.location.href = './student-dashboard.html';
+				} else if (user && user.role === 'tutor') {
+					window.location.href = './tutor-dashboard.html';
+				} else {
+					window.location.href = './index.html';
+				}
+				return;
+			} catch (error) {
+				console.log('Backend not available, trying local authentication...', error && error.name);
+			}
+
+			// Fallback: Check localStorage for demo accounts
+			try {
+				const storedData = localStorage.getItem('studentData');
+				if (storedData) {
+					const user = JSON.parse(storedData);
+					const userEmail = (user.email || '').toLowerCase();
+					if (userEmail === email && user.password === pass) {
+						localStorage.setItem('loggedIn', 'true');
+						localStorage.setItem('userRole', user.role || 'student');
+						saveRememberedEmail();
+						if (user.role === 'student') {
+							window.location.href = './student-dashboard.html';
+						} else if (user.role === 'tutor') {
+							window.location.href = './tutor-dashboard.html';
+						} else {
+							window.location.href = './index.html';
+						}
+						return;
+					}
+				}
+			} catch (localError) {
+				console.error('Local storage error:', localError);
+			}
+
+			showStatus('Invalid email or password. Please try again or register first.', 'error');
+			setLoading(false);
+		});
+	})();
+	</script>
+</body>
 </html>
+

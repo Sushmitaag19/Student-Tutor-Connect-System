@@ -25,24 +25,28 @@ console.log('Initializing database connection with config:', {
 
 const pool = new Pool(dbConfig);
 
-pool.connect()
-    .then(client => {
-        console.log(' Database connected successfully');
-        console.log('Connection details:', {
-            database: client.database,
-            host: dbConfig.host,
-            port: dbConfig.port
+if (process.env.NODE_ENV !== 'test') {
+    pool.connect()
+        .then(client => {
+            console.log(' Database connected successfully');
+            console.log('Connection details:', {
+                database: client.database,
+                host: dbConfig.host,
+                port: dbConfig.port
+            });
+            client.release();
+        })
+        .catch(err => {
+            console.error(' Failed to connect to database:', err.message);
+            console.error(' Please check:');
+            console.error('   1. PostgreSQL is running');
+            console.error('   2. Database "Student_tutor" exists');
+            console.error('   3. Username and password in connection.env');
+            console.error('   4. Server can access the database');
         });
-        client.release();
-    })
-    .catch(err => {
-        console.error(' Failed to connect to database:', err.message);
-        console.error(' Please check:');
-        console.error('   1. PostgreSQL is running');
-        console.error('   2. Database "Student_tutor" exists');
-        console.error('   3. Username and password in connection.env');
-        console.error('   4. Server can access the database');
-    });
+} else {
+    // Skip establishing DB connection during Jest tests
+}
 
 pool.on('error', (err) => {
     console.error(' Unexpected database pool error:', err);

@@ -426,19 +426,19 @@
 			<form class="form" id="tutorForm" novalidate>
 				<div class="form-group">
 					<label for="t-name">Full Name:</label>
-					<input type="text" name="name" id="t-name" required>
+					<input type="text" name="name" id="t-name" required autocomplete="name">
 					<div class="error" id="err-t-name"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="t-email">Email:</label>
-					<input type="email" name="email" id="t-email" required>
+					<input type="email" name="email" id="t-email" required autocomplete="email">
 					<div class="error" id="err-t-email"></div>
 				</div>
 
 				<div class="form-group">
 					<label for="t-pass">Password:</label>
-					<input type="password" name="password" id="t-pass" required minlength="8">
+					<input type="password" name="password" id="t-pass" required minlength="8" autocomplete="new-password">
 					<div class="error" id="err-t-pass"></div>
 				</div>
 
@@ -501,7 +501,7 @@
 
 				<div class="form-group">
 					<label for="t-location">Location (City):</label>
-					<input type="text" name="location" id="t-location" required>
+					<input type="text" name="location" id="t-location" required autocomplete="address-level2">
 					<div class="error" id="err-t-location"></div>
 				</div>
 

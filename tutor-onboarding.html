@@ -24,7 +24,7 @@
 
 	<div class="quiz">
 		<h2 id="quiz-title">Subject Quiz</h2>
-		<div class="timer">Time left: <span id="time">60</span>s</div>
+		<div class="timer">Time left: <span id="time">150</span>s</div>
 		<div id="question"></div>
 		<div id="options" class="options"></div>
 		<div class="controls">
@@ -58,7 +58,7 @@
 			}
 		}).catch(()=> alert('Failed to load quiz.'))
 
-		var idx = 0, score = 0, totalTime = 60, remainingTime = 60, intervalId = null, selected = null;
+		var idx = 0, score = 0, totalTime = 150, remainingTime = 150, intervalId = null, selected = null;
 
 		function render(){
 			document.getElementById('question').textContent = (idx+1)+'. '+questions[idx].q;

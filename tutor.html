@@ -20,10 +20,10 @@
             <li><a href="aboutus.html" class="nb">About us</a></li>
             <li><a href="tutor.html" class="nb">Find a tutor</a></li>
             <li><a href="becomeTutor.html" class="nb">Become a tutor</a></li>
-             <div class="search-bar"> 
+             <!-- <div class="search-bar"> 
             <input type="text" class="searchInput" placeholder="Search tutors..." id="navSearch"> 
             <button class="clickHere" id="navSearchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </div>
+        </div> -->
             <li><a href="login.html"><button type="button">Login</button></a></li>
             <li><a href="register.html"><button type="button">Sign up</button></a></li>
             </ul>
@@ -244,7 +244,6 @@ function ensureModalExists() {
   }
 }
 
-// Handle show more button click
 function handleShowMore(tutorId) {
   if (localStorage.getItem('loggedIn') !== 'true') {
     window.location.href = 'login.html';
@@ -271,7 +270,6 @@ function handleShowMore(tutorId) {
   modal.style.display = 'flex';
 }
 
-// Filter function
 function filterTutors() {
   const level = document.getElementById('level').value;
   const subject = document.getElementById('subject').value;
@@ -304,7 +302,6 @@ function filterTutors() {
   renderTutors(filtered);
 }
 
-// Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
   ensureModalExists();
   
@@ -313,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
 
-  // Tutors will be loaded by loadTutors() function
 
   document.querySelectorAll('select, input[type="radio"]').forEach(el => {
     el.addEventListener('change', filterTutors);
@@ -343,7 +339,6 @@ searchInput.addEventListener('input', () => {
    renderTutors(filtered);
 })
 
-// Navbar search functionality
 document.getElementById('navSearchBtn').addEventListener('click', function() {
 	var query = document.getElementById('navSearch').value.trim();
 	if (query) {
@@ -357,12 +352,13 @@ document.getElementById('navSearch').addEventListener('keypress', function(e) {
 	}
 });
 
-// Handle URL search parameter
 const urlParams = new URLSearchParams(window.location.search);
 const searchParam = urlParams.get('search');
 if (searchParam) {
 	document.getElementById('search').value = searchParam;
 	searchInput.dispatchEvent(new Event('input'));
 }
+
+
 </script>
 </html>

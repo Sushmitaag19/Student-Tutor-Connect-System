@@ -154,19 +154,10 @@
 		(async function() {
 			const API_BASE_URL = 'http://localhost:5000/api';
 			const token = localStorage.getItem('authToken');
-			
-			if (!token) {
-				alert('You must be logged in to view the dashboard.');
-				window.location.href = 'login.html';
-				return;
-			}
 
-			// Fetch tutor profile
 			try {
 				const response = await fetch(`${API_BASE_URL}/tutor/me`, {
-					headers: {
-						'Authorization': `Bearer ${token}`
-					},
+					headers: token ? { 'Authorization': `Bearer ${token}` } : {},
 					credentials: 'include'
 				});
 
@@ -177,13 +168,27 @@
 						window.location.href = 'login.html';
 						return;
 					}
+					if (response.status === 404) {
+						
+						try {
+							const meRes = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include', headers: token ? { 'Authorization': `Bearer ${token}` } : {} });
+							if (meRes.ok) {
+								const me = await meRes.json();
+								if (me && me.user && me.user.role === 'tutor') {
+									alert('Welcome! Please complete your tutor profile to access the dashboard.');
+									window.location.href = 'tutor-signup.html';
+									return;
+								}
+							}
+						} catch(_) {}
+						throw new Error('Tutor profile not found');
+					}
 					throw new Error('Failed to fetch tutor profile');
 				}
 
 				const data = await response.json();
 				const tutor = data.tutor;
 
-				// Populate dashboard
 				document.getElementById('welcome-msg').textContent = `Welcome, ${tutor.name}`;
 				document.getElementById('tutor-name').textContent = tutor.name || '-';
 				document.getElementById('tutor-email').textContent = tutor.email || '-';
@@ -204,7 +209,6 @@
 				alert('Failed to load tutor profile. Please try again.');
 			}
 
-			// Logout handler
 			document.getElementById('logout-btn').addEventListener('click', async function() {
 				try {
 					await fetch(`${API_BASE_URL}/auth/logout`, {

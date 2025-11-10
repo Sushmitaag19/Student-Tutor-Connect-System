@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #1e40af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --border-color: #475569;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .navbar {
+      background-color: #EEEEEE;;
+      border-bottom: 1px solid var(--border-color);
+      color: #333333;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .Logo img {
+      height: 50px;
+      width: auto;
+    }
+
+    .nav .list {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav .list a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav .list a:hover {
+      color: var(--primary);
+    }
+
+    .nav .list a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    .nav .list a:hover::after {
+      width: 100%;
+    }
+
+    .admin-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      color: var(--text-primary);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .kpi .card {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    .kpi .card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .kpi .card h3 {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .kpi .card p {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin: 2.5rem 0 1.5rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 1.5rem;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .card h3 {
+      color: var(--text-primary);
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .card p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card b {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background-color: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .pill.verified {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    .pill.pending {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border-color: var(--warning);
+    }
+
+    .feedback {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .feedback:hover {
+      border-color: var(--primary);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.1);
+    }
+
+    .feedback p {
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      font-size: 0.9375rem;
+    }
+
+    .feedback b {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .feedback i {
+      color: var(--text-muted);
+      font-style: normal;
+      display: block;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .feedback small {
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      display: block;
+      margin-top: 0.5rem;
+    }
+
+    .sentiment-score {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8125rem;
+    }
+
+    .sentiment-positive {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .sentiment-neutral {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+
+    .sentiment-negative {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .controls input,
+    .controls select {
+      padding: 0.5rem 1rem;
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      transition: all 0.3s ease;
+    }
+
+    .controls input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .controls input:focus,
+    .controls select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .controls button {
+      padding: 0.5rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .controls button:hover {
+      background-color: var(--primary-dark);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.8125rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .btn-view {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-view:hover {
+      background-color: #059669;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-remove {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .btn-remove:hover {
+      background-color: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      overflow-y: auto;
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 1rem;
+    }
+
+    .modal-header h2 {
+      color: var(--text-primary);
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: var(--primary);
+    }
+
+    .feedback-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+
+    .feedback-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .feedback-item p {
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-size: 0.9375rem;
+    }
+
+    .feedback-item b {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .no-feedback {
+      color: var(--text-muted);
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.875rem;
+      }
+
+      .navbar {
+        padding: 1rem;
+      }
+
+      .nav .list {
+        gap: 1rem;
+      }
+
+      .admin-wrap {
+        padding: 1.5rem 1rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-page="admin">
+  <nav class="navbar">
+    <a href="index.html" class="Logo"><img src="./assets/images/pill-logo.png" alt="Logo" /></a>
+    <div class="nav">
+      <ul class="list">
+        <li><a href="admin.html">Admin</a></li>
+        <li><a href="logout.html">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="admin-wrap">
+    <h1>Admin Dashboard</h1>
+
+    <div class="controls">
+      <input type="text" placeholder="Search tutors..." />
+      <select>
+        <option value="all">All</option>
+        <option value="verified">Verified</option>
+        <option value="pending">Pending</option>
+      </select>
+      <button>Filter</button>
+    </div>
+
+    <div class="kpi">
+      <div class="card">
+        <h3>Total Tutors</h3>
+        <p id="kpi-tutors">-</p>
+      </div>
+      <div class="card">
+        <h3>Total Students</h3>
+        <p id="kpi-students">-</p>
+      </div>
+      <div class="card">
+        <h3>Total Feedback</h3>
+        <p id="kpi-feedback">-</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">Tutors</h2>
+    <div class="controls">
+      <input type="text" id="tutorSearch" placeholder="Search tutors by name..." />
+      <select id="tutorFilter">
+        <option value="">All Status</option>
+        <option value="verified">Verified</option>
+        <option value="pending">Pending</option>
+      </select>
+      <button onclick="filterTutors()">Search</button>
+    </div>
+    <div id="tutors" class="grid"></div>
+
+    <h2 class="section-title">Students</h2>
+    <div class="controls">
+      <input type="text" id="studentSearch" placeholder="Search students by name..." />
+      <button onclick="filterStudents()">Search</button>
+    </div>
+    <div id="students" class="grid"></div>
+
+    <h2 class="section-title">Recent Feedback</h2>
+    <div id="feedback" class="grid"></div>
+  </div>
+
+  <div id="feedbackModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Feedback</h2>
+        <button class="modal-close" onclick="closeFeedbackModal()">&times;</button>
+      </div>
+      <div id="feedbackContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api';
+    let allTutors = [];
+    let allStudents = [];
+    let allFeedback = [];
+
+    async function ensureAdmin(){
+      try{
+        const meRes = await fetch(API + '/auth/me', { credentials:'include' });
+        if(meRes.ok){
+          const me = await meRes.json();
+          if(me && me.user && me.user.role === 'admin') return true;
+        }
+      }catch{}
+      // Fallback to local flags set by admin quick login
+      const email = localStorage.getItem('admin_email');
+      const role = localStorage.getItem('userRole');
+      const ok = (role === 'admin') || (email === 'admin123@gmail.com');
+      if(!ok){
+        alert('Admin access required.');
+        location.href = 'login.html';
+        return false;
+      }
+      return true;
+    }
+
+    function tutorCard(t){
+      const status = t.verification_status || 'pending';
+      const statusClass = status === 'verified' ? 'verified' : 'pending';
+      return `
+        <div class="card">
+          <h3>${t.name || t.full_name || 'Tutor'}</h3>
+          <p><b>Subject:</b> ${t.subject || '-'}</p>
+          <p><b>Charge:</b> Rs. ${t.hourly_rate || '-'} / hr</p>
+          <p><b>Mode:</b> ${t.teaching_mode || '-'}</p>
+          <p><span class="pill ${statusClass}">${status}</span></p>
+          <div class="card-actions">
+            <button class="btn-small btn-view" onclick="viewUserFeedback('tutor', ${t.tutor_id}, '${(t.name || t.full_name || 'Tutor').replace(/'/g, "\\'")}')">View Feedback</button>
+            <button class="btn-small btn-remove" onclick="removeUser('tutor', ${t.tutor_id}, '${(t.name || t.full_name || 'Tutor').replace(/'/g, "\\'")}')">Remove</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function studentCard(s){
+      const subs = Array.isArray(s.subjects) ? s.subjects.join(', ') : (s.subjects || '-');
+      return `
+        <div class="card">
+          <h3>${s.full_name || 'Student'}</h3>
+          <p><b>Subjects:</b> ${subs}</p>
+          <p><b>Mode:</b> ${s.preferred_mode || '-'}</p>
+          <p><b>Budget:</b> ${s.budget || '-'}</p>
+          <div class="card-actions">
+            <button class="btn-small btn-view" onclick="viewUserFeedback('student', ${s.student_id}, '${(s.full_name || 'Student').replace(/'/g, "\\'")}')">View Feedback</button>
+            <button class="btn-small btn-remove" onclick="removeUser('student', ${s.student_id}, '${(s.full_name || 'Student').replace(/'/g, "\\'")}')">Remove</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function feedbackCard(f){
+      const sentimentScore = typeof f.sentiment_score === 'number' ? f.sentiment_score : null;
+      let sentimentClass = 'sentiment-neutral';
+      if(sentimentScore !== null){
+        if(sentimentScore > 0.5) sentimentClass = 'sentiment-positive';
+        else if(sentimentScore < -0.5) sentimentClass = 'sentiment-negative';
+      }
+      return `
+        <div class="feedback">
+          <p><b>From:</b> ${f.from_name || f.from_user_id}</p>
+          <p><b>To:</b> ${f.to_name || f.to_user_id} <span class="pill">${f.to_role}</span></p>
+          <p>${f.text}</p>
+          ${sentimentScore !== null ? `<i class="sentiment-score ${sentimentClass}">Sentiment: ${sentimentScore.toFixed(2)}</i>` : ''}
+          <small>${new Date(f.created_at).toLocaleString()}</small>
+        </div>
+      `;
+    }
+
+    function viewUserFeedback(role, userId, userName) {
+      const userFeedback = allFeedback.filter(f => 
+        (f.to_user_id === userId || f.to_id === userId) && f.to_role === role
+      );
+      
+      let feedbackHTML = '';
+      if (userFeedback.length === 0) {
+        feedbackHTML = '<div class="no-feedback">No feedback available for this user.</div>';
+      } else {
+        feedbackHTML = userFeedback.map(f => {
+          const sentimentScore = typeof f.sentiment_score === 'number' ? f.sentiment_score : null;
+          let sentimentClass = 'sentiment-neutral';
+          if(sentimentScore !== null){
+            if(sentimentScore > 0.5) sentimentClass = 'sentiment-positive';
+            else if(sentimentScore < -0.5) sentimentClass = 'sentiment-negative';
+          }
+          
+          return `
+            <div class="feedback-item">
+              <p><b>From:</b> ${f.from_name || f.from_user_id}</p>
+              <p>${f.text}</p>
+              ${sentimentScore !== null ? `<p><span class="sentiment-score ${sentimentClass}">Sentiment: ${sentimentScore.toFixed(2)}</span></p>` : ''}
+              <small>${new Date(f.created_at).toLocaleString()}</small>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      document.getElementById('feedbackContent').innerHTML = `<h3>Feedback for ${userName}</h3>${feedbackHTML}`;
+      document.getElementById('feedbackModal').classList.add('show');
+    }
+
+    function closeFeedbackModal() {
+      document.getElementById('feedbackModal').classList.remove('show');
+    }
+
+    function filterTutors() {
+      const search = document.getElementById('tutorSearch').value.toLowerCase();
+      const filter = document.getElementById('tutorFilter').value;
+      
+      let filtered = allTutors.filter(t => {
+        const name = (t.name || t.full_name || '').toLowerCase();
+        const matchesSearch = name.includes(search);
+        const matchesStatus = !filter || (t.verification_status || '').toLowerCase() === filter;
+        return matchesSearch && matchesStatus;
+      });
+      
+      document.getElementById('tutors').innerHTML = filtered.length > 0 
+        ? filtered.map(tutorCard).join('')
+        : '<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center;">No tutors found.</p>';
+    }
+
+    function filterStudents() {
+      const search = document.getElementById('studentSearch').value.toLowerCase();
+      
+      let filtered = allStudents.filter(s => {
+        const name = (s.full_name || '').toLowerCase();
+        return name.includes(search);
+      });
+      
+      document.getElementById('students').innerHTML = filtered.length > 0 
+        ? filtered.map(studentCard).join('')
+        : '<p style="grid-column: 1/-1; color: var(--text-muted); text-align: center;">No students found.</p>';
+    }
+
+    async function removeUser(role, userId, userName) {
+      if (!confirm(`Are you sure you want to remove ${userName}? This action cannot be undone.`)) {
+        return;
+      }
+      
+      try {
+        const endpoint = role === 'tutor' ? `/tutor/${userId}` : `/student/${userId}`;
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          alert('Admin actions require a valid login. Please log in as an admin user via email/password.');
+          return;
+        }
+        const response = await fetch(API + endpoint, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          alert(`${role.charAt(0).toUpperCase() + role.slice(1)} removed successfully.`);
+          load();
+        } else {
+          alert('Failed to remove user. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error removing user:', error);
+        alert('Error removing user.');
+      }
+    }
+
+    async function load(){
+      if(!(await ensureAdmin())) return;
+      const [tutRes, stuRes, fbRes] = await Promise.all([
+        fetch(API + '/tutor/all'),
+        fetch(API + '/student/all'),
+        fetch(API + '/feedback/all')
+      ]);
+      const tdata = await tutRes.json().catch(()=>({ tutors:[] }));
+      const sdata = await stuRes.json().catch(()=>({ students:[] }));
+      const fdata = await fbRes.json().catch(()=>({ feedback:[] }));
+
+      allTutors = tdata.tutors || [];
+      allStudents = sdata.students || [];
+      allFeedback = fdata.feedback || [];
+
+      document.getElementById('kpi-tutors').textContent = (tdata.count || allTutors.length);
+      document.getElementById('kpi-students').textContent = (sdata.count || allStudents.length);
+      document.getElementById('kpi-feedback').textContent = allFeedback.length;
+
+      document.getElementById('tutors').innerHTML = allTutors.map(tutorCard).join('');
+      document.getElementById('students').innerHTML = allStudents.map(studentCard).join('');
+      document.getElementById('feedback').innerHTML = allFeedback.slice(0,12).map(feedbackCard).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', load);
+  </script>
+</body>
+</html>

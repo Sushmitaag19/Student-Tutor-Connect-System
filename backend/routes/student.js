@@ -197,6 +197,30 @@ router.get('/profile/:user_id', async (req, res) => {
  * @desc    Get all students
  * @access  Public
  */
+/**
+ * @route   DELETE /api/student/:student_id
+ * @desc    Admin only - remove a student profile (hard delete profile only)
+ * @access  Private (Admin)
+ */
+router.delete('/:student_id', async (req, res) => {
+    const client = await pool.connect();
+    try {
+        // Admin check via simple header in future; for now reuse auth if wired
+        if (!req.user || req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Admin privileges required' });
+        }
+        const { student_id } = req.params;
+        const del = await client.query('DELETE FROM students WHERE student_id = $1', [student_id]);
+        if (!del.rowCount) return res.status(404).json({ error: 'Student not found' });
+        return res.json({ message: 'Student removed', student_id });
+    } catch (err) {
+        console.error('Admin remove student error:', err);
+        res.status(500).json({ error: 'Failed to remove student' });
+    } finally {
+        client.release();
+    }
+});
+
 router.get('/all', async (req, res) => {
     const client = await pool.connect();
 

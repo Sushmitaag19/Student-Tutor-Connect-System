@@ -1,0 +1,21 @@
+tutor_id,name,education_level,subject,experience_years,hourly_rate,teaching_mode,location
+1,Jaime Brown,PhD,Physics,5,1760.01,Hybrid,Pokhara
+2,Jasmine Shaw,PhD,Math,10,1842.66,Offline,Bhaktapur
+3,Rachel Herrera,PhD,Computer Science,12,1349.22,Hybrid,Lalitpur
+4,Angel Ross,PhD,Physics,11,1655.32,Offline,Bhaktapur
+5,Elaine Holmes,Bachelors,Biology,2,1024.98,Offline,Lalitpur
+6,Barry Townsend,Bachelors,Chemistry,1,841.31,Hybrid,Kathmandu
+7,Michael Stephenson,PhD,Computer Science,2,909.78,Offline,Pokhara
+8,Mary Walker,Masters,English,2,927.65,Hybrid,Bhaktapur
+9,Edward Benton,Bachelors,Math,4,902.2,Online,Kathmandu
+10,David Lam,PhD,Math,1,627.33,Online,Dharan
+11,Loretta Mosley,PhD,Nepali,10,940.48,Online,Pokhara
+12,Kyle Chang,Masters,Nepali,4,1121.58,Online,Bhaktapur
+13,Sydney White,Masters,Physics,3,1661.24,Online,Lalitpur
+14,Melissa Collins,PhD,Math,11,1211.09,Hybrid,Lalitpur
+15,Daniel Burton,Bachelors,English,2,1760.44,Offline,Lalitpur
+16,Katherine Brown,Bachelors,Nepali,5,1570.1,Offline,Kathmandu
+17,John Reed,Bachelors,English,2,571.82,Hybrid,Dharan
+18,Jesse Humphrey,Bachelors,Computer Science,1,1158.14,Hybrid,Bhaktapur
+19,Tyler Warren,Bachelors,Biology,8,1773.63,Hybrid,Pokhara
+20,Antonio Powell,Bachelors,Math,3,1152.21,Online,Bhaktapur

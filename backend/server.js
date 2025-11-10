@@ -110,6 +110,12 @@ try {
   app.use('/api/search', require('./routes/search'));
   console.log('✓ Search routes loaded');
   
+  app.use('/api/requests', require('./routes/requests'));
+  console.log('✓ Requests routes loaded');
+  
+  app.use('/api/feedback', require('./routes/feedback'));
+  console.log('✓ Feedback routes loaded');
+  
   // Log registered tutor routes for debugging
   if (tutorRoutes && tutorRoutes.stack) {
     console.log('Registered tutor routes:');
@@ -163,7 +169,11 @@ app.use('/api/*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000; 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log('CORS configured for all origins including null');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('CORS configured for all origins including null');
+  });
+}
+
+module.exports = app;
