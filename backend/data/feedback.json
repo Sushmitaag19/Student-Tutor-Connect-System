@@ -1,4 +1,14 @@
 {
-  "seq": 1,
-  "items": []
+  "seq": 2,
+  "items": [
+    {
+      "id": 1,
+      "from_user_id": 73,
+      "to_user_id": "58",
+      "to_role": "tutor",
+      "text": "",
+      "sentiment_score": null,
+      "created_at": "2025-11-11T00:23:48.358Z"
+    }
+  ]
 }

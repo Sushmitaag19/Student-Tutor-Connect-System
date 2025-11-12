@@ -171,7 +171,7 @@
 			box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 			overflow: hidden;
 			transition: all 0.3s ease;
-			cursor: pointer;
+			cursor: default;
 		}
 		.tutor-card:hover {
 			transform: translateY(-2px);
@@ -283,7 +283,8 @@
 		.card-actions { 
 			display: flex; 
 			justify-content: space-between; 
-			align-items: center;
+			align-items: flex-start;
+			flex-wrap: wrap;
 			padding: 12px 14px; 
 			gap: 8px; 
 			border-top: 1px solid #f0f0f0;
@@ -309,6 +310,7 @@
 		.select-btn:hover { 
 			transform: translateY(-1px); 
 			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+			color: black;
 		}
 		.select-btn[disabled] { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
 		.select-btn.loading { background: #6c757d; }
@@ -321,6 +323,9 @@
 			display: none;
 			background: #f9f9f9;
 			border-top: 1px solid #e0e0e0;
+			width: 100%;
+			box-sizing: border-box;
+			flex: 1 1 100%;
 		}
 		.feedback-form{ 
 			display: flex; 
@@ -550,9 +555,6 @@
 				}
 			}
 
-			// restore previously pending selection to prevent multiple selections across reloads
-			const pendingSel = localStorage.getItem('pending_tutor_selection');
-			if (pendingSel) { try { selectedTutorId = Number(pendingSel); } catch(_){} }
 
 			updateNotificationCount();
 		});
@@ -857,7 +859,7 @@
 						</div>
 						<div class="card-actions">
 							<div class="feedback-actions">
-								<button class="select-btn">Select</button>
+								<button class="select-btn" data-action="select">Select</button>
 								<button class="select-btn secondary" data-action="toggle-feedback">Rate</button>
 							</div>
 							<div class="feedback-panel" data-panel>
@@ -879,10 +881,6 @@
 						</div>
 					`;
 					gridEl.appendChild(card);
-					const btn = card.querySelector('.select-btn');
-					if (selectedTutorId && Number(tutor.tutor_id) !== Number(selectedTutorId)) btn.disabled = true;
-					if (selectedTutorId && Number(tutor.tutor_id) === Number(selectedTutorId)) { btn.textContent = 'Pending'; btn.classList.add('pending'); btn.disabled = true; }
-					btn.addEventListener('click', () => handleSelectTutor(tutor, btn));
 					// feedback handlers
 					const panel = card.querySelector('[data-panel]');
 					const listEl = card.querySelector('[data-list]');
@@ -890,6 +888,50 @@
 					const submitBtn = card.querySelector('[data-action="submit-feedback"]');
 					const ratingEl = card.querySelector('[data-rating]');
 					const statsEl = card.querySelector('[data-stats]');
+					// handle Select -> pending state
+					const selectBtn = card.querySelector('[data-action="select"]');
+					if (selectBtn){
+						if (selectedTutorId && Number(selectedTutorId) === Number(tutor.tutor_id)){
+							selectBtn.classList.add('pending');
+							selectBtn.textContent = 'Pending';
+							selectBtn.disabled = true;
+						}
+						selectBtn.addEventListener('click', async () => {
+							if (selectedTutorId && Number(selectedTutorId) !== Number(tutor.tutor_id)){
+								alert('You already have a pending request.');
+								return;
+							}
+							selectBtn.disabled = true;
+							selectBtn.classList.add('loading');
+							selectBtn.textContent = 'Sending...';
+							try{
+								const token = localStorage.getItem('authToken');
+								if (!token){ window.location.href = 'login.html'; return; }
+								const res = await fetch(`${API_BASE_URL}/requests/send`, {
+									method: 'POST',
+									credentials: 'include',
+									headers: Object.assign({ 'Content-Type': 'application/json' }, getAuthHeaders()),
+									body: JSON.stringify({ tutor_id: tutor.tutor_id })
+								});
+								if (!res.ok){
+									let msg = await res.text();
+									try{ const j = JSON.parse(msg); msg = j.error || j.message || msg; }catch{}
+									throw new Error(msg || 'Failed to send request');
+								}
+								// success -> reflect pending
+								selectedTutorId = tutor.tutor_id;
+								selectBtn.classList.remove('loading');
+								selectBtn.classList.add('pending');
+								selectBtn.textContent = 'Pending';
+							} catch(e){
+								console.error('Failed to send request', e);
+								selectBtn.disabled = false;
+								selectBtn.classList.remove('loading');
+								selectBtn.textContent = 'Select';
+								alert('Failed to send request. Please try again.');
+							}
+						});
+					}
 					toggleBtn.addEventListener('click', async ()=>{
 						panel.style.display = panel.style.display === 'none' || !panel.style.display ? 'block' : 'none';
 						if (panel.style.display === 'block') {
@@ -950,50 +992,6 @@
 			} catch(e){ console.error(e); alert('Failed to submit feedback'); }
 		}
 
-		async function handleSelectTutor(tutor, btn){
-			if (selectedTutorId && Number(selectedTutorId) !== Number(tutor.tutor_id)) {
-				return; // Prevent multiple selections
-			}
-			const API_BASE_URL = 'http://localhost:5000/api';
-			const token = localStorage.getItem('authToken');
-			const allButtons = document.querySelectorAll('.select-btn');
-
-			// set loading state
-			const originalText = btn.textContent;
-			btn.textContent = 'Selecting...';
-			btn.classList.add('loading');
-			btn.disabled = true;
-
-			try {
-				const res = await fetch(`${API_BASE_URL}/requests/request_tutor`, {
-					method: 'POST',
-					headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { 'Authorization': `Bearer ${token}` } : {}),
-					credentials: 'include',
-					body: JSON.stringify({ tutor_id: tutor.tutor_id })
-				});
-				const data = await res.json().catch(() => ({}));
-				if (!res.ok || data.success === false) {
-					throw new Error((data && (data.error || data.message)) || `Request failed (${res.status})`);
-				}
-				// success (or already pending)
-				selectedTutorId = Number(tutor.tutor_id);
-				localStorage.setItem('pending_tutor_selection', String(selectedTutorId));
-				// Update clicked button to pending
-				btn.textContent = 'Pending';
-				btn.classList.remove('loading');
-				btn.classList.add('pending');
-				btn.disabled = true;
-				// Disable all other buttons
-				allButtons.forEach(b => { if (b !== btn) b.disabled = true; });
-			} catch (e) {
-				console.error('Select tutor error:', e);
-				btn.textContent = originalText;
-				btn.classList.remove('loading');
-				// Allow retry
-				if (!selectedTutorId) btn.disabled = false;
-				alert(e.message || 'Failed to send selection. Please try again.');
-			}
-		}
 	</script>
 </body>
 </html> 

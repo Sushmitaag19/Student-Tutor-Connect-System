@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="assets/style.css" />
   <style>
     * {
       margin: 0;
@@ -34,9 +35,9 @@
     }
 
     .navbar {
-      background-color: #EEEEEE;;
+      background-color: var(--nav);
       border-bottom: 1px solid var(--border-color);
-      color: #333333;
+      color: var(--font);
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -167,6 +168,11 @@
       border-radius: 12px;
       padding: 1.5rem;
       transition: all 0.3s ease;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      box-sizing: border-box;
     }
 
     .card:hover {

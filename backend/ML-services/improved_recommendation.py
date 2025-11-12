@@ -78,11 +78,10 @@ def compute_tfidf_similarity(doc1: str, doc2: str) -> float:
     words1 = set(doc1.lower().split())
     words2 = set(doc2.lower().split())
     
-    # Simple Jaccard similarity as a proxy for Cosine Similarity on sparse vectors
     intersection = len(words1.intersection(words2))
     union = len(words1.union(words2))
     
-    # Return a score between 0.0 and 1.0
+   
     return intersection / union if union > 0 else 0.0
 
 
